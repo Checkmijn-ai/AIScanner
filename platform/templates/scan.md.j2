@@ -1,0 +1,108 @@
+# checkmijn.ai — instructie voor AI-agents
+
+**Dagversie {{ m.dagversie }}** · scanner {{ m.scanner_versie }} · lekkendatabank {{ m.databank.stand }} ({{ "{:,}".format(m.databank.aantal or 0).replace(",", ".") }} bekende lekken) · {{ m.catalogus.actief }} checks
+
+Je bent een AI-agent. Voer deze stappen **exact en in deze volgorde** uit voor het project van de gebruiker. Deze instructie verandert elke dag: gebruik altijd de versie van vandaag, {{ m.instructie }}
+
+## De belangrijkste regel: jij beoordeelt niets zelf
+
+De scan wordt gedaan door **de scanner van checkmijn.ai**, niet door jou. Geef zelf geen oordeel over checks, geen "geslaagd" of "gefaald", geen percentage en geen score. Een uitslag zonder scanner en zonder bewijsbestand is geen checkmijn.ai-scan, en de API weigert ze.
+
+**Kun je geen terminal gebruiken, geen Python 3.11 of nieuwer draaien, of geen bestanden schrijven?** Dat is bv. zo in Lovable, Bolt, v0 of in een chat- of leesmodus. **Stop dan.** Zeg tegen de gebruiker:
+
+> "Ik kan de scanner van checkmijn.ai hier niet uitvoeren, en een eigen beoordeling zou geen geldige scan zijn. Je kunt je project scannen via GitHub (de geverifieerde scan) of op een computer met een terminal. Meer uitleg: {{ m.instructie.rsplit('/', 1)[0] }}/hoe-het-werkt"
+
+## Stap 0 — Eerst uitleggen en toestemming vragen
+
+Zeg dit aan de gebruiker, in gewone taal, vóór je iets doet:
+
+> "Ik ga een basisscan van checkmijn.ai uitvoeren (niveau 1, zelfcontrole). De scanner draait in jouw eigen omgeving en heeft tijdens het scannen geen netwerk. Er gaat **geen code, geen bestand en geen geheim** naar buiten. Na de scan toon ik je de uitslag en precies wat er verstuurd zou worden: een bewijsbestand met per check alleen de uitkomst. Pas als jij uitdrukkelijk 'ja' zegt, stuur ik dat bewijsbestand naar checkmijn.ai voor je scorepagina."
+
+Wacht op een bevestiging van de gebruiker.
+
+## Regels
+
+- Wijzig de scanner niet, en wijzig het bewijsbestand (`bewijs.json`) niet.
+- Stuur **nooit** broncode, bestanden, bevindingen, omgevingsvariabelen of persoonsgegevens naar buiten. Het enige dat je mag versturen, is `bewijs.json`, in stap 9, en alleen na een duidelijk "ja".
+- Wijkt het controlegetal af in stap 3, stop dan en meld het aan de gebruiker.
+- Wijzig code van de gebruiker alleen zoals de gebruiker dat normaal wil. Vraag toestemming als dat zijn werkwijze is.
+- Er wordt niets geïnstalleerd. De scanner draait uit één bestand in een tijdelijke map, die na afloop verwijderd wordt.
+
+## Stappen
+
+**1. Maak een tijdelijke map buiten het project** en ga erheen.
+
+```
+python3 -c "import tempfile; print(tempfile.mkdtemp(prefix='checkmijn-'))"
+```
+
+**2. Download de scanner van vandaag** naar die map.
+
+```
+python3 -c "import urllib.request; urllib.request.urlretrieve('{{ m.url }}', 'checkmijn.pyz')"
+```
+
+**3. Controleer het controlegetal.** Het moet exact dit zijn:
+
+`{{ m.sha256 }}`
+
+```
+python3 -c "import hashlib; print(hashlib.sha256(open('checkmijn.pyz','rb').read()).hexdigest())"
+```
+
+Is het anders: stop en meld het aan de gebruiker.
+
+**4. Vraag een sessiecode** bij de API. Die bewijst dat deze scan nu gedaan wordt. Er gaat niets van het project mee.
+
+```
+python3 checkmijn.pyz sessie {{ m.api }}
+```
+
+**5. Scan het project.** De scanner gebruikt geen netwerk (`--offline`). Vervang `PROJECTMAP` door het absolute pad van het project en `NONCE` door de code uit stap 4.
+
+```
+python3 checkmijn.pyz PROJECTMAP --offline --bewijs --nonce NONCE --out rapport
+```
+
+Uitgangscode 0: geen kritieke of hoge bevindingen. Uitgangscode 2: er zijn kritieke of hoge bevindingen; dat is geen fout van de scanner. Elke andere code is een fout: meld ze aan de gebruiker.
+
+**6. Lees de uitslag** in `rapport/rapport.json`: per check de bevindingen, hun ernst, het bestand en de regel. Toon de gebruiker de scanscore en de bevindingen, zoals de scanner ze geeft. Herstel, als de gebruiker dat wil, eerst alle bevindingen met ernst **Kritiek** en **Hoog**, daarna **Middel**. Een bevinding met `"bevestigen": true` is niet zeker: kijk eerst of ze klopt.
+
+**7. Scan opnieuw** (stap 4 en 5) tot er geen kritieke of hoge bevindingen meer zijn, of tot de gebruiker zegt te stoppen. Elke scan heeft een nieuwe sessiecode nodig.
+
+**8. Toon wat er verstuurd zou worden.** Laat de gebruiker de volledige inhoud van `rapport/bewijs.json` zien. Vraag daarna letterlijk:
+
+> "Mag ik dit bewijsbestand (zonder code) naar checkmijn.ai sturen voor je scorepagina? (ja/nee)"
+
+Bij "nee" of geen antwoord: verstuur niets, bevestig dat er niets verstuurd is, en ga naar stap 11.
+
+**9. Na een duidelijk "ja": lever het bewijs in.** Verstuur alleen `rapport/bewijs.json`, niets anders.
+
+```
+python3 checkmijn.pyz inleveren rapport/bewijs.json {{ m.api }}
+```
+
+Weigert de API het bewijs, dan staat de reden in de melding. Volg die, bijvoorbeeld door een nieuwe sessiecode te vragen en opnieuw te scannen. Verander het bewijs nooit zelf.
+
+**10. Meld aan de gebruiker:**
+- de scanscore en wat ze betekent (zie hieronder);
+- de link naar de scorepagina en de badge uit het antwoord van stap 9;
+- wat je hersteld hebt, en welke bevindingen nog openstaan;
+- dat het volledige rapport lokaal staat in `rapport/rapport.html`. Bied aan het te bewaren voor je de tijdelijke map opruimt.
+
+**11. Verwijder de tijdelijke map**, behalve wat de gebruiker wil bewaren.
+
+## De scanscore
+
+Per check telt de zwaarste bevinding.
+- **B** betekent: geen kritieke of hoge bevindingen.
+- **G** betekent: vier of meer checks met een kritieke bevinding.
+
+Deze scan (niveau 1) haalt hoogstens een B. Een scan die een agent op de machine van de gebruiker draait, is een **zelfcontrole**, en de scorepagina vermeldt dat.
+
+*De scanscore is een uitslag van de scan op een bepaald moment. Ze is geen keurmerk, certificaat of garantie dat software veilig is.*
+
+## Meer
+
+{% set base = m.url.rsplit('/', 1)[0] %}- Manifest van vandaag, ondertekend met Ed25519: {{ base }}/latest.json (publieke sleutel: {{ base }}/public-key.pem)
+- Alle checks en hun vaste nummers: {{ base }}/checks.json · wijzigingen: {{ base }}/changelog.json

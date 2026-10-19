@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI-code scan — {{ s.app }}</title>
+<style>
+:root{--ink:#16202e;--muted:#5b6676;--line:#dfe3e8;--soft:#f5f7f9;--accent:#1f4e79;
+--krit:#a4161a;--hoog:#d9480f;--mid:#b7791f;--laag:#4a6fa5;--ok:#2b8a3e;--nvt:#868e96;--open:#6c5ce7}
+*{box-sizing:border-box}
+body{margin:0;background:#fff;color:var(--ink);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.page{max-width:1040px;margin:0 auto;padding:40px 28px 80px}
+h1{font-size:28px;margin:0 0 4px;letter-spacing:-.01em}
+h2{font-size:19px;margin:40px 0 12px;padding-bottom:6px;border-bottom:2px solid var(--ink)}
+h3{font-size:15px;margin:26px 0 8px}
+.sub{color:var(--muted);margin:0 0 24px}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:4px 24px;background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:14px 18px;margin-bottom:22px}
+.meta div{display:flex;gap:8px}.meta b{min-width:96px;color:var(--muted);font-weight:500}
+.scorebox{display:flex;gap:22px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:16px 18px;margin:0 0 18px;flex-wrap:wrap}
+.scale{display:flex;gap:4px}
+.scale span{width:34px;height:40px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;border-radius:4px;opacity:.28;font-size:16px}
+.scale span.on{opacity:1;transform:scale(1.18);box-shadow:0 0 0 2px #fff,0 0 0 4px var(--ink)}
+.l-A{background:#1b7f3b}.l-B{background:#4f9d2a}.l-C{background:#a4b61f}.l-D{background:#e0b400}.l-E{background:#e98a15}.l-F{background:#d9480f}.l-G{background:#b1161a}
+.scoretext{flex:1;min-width:240px}.scoretext .big{font-size:20px;font-weight:650}
+.verdict{border-left:5px solid var(--accent);background:var(--soft);padding:14px 18px;border-radius:0 8px 8px 0;margin:6px 0 20px;font-size:17px}
+.verdict.bad{border-color:var(--krit)}.verdict.good{border-color:var(--ok)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:10px 0 6px}
+.tile{border:1px solid var(--line);border-radius:8px;padding:10px 12px}
+.tile .n{font-size:26px;font-weight:650;line-height:1.1}.tile .l{color:var(--muted);font-size:12.5px}
+table{width:100%;border-collapse:collapse;margin:8px 0 14px;font-size:13px}
+th{text-align:left;font-weight:600;color:var(--muted);border-bottom:1px solid var(--ink);padding:6px 8px;font-size:12px;text-transform:uppercase;letter-spacing:.03em}
+td{border-bottom:1px solid var(--line);padding:7px 8px;vertical-align:top}
+td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.badge{display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap;border:1px solid}
+.st-Gehaald{color:var(--ok);border-color:var(--ok)}.st-Bevinding{color:var(--hoog);border-color:var(--hoog)}
+.st-nvt{color:var(--nvt);border-color:var(--nvt)}.st-open{color:var(--open);border-color:var(--open)}
+.e-Kritiek{background:var(--krit);border-color:var(--krit);color:#fff}.e-Hoog{background:var(--hoog);border-color:var(--hoog);color:#fff}
+.e-Middel{background:var(--mid);border-color:var(--mid);color:#fff}.e-Laag{background:var(--laag);border-color:var(--laag);color:#fff}
+.e-Info{color:var(--nvt);border-color:var(--nvt)}
+.conf{display:inline-block;font-size:11.5px;color:var(--open);border:1px dashed var(--open);border-radius:4px;padding:0 5px;margin-left:4px;white-space:nowrap}
+code,.ev{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px}
+.ev{display:block;background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:6px 8px;margin-top:4px;white-space:pre-wrap;word-break:break-word;color:#333}
+.check{border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin:12px 0;break-inside:avoid-page}
+.check .hd{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.check .id{font-weight:700}.check .norm{color:var(--muted);font-size:12.5px}
+.info{color:var(--muted);font-size:12.5px;margin:6px 0 0;padding-left:18px}
+.finding{border-top:1px solid var(--line);padding:8px 0 6px}
+.finding:first-of-type{border-top:0}
+.loc{color:var(--muted);font-size:12.5px}
+.note{color:var(--muted);font-size:12.5px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+ul.plain{padding-left:18px;margin:6px 0}
+footer{margin-top:50px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);padding-top:12px}
+@media (max-width:720px){.two{grid-template-columns:1fr}.page{padding:24px 16px}}
+@media print{.page{padding:0}table{font-size:11.5px}td{padding:5px 6px}h2{break-after:avoid}.check{break-inside:avoid}a{color:inherit;text-decoration:none}}
+</style>
+</head>
+<body><div class="page">
+
+<p class="note">{{ s.uitvoerder }} · vertrouwelijk</p>
+<h1>AI-code scan — rapport</h1>
+<p class="sub">Niveau {{ s.niveau }} · {{ s.totaal }} controles, elk gekoppeld aan de norm of wet waar ze uit komt</p>
+
+<div class="meta">
+  <div><b>Klant</b><span>{{ s.klant }}</span></div>
+  <div><b>App</b><span>{{ s.app }}{% if s.versie %} · versie {{ s.versie }}{% endif %}</span></div>
+  <div><b>Gescande build</b><span><code>{{ (s.commit or 'geen git-commit')[:12] }}</code></span></div>
+  <div><b>Scandatum</b><span>{{ s.datum }}</span></div>
+  <div><b>Scope</b><span>{{ s.scope }}</span></div>
+  <div><b>Scanner</b><span>{{ s.scanner }} · regelset {{ s.regelset }}</span></div>
+  <div><b>AI in de app</b><span>{% if s.ai.gebruikt %}ja ({{ (s.ai.pakketten + s.ai.endpoints)|join(', ') }}){% elif s.ai.gebruikt is none %}niet bepaald{% else %}nee{% endif %}</span></div>
+  <div><b>Talen</b><span>{{ s.talen|join(', ') or '—' }} · {{ s.bestanden }} bestanden</span></div>
+</div>
+
+{% set sc = s.score %}
+<div class="scorebox">
+  <div class="scale">{% for L in 'ABCDEFG' %}<span class="l-{{ L }}{% if sc.letter == L %} on{% endif %}">{{ L }}</span>{% endfor %}</div>
+  <div class="scoretext">
+    <div class="big">{% if sc.letter %}Scanscore {{ sc.letter }}{% else %}Geen scanscore{% endif %} · {{ s.soort }}</div>
+    <div class="note">{{ sc.uitleg }} Grenzen: zie achteraan. Dit is een score van deze scan, geen keurmerk of certificaat.</div>
+  </div>
+</div>
+
+<div class="verdict {{ 'bad' if (s.ernst.Kritiek + s.ernst.Hoog) else 'good' }}">
+  <b>{{ s.uitslag }}.</b> {{ s.status.Gehaald }} van de {{ s.gescand }} gescande controles zonder bevindingen;
+  {{ s.status['Niet gescand'] }} niet gescand, {{ s.status['Niet van toepassing'] }} niet van toepassing.
+</div>
+
+<div class="tiles">
+  <div class="tile"><div class="n" style="color:var(--krit)">{{ s.ernst.Kritiek }}</div><div class="l">kritiek</div></div>
+  <div class="tile"><div class="n" style="color:var(--hoog)">{{ s.ernst.Hoog }}</div><div class="l">hoog</div></div>
+  <div class="tile"><div class="n" style="color:var(--mid)">{{ s.ernst.Middel }}</div><div class="l">middel</div></div>
+  <div class="tile"><div class="n" style="color:var(--laag)">{{ s.ernst.Laag }}</div><div class="l">laag</div></div>
+  <div class="tile"><div class="n" style="color:var(--open)">{{ s.bevestigen }}</div><div class="l">te bevestigen door een analist</div></div>
+</div>
+<p class="note">Bevindingen met de vermelding <span class="conf">te bevestigen</span> komen uit een patroon dat niet zeker is: de scan markeert, een analist bevestigt of verwerpt ze (niveau 2).</p>
+
+<h2>Belangrijkste bevindingen</h2>
+{% if top %}
+<table><tr><th>Ernst</th><th>Scan</th><th>Bevinding</th><th>Waar</th></tr>
+{% for c, f in top[:15] %}
+<tr><td><span class="badge e-{{ f.ernst }}">{{ f.ernst }}</span></td><td><a href="#{{ c.id }}">{{ c.id }}</a></td>
+<td>{{ f.titel }}{% if f.bevestigen %}<span class="conf">te bevestigen</span>{% endif %}</td><td class="loc">{{ f.bestand }}{% if f.regel %}:{{ f.regel }}{% endif %}</td></tr>
+{% endfor %}</table>
+{% if top|length > 15 %}<p class="note">En nog {{ top|length - 15 }} kritieke of hoge bevindingen; zie de details per scan.</p>{% endif %}
+{% else %}<p>Geen kritieke of hoge bevindingen.</p>{% endif %}
+
+<h2>Per wet en norm</h2>
+<p class="note">Het aantal scans dat een wet of norm als bron heeft. Dit zegt niet hoeveel van die wet gedekt is, en niet dat de app eraan voldoet.</p>
+<div class="two">
+<table><tr><th>Wet</th><th class="num">Scans</th><th class="num">Gehaald</th><th class="num">Bevinding</th><th class="num">Open</th></tr>
+{% for w in s.wetten %}<tr><td>{{ w.naam }}{% if w.noot %}<div class="note">{{ w.noot }}</div>{% endif %}</td><td class="num">{{ w.checks }}</td><td class="num">{{ w.gehaald }}</td><td class="num">{{ w.bevinding }}</td><td class="num">{{ w.open }}</td></tr>{% endfor %}
+</table>
+<table><tr><th>Norm</th><th class="num">Scans</th><th class="num">Gehaald</th><th class="num">Bevinding</th><th class="num">Open</th></tr>
+{% for w in s.normen %}<tr><td>{{ w.naam }}</td><td class="num">{{ w.checks }}</td><td class="num">{{ w.gehaald }}</td><td class="num">{{ w.bevinding }}</td><td class="num">{{ w.open }}</td></tr>{% endfor %}
+</table>
+</div>
+<p class="note">"Open" = niet gescand, bijvoorbeeld omdat er geen URL of geen GitHub-token was. Niet van toepassing telt niet mee.</p>
+
+<h2>Alle scans</h2>
+{% for dom, rows in domains %}
+<h3>{{ dom }}</h3>
+<table><tr><th style="width:46px">ID</th><th>Scan</th><th style="width:150px">Normen en wetten</th><th style="width:86px">Methode</th><th style="width:108px">Resultaat</th></tr>
+{% for c, r in rows %}
+<tr><td><a href="#{{ c.id }}">{{ c.id }}</a></td><td>{{ c.scan }}</td><td class="note">{{ c.normen }}</td><td class="note">{{ c.methode }}</td>
+<td><span class="badge {{ statusclass(r.status) }}">{{ r.status }}</span>{% if r.findings %} <span class="note">{{ r.findings|length }}</span>{% endif %}</td></tr>
+{% endfor %}</table>
+{% endfor %}
+
+<h2>Details per scan</h2>
+{% for c, r in results %}
+<div class="check" id="{{ c.id }}">
+  <div class="hd"><span class="id">{{ c.id }}</span><span class="badge {{ statusclass(r.status) }}">{{ r.status }}</span>
+  <span>{{ c.scan }}</span></div>
+  <div class="norm">{{ c.normen }} · {{ c.methode }} · standaardernst {{ c.ernst|lower }}</div>
+  {% if r.reden %}<p class="note"><b>{{ r.status }}:</b> {{ r.reden }}</p>{% endif %}
+  {% for f in r.findings[:40] %}
+  <div class="finding"><span class="badge e-{{ f.ernst }}">{{ f.ernst }}</span> {{ f.titel }}{% if f.bevestigen %}<span class="conf">te bevestigen</span>{% endif %}
+    {% if f.bestand %}<div class="loc">{{ f.bestand }}{% if f.regel %}, regel {{ f.regel }}{% endif %}</div>{% endif %}
+    {% if f.bewijs %}<span class="ev">{{ f.bewijs }}</span>{% endif %}</div>
+  {% endfor %}
+  {% if r.findings|length > 40 %}<p class="note">En nog {{ r.findings|length - 40 }} bevindingen: zie rapport.json.</p>{% endif %}
+  {% if r.info %}<ul class="info">{% for i in r.info if not i.startswith('Traceback') %}<li>{{ i }}</li>{% endfor %}</ul>{% endif %}
+</div>
+{% endfor %}
+
+<h2>Hoe de scanscore berekend wordt</h2>
+<p class="note">Per scan telt de zwaarste bevinding. Een bevinding die nog bevestigd moet worden, telt één niveau lager tot een analist ze bevestigt. Een score komt er alleen als minstens 70% van de scans die van toepassing zijn, gescand is (nu {{ (sc.dekking * 100)|round|int }}%).</p>
+<table><tr><th style="width:60px">Score</th><th>Voorwaarde</th></tr>
+{% for L, t in sc.grenzen %}<tr><td><span class="badge l-{{ L }}" style="color:#fff;border-color:transparent">{{ L }}</span></td><td>{{ t }}</td></tr>{% endfor %}
+</table>
+<p class="note">{% if s.soort == 'Zelfcontrole' %}<b>Zelfcontrole:</b> de bouwer draaide deze scan zelf. Het rapport toont wat de scanner vond, maar is niet onafhankelijk geverifieerd.{% else %}<b>Geverifieerde scan:</b> uitgevoerd door {{ s.uitvoerder }}.{% endif %}</p>
+
+<h2>Wat dit rapport is, en wat niet</h2>
+<div class="two">
+<div><b>Wat het is</b><ul class="plain">
+<li>Een momentopname van deze versie op de scandatum, met wat de scans gevonden hebben.</li>
+<li>Elke scan draait met vaste regels: dezelfde code geeft dezelfde uitkomst.</li>
+<li>De code bleef bij de klant; alleen de resultaten zijn verwerkt. Geheimen staan gemaskeerd in dit rapport.</li>
+</ul></div>
+<div><b>Wat het niet is</b><ul class="plain">
+<li>Geen certificaat of garantie dat de app veilig is.</li>
+<li>Geen wettelijke conformiteitsbeoordeling, CE-markering of certificering.</li>
+<li>Geen oordeel dat de app aan een wet voldoet.</li>
+<li>Geen handmatige pentest en geen verbeteradvies.</li>
+</ul></div>
+</div>
+
+<footer>{{ s.uitvoerder }} · {{ s.scanner }} · regelset {{ s.regelset }} · lekkendatabank: GitHub Advisory Database (CC-BY 4.0) · regels voor geheimen gebaseerd op gitleaks (MIT) · {{ s.datum }}</footer>
+</div></body></html>

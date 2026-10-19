@@ -1,0 +1,54 @@
+name: checkmijn.ai scan
+description: Onafhankelijke scan van software die met AI gebouwd is. De code verlaat GitHub niet; alleen een bewijsbestand (optioneel) gaat naar checkmijn.ai.
+author: checkmijn.ai
+branding:
+  icon: check-circle
+  color: green
+inputs:
+  pad:
+    description: Map die gescand wordt (standaard de hele repository)
+    required: false
+    default: ${{ github.workspace }}
+  insturen:
+    description: "true = bewijsbestand (zonder code of paden) inleveren bij checkmijn.ai voor een scorepagina en badge"
+    required: false
+    default: "false"
+  faal-bij:
+    description: "nooit | kritiek | hoog — laat de run falen bij bevindingen van deze ernst"
+    required: false
+    default: "nooit"
+  manifest:
+    description: Adres van het manifest van de dagversie
+    required: false
+    default: https://klankenreis.github.io/checkmijn-scanner/latest.json
+outputs:
+  score:
+    description: De scanscore (A–G), of "geen" als er niet genoeg gescand kon worden
+    value: ${{ steps.scan.outputs.score }}
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5.6.0
+      with:
+        python-version: "3.12"
+    - name: Controle van de handtekening voorbereiden
+      shell: bash
+      run: python -m pip install --quiet "cryptography>=42"
+    - name: Scannen met checkmijn.ai
+      id: scan
+      shell: bash
+      env:
+        CM_PAD: ${{ inputs.pad }}
+        CM_INSTUREN: ${{ inputs.insturen }}
+        CM_FAAL_BIJ: ${{ inputs.faal-bij }}
+        CM_MANIFEST: ${{ inputs.manifest }}
+        CM_OUT: ${{ runner.temp }}/checkmijn-rapport
+      run: python "${{ github.action_path }}/action/scan_ci.py"
+    - name: Rapport bewaren bij deze run
+      if: always()
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
+      with:
+        name: checkmijn-rapport
+        path: ${{ runner.temp }}/checkmijn-rapport
+        retention-days: 30
+        if-no-files-found: ignore

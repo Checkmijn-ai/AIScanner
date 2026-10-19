@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scanscore {{ r.letter or '–' }} · {{ r.project }}</title>
+<style>
+:root{--bg:#f3f5f8;--paper:#fff;--ink:#15203a;--muted:#56627a;--line:#d9dee8;--accent:#0f6b6b}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1524;--paper:#161e31;--ink:#e7ecf6;--muted:#9aa6bd;--line:#2a3550;--accent:#5cc7c2;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding:40px max(16px,env(safe-area-inset-right)) 60px max(16px,env(safe-area-inset-left));display:grid;gap:22px}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:22px}
+.eyebrow{font:600 12px/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+h1{margin:6px 0 0;font-size:28px;line-height:1.15}
+.hero{display:flex;gap:24px;align-items:center;flex-wrap:wrap}
+.big{width:96px;height:110px;border-radius:10px;color:#fff;display:flex;align-items:center;justify-content:center;font:800 64px/1 -apple-system,"Segoe UI",sans-serif}
+.scale{display:flex;gap:4px;margin-top:10px}
+.scale span{width:26px;height:30px;border-radius:4px;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;opacity:.3}
+.scale span.on{opacity:1;outline:2px solid var(--ink);outline-offset:2px}
+.pill{display:inline-block;border:1px solid var(--accent);color:var(--accent);border-radius:999px;padding:2px 10px;font-size:13px;font-weight:600}
+.pill.warn{border-color:#b1161a;color:#b1161a}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px 20px;font-size:14px}
+.meta b{display:block;color:var(--muted);font-weight:500;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+code{font:13px ui-monospace,Menlo,Consolas,monospace}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--ink);padding:6px 8px}
+td{border-bottom:1px solid var(--line);padding:7px 8px}
+td.n{text-align:right;font-variant-numeric:tabular-nums}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+ul{margin:6px 0 0;padding-left:18px}
+.note{color:var(--muted);font-size:14px}
+.tbl{overflow-x:auto}
+</style>
+</head>
+<body><div class="wrap">
+  <div class="card">
+    <span class="eyebrow">Scanscore · niveau {{ b.niveau }}</span>
+    <h1>{{ r.project or 'Project' }}</h1>
+    <div class="hero" style="margin-top:16px">
+      <div class="big" style="background:{{ '#8a94a6' if verlopen or not r.letter else kleur[r.letter] }}">{{ r.letter or '–' }}</div>
+      <div>
+        <div><span class="pill">{{ r.soort }}</span> {% if verlopen %}<span class="pill warn">Verlopen</span>{% endif %}</div>
+        <div class="scale" aria-label="Scanscore van A tot G">{% for L in 'ABCDEFG' %}<span style="background:{{ kleur[L] }}" class="{{ 'on' if L == r.letter }}">{{ L }}</span>{% endfor %}</div>
+        <p class="note" style="margin:10px 0 0">{% if r.letter == 'B' %}Geen kritieke of hoge bevindingen op de controles van deze scan.{% elif r.letter %}{{ b.ernst.Kritiek }} kritieke en {{ b.ernst.Hoog }} hoge bevindingen op het moment van de scan.{% else %}Geen score: te weinig controles gescand.{% endif %}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card meta">
+    <div><b>Gescand op</b>{{ r.aangemaakt[:10] }}</div>
+    <div><b>Geldig tot</b>{{ r.geldig_tot[:10] }}</div>
+    <div><b>Code (commit)</b><code>{{ (r.commit_hash or 'geen git')[:12] }}</code></div>
+    <div><b>Scanner</b>dagversie {{ r.dagversie }}</div>
+    <div><b>Lekkendatabank</b>stand {{ r.databank }}</div>
+    <div><b>Controlegetal code</b><code>{{ r.boom[:16] }}…</code></div>
+  </div>
+
+  <div class="card">
+    <h2 style="margin:0 0 10px;font-size:18px">Uitslag per onderwerp</h2>
+    <div class="tbl"><table>
+      <tr><th>Onderwerp</th><th class="n">Gehaald</th><th class="n">Bevinding</th><th class="n">Niet gescand</th><th class="n">N.v.t.</th></tr>
+      {% for d, c in domeinen %}<tr><td>{{ d }}</td><td class="n">{{ c['Gehaald'] }}</td><td class="n">{{ c['Bevinding'] }}</td><td class="n">{{ c['Niet gescand'] }}</td><td class="n">{{ c['Niet van toepassing'] }}</td></tr>{% endfor %}
+    </table></div>
+    <p class="note">Bevindingen per ernst: {{ b.ernst.Kritiek }} kritiek · {{ b.ernst.Hoog }} hoog · {{ b.ernst.Middel }} middel · {{ b.ernst.Laag }} laag. Details staan in het rapport van de eigenaar; deze pagina toont geen code of bevindingen.</p>
+  </div>
+
+  <div class="card two">
+    <div><b>Wat deze score zegt</b>
+      <ul><li>Deze versie van de code (commit hierboven) is gescand met de vaste controles van de dagversie op de vermelde datum.</li>
+      <li>De score is door onze server opnieuw berekend uit de resultaten.</li>
+      <li>De scanner was een gepubliceerde, ondertekende dagversie.</li></ul></div>
+    <div><b>Wat ze niet zegt</b>
+      <ul><li>Geen keurmerk, certificaat of garantie dat de software veilig is.</li>
+      <li>{% if r.soort == 'Zelfcontrole' %}<b>Zelfcontrole:</b> de eigenaar of zijn AI-agent draaide de scan op een eigen machine. Wij hebben de uitvoering niet zelf gezien.{% else %}Geverifieerde scan.{% endif %}</li>
+      <li>Geen handmatige pentest en geen oordeel over de organisatie.</li></ul></div>
+  </div>
+
+  <p class="note">Gegevens als JSON: <code>{{ site }}/api/v1/score/{{ r.id }}</code> · Badge: <code>{{ site }}/score/{{ r.id }}.svg</code> · [Bedrijfsnaam]</p>
+</div></body></html>

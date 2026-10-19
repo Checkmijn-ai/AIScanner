@@ -1,0 +1,543 @@
+- id: A-03
+  domein: A. Product, scope en inventaris
+  scan: SBOM in machineleesbaar formaat (SPDX of CycloneDX), automatisch bij de build gemaakt, minstens alle directe afhankelijkheden
+  normen: CRA bijlage I deel II (1); ISO/IEC 5962
+  ernst: Middel
+  modus: auto
+  module: sbom
+  methode: scan
+  hint: Laat de pipeline bij elke build een SBOM maken, bv. met syft of @cyclonedx/cyclonedx-npm, en bewaar die bij de release.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: A-09
+  domein: A. Product, scope en inventaris
+  scan: 'AI-vermelding: vastgesteld of het product AI gebruikt (scan met vaste regels en verklaring van de bouwer); het rapport toont "AI: ja" of "AI: nee", met het hoogste autonomieniveau'
+  normen: AI Act art. 50; ISO/IEC 42001
+  ernst: Laag
+  modus: auto
+  module: ai
+  methode: scan + verklaring
+  hint: Vermeld in de documentatie of het product AI gebruikt en welk autonomieniveau (AI-1 tot AI-4).
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: B-05
+  domein: B. Bouwen met AI
+  scan: Agentconfiguratie in de repo (instructiebestanden, regels, MCP-configuratie, prompt- en agentlogs) bevat geen geheimen, geen klantgegevens en geen onveilige instructies zoals "sla tests over"
+  normen: OWASP Agentic ASI01, ASI04
+  ernst: Hoog
+  modus: auto
+  module: agent
+  methode: scan + analist
+  hint: Haal geheimen uit agentbestanden (gebruik omgevingsvariabelen), schrap instructies die tests, controles of bevestigingen overslaan, en pin MCP-servers op een vaste versie.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: B-06
+  domein: B. Bouwen met AI
+  scan: 'Geen verzonnen of verdachte pakketten: elke afhankelijkheid bestaat in het officiële register, is niet pas geregistreerd en lijkt niet op een bekende naam'
+  normen: OWASP A03:2025
+  ernst: Kritiek
+  modus: auto
+  module: packages
+  methode: scan
+  hint: Verwijder kwaadaardige of verdachte pakketten, controleer de schrijfwijze tegen het officiële register en installeer opnieuw met een lockfile.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: C-01
+  domein: C. Codekwaliteit en onderhoudbaarheid
+  scan: Statische analyse zonder kritieke of hoge bevindingen op de vier kenmerken van ISO/IEC 5055
+  normen: ISO/IEC 5055
+  ernst: Hoog
+  modus: deels
+  module: code
+  methode: scan
+  hint: Vermijd eval en new Function; gebruik veilige parsers (yaml.safe_load, JSON), valideer bestandspaden tegen een vaste map en zet externe entiteiten in XML-parsers uit.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: C-06
+  domein: C. Codekwaliteit en onderhoudbaarheid
+  scan: 'Foutafhandeling: fouten worden niet ingeslikt, gebruikers zien geen stacktraces, gedrag bij uitzonderingen is bepaald'
+  normen: OWASP A10:2025
+  ernst: Middel
+  modus: deels
+  module: code
+  methode: scan + analist
+  hint: Log fouten in plaats van ze in te slikken, toon gebruikers een algemene foutmelding zonder stacktrace en zet debugmodus uit in productie.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: C-07
+  domein: C. Codekwaliteit en onderhoudbaarheid
+  scan: Het project bouwt uit een schone checkout met één gedocumenteerde opdracht; versies zijn vastgezet in een lockfile
+  normen: ISO/IEC 25010 (flexibiliteit); SLSA
+  ernst: Middel
+  modus: auto
+  module: build
+  methode: scan
+  hint: Commit een lockfile en documenteer in de README hoe je het project bouwt (npm ci, pip install -r ...).
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: C-13
+  domein: C. Codekwaliteit en onderhoudbaarheid
+  scan: 'Geen blokkerende of kritieke code smells: ongebruikte variabelen en imports, magische getallen, lege catch-blokken, hardgecodeerde URL''s of configuratie, verouderde (deprecated) API''s. Lagere
+    ernst staat in het rapport'
+  normen: ISO/IEC 5055
+  ernst: Laag
+  modus: deels
+  module: code
+  methode: scan
+  hint: Vervang verouderde API's, haal hardgecodeerde adressen naar configuratie en los TODO's in beveiligingscode op.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: C-19
+  domein: C. Codekwaliteit en onderhoudbaarheid
+  scan: 'Geen ongebruikte afhankelijkheden: elk pakket in het manifest wordt echt gebruikt (ongebruikte pakketten zijn onnodig aanvalsoppervlak)'
+  normen: ISO/IEC 5055; CRA bijlage I (2)(j)
+  ernst: Laag
+  modus: auto
+  module: packages
+  methode: scan
+  hint: Verwijder pakketten die niet gebruikt worden uit package.json of requirements.txt.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: C-20
+  domein: C. Codekwaliteit en onderhoudbaarheid
+  scan: 'Geen achtergebleven rommel in repository en artefact: back-upbestanden (.bak, .old, .orig), database-dumps, testdata met echte gegevens, voorbeeld- en democode, tijdelijke bestanden van AI-agents,
+    gecommitte buildoutput'
+  normen: ISO/IEC 27002 8.4; OWASP WSTG-CONF-04
+  ernst: Hoog
+  modus: auto
+  module: hygiene
+  methode: scan
+  hint: Verwijder .env, dumps, sleutelbestanden, back-ups, agentgeschiedenis en buildoutput uit de repository en zet ze in .gitignore; trek gelekte geheimen in.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: D-02
+  domein: D. Hoe de bouwer test
+  scan: Tests draaien automatisch bij elke wijziging en een falende test blokkeert de release
+  normen: ISO/IEC 27002 8.29
+  ernst: Middel
+  modus: auto
+  module: ci
+  methode: scan
+  hint: Laat de pipeline tests draaien bij elke push en pull request, zonder continue-on-error of || true.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: D-06
+  domein: D. Hoe de bouwer test
+  scan: Statische beveiligingsanalyse en afhankelijkheidsscan in de pipeline, met een drempel die de release blokkeert
+  normen: NIST SP 800-218; ISO/IEC 27002 8.25
+  ernst: Middel
+  modus: auto
+  module: ci
+  methode: scan
+  hint: Voeg een statische beveiligingsanalyse (bv. CodeQL of Opengrep) en een scan van afhankelijkheden (bv. npm audit --audit-level=high of osv-scanner) toe aan de pipeline, met een drempel die faalt.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: D-12
+  domein: D. Hoe de bouwer test
+  scan: 'Extern aanvalsoppervlak gescand: alle domeinen, subdomeinen, open poorten en publiek bereikbare diensten van de app in kaart gebracht en getest op bekende zwakheden (externe kwetsbaarheidsscan;
+    geen pentest)'
+  normen: CRA I (2)(j); ISO/IEC 27002 8.8
+  ernst: Hoog
+  modus: live
+  module: live
+  methode: scan
+  hint: Sluit poorten die niet publiek moeten zijn met een firewall of security group; databanken en beheer alleen via VPN of privénetwerk.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: E-03
+  domein: E. Applicatiebeveiliging
+  scan: 'Sessies: veilige cookies, time-outs, afmelden maakt de sessie ongeldig'
+  normen: OWASP ASVS 5.0
+  ernst: Hoog
+  modus: deels
+  module: code
+  methode: scan
+  hint: Zet cookies op Secure, HttpOnly en SameSite, gebruik een sterk sessiegeheim uit de omgeving, geef JWT's een vervaldatum en controleer ze met verify.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: E-04
+  domein: E. Applicatiebeveiliging
+  scan: 'Geen injectie: geparametriseerde queries, output-encoding, geen SQL-, OS-, template- of XSS-lekken'
+  normen: A05:2025
+  ernst: Kritiek
+  modus: deels
+  module: code
+  methode: scan + analist
+  hint: Gebruik geparametriseerde queries (placeholders), geen shell met invoer (execFile met een lijst argumenten), en laat templates automatisch escapen.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: E-05
+  domein: E. Applicatiebeveiliging
+  scan: Geen geheimen in code, configuratie of git-geschiedenis; geheimen staan in een kluis of de omgeving
+  normen: ISO/IEC 27002 8.24; CRA I (2)(e)
+  ernst: Kritiek
+  modus: auto
+  module: secrets
+  methode: scan
+  hint: Trek het geheim in bij de aanbieder, haal het uit de code en de git-geschiedenis, en lees geheimen voortaan uit omgevingsvariabelen of een kluis.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: E-06
+  domein: E. Applicatiebeveiliging
+  scan: 'Versleuteling: TLS 1.2 of hoger voor al het verkeer, gevoelige gegevens versleuteld opgeslagen, geen verouderde of zelfgemaakte algoritmen'
+  normen: A04:2025; CRA I (2)(e)
+  ernst: Hoog
+  modus: deels
+  module: code
+  methode: scan
+  hint: Hash wachtwoorden met bcrypt, scrypt of Argon2; gebruik crypto.randomBytes of secrets voor tokens; zet certificaatcontrole nooit uit; gebruik https://.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: E-08
+  domein: E. Applicatiebeveiliging
+  scan: 'Beveiligingsheaders en configuratie: CSP, HSTS, restrictieve CORS'
+  normen: A02:2025
+  ernst: Middel
+  modus: live
+  module: live
+  methode: scan
+  hint: Stel HSTS, Content-Security-Policy, X-Content-Type-Options, Referrer-Policy en frame-ancestors in (bv. met helmet) en beperk CORS tot vaste herkomsten.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: F-01
+  domein: F. Afhankelijkheden en supply chain
+  scan: Geen afhankelijkheden met bekende uitbuitbare kwetsbaarheden (bv. CISA KEV, EU-kwetsbaarhedendatabank) en geen kritieke CVE zonder mitigatie
+  normen: CRA I deel I (2)(a)
+  ernst: Kritiek
+  modus: auto
+  module: vulns
+  methode: scan
+  hint: Werk de getroffen pakketten bij naar de vermelde versie en maak de lockfile opnieuw.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: F-02
+  domein: F. Afhankelijkheden en supply chain
+  scan: Geen frameworks of runtimes die niet meer ondersteund worden; geen onbeheerde pakketten in kritieke functies
+  normen: A03:2025
+  ernst: Hoog
+  modus: auto
+  module: eol
+  methode: scan
+  hint: Stap over naar een ondersteunde versie van de runtime of het framework en vervang niet meer onderhouden pakketten.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: F-03
+  domein: F. Afhankelijkheden en supply chain
+  scan: Versies vastgezet met een lockfile en integriteitscontrole (hashes)
+  normen: SLSA
+  ernst: Middel
+  modus: auto
+  module: build
+  methode: scan
+  hint: Commit een lockfile met hashes (package-lock.json, poetry.lock of pip-compile --generate-hashes).
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: F-05
+  domein: F. Afhankelijkheden en supply chain
+  scan: Alle licenties gekend en verenigbaar met het gebruik; geen onbedoelde copyleft
+  normen: ISO/IEC 5230
+  ernst: Middel
+  modus: deels
+  module: licenses
+  methode: scan
+  hint: Vervang pakketten met een licentie die niet past bij je gebruik, of vraag juridisch advies.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: F-13
+  domein: F. Afhankelijkheden en supply chain
+  scan: Indirecte (transitieve) afhankelijkheden worden mee gescand; bij Plus staan ze ook in de SBOM
+  normen: CRA I deel II (1)
+  ernst: Hoog
+  modus: auto
+  module: vulns
+  methode: scan
+  hint: Commit een lockfile zodat ook indirecte afhankelijkheden vastliggen en gescand kunnen worden.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: G-08
+  domein: G. Kwetsbaarheden en updates (CRA)
+  scan: Doorlopende bewaking van nieuwe kwetsbaarheden in afhankelijkheden via de SBOM
+  normen: CRA I deel II (1), (3)
+  ernst: Middel
+  modus: auto
+  module: ci
+  methode: scan
+  hint: Zet Dependabot of Renovate aan, of plan een wekelijkse scan van afhankelijkheden in de pipeline.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: H-02
+  domein: H. AI in het product
+  scan: 'Uitvoer van het model wordt behandeld als onbetrouwbare invoer: niet rechtstreeks uitgevoerd, gevalideerd en geëncodeerd'
+  normen: LLM05
+  ernst: Hoog
+  modus: deels
+  module: code
+  methode: scan + analist
+  hint: 'Behandel uitvoer van een AI-model als onbetrouwbare invoer: nooit in eval, shell of SQL; valideer tegen een schema en escape bij weergave.'
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: H-08
+  domein: H. AI in het product
+  scan: Limieten op verbruik (tokens, aanvragen) tegen misbruik en onverwachte kosten
+  normen: LLM10
+  ernst: Middel
+  modus: deels
+  module: code
+  methode: scan
+  hint: Geef elke AI-aanroep een limiet op tokens (max_tokens) en zet rate limiting per gebruiker.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: O-04
+  domein: O. Website, domein en juridische informatie
+  scan: 'Geen cookies of trackers vóór toestemming: de scan bezoekt de site zonder te klikken en noteert wat er wordt geplaatst'
+  normen: ePrivacyrichtlijn art. 5(3)
+  ernst: Middel
+  modus: live
+  module: live
+  methode: scan
+  hint: Plaats trackingcookies en -scripts pas na toestemming via een toestemmingsbeheerder.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: O-05
+  domein: O. Website, domein en juridische informatie
+  scan: 'De site zelf is veilig: TLS, beveiligingsheaders, CMS en plugins op een ondersteunde versie, geen beheerpagina''s open'
+  normen: OWASP Top 10:2025; CRA I (2)(a)
+  ernst: Hoog
+  modus: live
+  module: live
+  methode: scan
+  hint: Blokkeer toegang tot .git, .env en beheerpagina's op de webserver en houd CMS en plugins bij.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: O-06
+  domein: O. Website, domein en juridische informatie
+  scan: 'Domein en e-mail beschermd tegen misbruik: SPF, DKIM en DMARC ingesteld, geen overneembare subdomeinen, DNSSEC waar mogelijk'
+  normen: Basis cyberhygiëne (NIS2 art. 21(2)(g))
+  ernst: Middel
+  modus: live
+  module: live
+  methode: scan
+  hint: Publiceer SPF, DKIM en een DMARC-record met p=quarantine of p=reject.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: P-05
+  domein: P. Koppelingen met andere systemen
+  scan: Inkomende webhooks en berichten worden gecontroleerd (handtekening, herkomst); uitgaande verzoeken alleen naar toegestane bestemmingen; antwoorden van derden worden niet blind vertrouwd
+  normen: OWASP API7, API10
+  ernst: Hoog
+  modus: deels
+  module: code
+  methode: scan + analist
+  hint: Controleer de handtekening van elke webhook (bv. stripe.webhooks.constructEvent) en laat uitgaande verzoeken alleen naar een vaste lijst van adressen gaan.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: R-03
+  domein: R. Versiebeheer en releases
+  scan: 'Branchstrategie vastgelegd; hoofdbranch beschermd: geen directe of geforceerde push, verplichte review (B-03) en een geslaagde pipeline'
+  normen: ISO/IEC 27002 8.32
+  ernst: Hoog
+  modus: auto
+  module: github
+  methode: scan
+  hint: 'Beveilig de hoofdbranch: verplichte review via pull request, geen force-push, verplichte geslaagde pipeline.'
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: R-13
+  domein: R. Versiebeheer en releases
+  scan: 'Repository-instellingen: geheimenscanning en afhankelijkheidswaarschuwingen aan, geen onbedoeld publieke repositories, geen langlevende persoonlijke tokens'
+  normen: OpenSSF Scorecard
+  ernst: Middel
+  modus: auto
+  module: github
+  methode: scan
+  hint: Zet geheimenscanning, push protection en waarschuwingen voor kwetsbare afhankelijkheden aan.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: S-04
+  domein: S. Mobiele apps (module)
+  scan: Geen geheimen of API-sleutels in de app zelf
+  normen: OWASP MASVS-STORAGE, MASVS-CODE
+  ernst: Kritiek
+  modus: auto
+  module: secrets
+  methode: scan
+  hint: Haal geheimen uit de mobiele app; laat de app via je eigen server met diensten praten.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: S-06
+  domein: S. Mobiele apps (module)
+  scan: SDK's van derden (analyse, advertenties, crashrapporten) geïnventariseerd; tracking pas na toestemming
+  normen: ePrivacyrichtlijn art. 5(3); OWASP MASVS-PRIVACY
+  ernst: Middel
+  modus: deels
+  module: mobile
+  methode: scan
+  hint: Vraag toestemming voor analyse- en reclame-SDK's voor ze gegevens verzamelen.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: U-01
+  domein: U. Frontend (webclient)
+  scan: Geen geheimen, API-sleutels of interne adressen in de JavaScript-bundel
+  normen: OWASP ASVS 5.0; A02:2025
+  ernst: Kritiek
+  modus: auto
+  module: bundle
+  methode: scan
+  hint: 'Haal geheimen uit de frontend: geheime sleutels alleen op de server, nooit in VITE_/NEXT_PUBLIC_-variabelen of in de browser.'
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: U-02
+  domein: U. Frontend (webclient)
+  scan: Source maps en debugmodus niet publiek in productie
+  normen: A02:2025
+  ernst: Middel
+  modus: auto
+  module: bundle
+  methode: scan
+  hint: Zet source maps uit in de productiebuild of publiceer ze niet.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: U-03
+  domein: U. Frontend (webclient)
+  scan: Sessietokens en gevoelige gegevens niet in localStorage of sessionStorage; cookies met HttpOnly, Secure en SameSite
+  normen: OWASP ASVS 5.0
+  ernst: Hoog
+  modus: auto
+  module: code
+  methode: scan
+  hint: Bewaar sessietokens in een cookie met HttpOnly, Secure en SameSite in plaats van localStorage.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: U-04
+  domein: U. Frontend (webclient)
+  scan: Bescherming tegen CSRF en clickjacking (frame-ancestors)
+  normen: OWASP ASVS 5.0
+  ernst: Middel
+  modus: deels
+  module: code
+  methode: scan
+  hint: Voeg CSRF-bescherming toe (of SameSite=Strict cookies) en stel frame-ancestors of X-Frame-Options in.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: U-06
+  domein: U. Frontend (webclient)
+  scan: Scripts van derden (analyse, chat, advertenties) geïnventariseerd, met toestemming waar nodig en beperkt via CSP; op betaalpagina's goedgekeurd en bewaakt
+  normen: ePrivacyrichtlijn art. 5(3); A08:2025; PCI DSS 4.0 req. 6.4.3
+  ernst: Middel
+  modus: deels
+  module: code
+  methode: scan
+  hint: Laad scripts van derden met integrity (SRI), beperk ze met een CSP en laad trackers pas na toestemming.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: U-07
+  domein: U. Frontend (webclient)
+  scan: Geen gevaarlijke DOM-functies met gebruikersinvoer (innerHTML, eval); berichten tussen vensters (postMessage) met controle van de herkomst
+  normen: A05:2025
+  ernst: Hoog
+  modus: deels
+  module: code
+  methode: scan + analist
+  hint: Gebruik textContent in plaats van innerHTML, sanitiseer HTML met DOMPurify en controleer event.origin in postMessage-listeners.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: W-03
+  domein: W. Backend en opslag
+  scan: Bestandsopslag (bv. S3, Blob) privé, toegang via kortlevende ondertekende links; uploads gecontroleerd en buiten de webroot bewaard
+  normen: A01:2025; OWASP ASVS 5.0
+  ernst: Hoog
+  modus: deels
+  module: code
+  methode: scan
+  hint: Maak opslag privé, gebruik kortlevende ondertekende links en bewaar uploads buiten publieke mappen.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: W-06
+  domein: W. Backend en opslag
+  scan: 'Limieten op middelen: time-outs, maximale grootte van verzoeken en uploads, paginering, bescherming tegen trage queries'
+  normen: OWASP API4; CRA I (2)(h)
+  ernst: Middel
+  modus: deels
+  module: code
+  methode: scan
+  hint: Zet time-outs op uitgaande verzoeken en limieten op de grootte van verzoeken en uploads.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: Y-01
+  domein: Y. Communicatieprotocollen
+  scan: 'TLS juist ingesteld: alleen TLS 1.2 en 1.3, sterke cipher suites met forward secrecy, geldige certificaten met volledige keten, HSTS'
+  normen: NIST SP 800-52 Rev. 2; BSI TR-02102-2
+  ernst: Hoog
+  modus: live
+  module: live
+  methode: scan
+  hint: Sta alleen TLS 1.2 en 1.3 met sterke ciphers toe, zet HSTS aan en vernieuw certificaten automatisch.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: Y-02
+  domein: Y. Communicatieprotocollen
+  scan: 'Geen onversleutelde protocollen voor gegevens of beheer: geen HTTP behalve doorverwijzing, geen FTP, Telnet, LDAP of MQTT zonder TLS, geen SNMP v1/v2'
+  normen: CRA I (2)(e); ISO/IEC 27002 8.21
+  ernst: Hoog
+  modus: live
+  module: live
+  methode: scan
+  hint: Stuur HTTP door naar HTTPS en sluit FTP, Telnet en andere onversleutelde diensten.
+  sinds: '0.1'
+  versie: 1
+  status: actief
+- id: Y-04
+  domein: Y. Communicatieprotocollen
+  scan: 'Verouderde protocolversies uit: SSH alleen versie 2 met sterke algoritmen en sleutels, SMBv1 uit, RDP niet publiek bereikbaar'
+  normen: CIS Benchmarks
+  ernst: Hoog
+  modus: live
+  module: live
+  methode: scan
+  hint: Sluit RDP en SMB voor het internet; SSH alleen versie 2 met sleutels.
+  sinds: '0.1'
+  versie: 1
+  status: actief

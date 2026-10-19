@@ -1,0 +1,71 @@
+# Referentiegegevens met vaste stand. Elke wijziging = nieuwe versie van de regelset.
+stand: "2026-10-17"
+
+# Populaire pakketten: basis voor de controle op namen die er verdacht op lijken (typosquatting).
+populair:
+  npm: [react, react-dom, vue, angular, "@angular/core", svelte, next, nuxt, express, koa, fastify, hapi, lodash, underscore,
+        axios, request, node-fetch, got, superagent, moment, dayjs, date-fns, luxon, uuid, nanoid, chalk, commander, yargs,
+        debug, dotenv, cors, helmet, morgan, body-parser, cookie-parser, express-session, passport, jsonwebtoken, bcrypt,
+        bcryptjs, argon2, mongoose, mongodb, mysql, mysql2, pg, sequelize, typeorm, prisma, "@prisma/client", knex, redis,
+        ioredis, socket.io, ws, graphql, apollo-server, "@apollo/client", webpack, vite, rollup, esbuild, parcel, babel-core,
+        "@babel/core", typescript, ts-node, eslint, prettier, jest, mocha, chai, vitest, cypress, playwright, puppeteer,
+        tailwindcss, postcss, autoprefixer, sass, less, styled-components, "@emotion/react", redux, "@reduxjs/toolkit",
+        mobx, zustand, rxjs, jquery, bootstrap, three, d3, chart.js, multer, sharp, nodemailer, winston, pino, joi, yup,
+        zod, ajv, validator, crypto-js, openai, "@anthropic-ai/sdk", langchain, "@langchain/core", ai, cheerio, marked,
+        "markdown-it", highlight.js, classnames, clsx, qs, semver, glob, rimraf, mkdirp, fs-extra, cross-env, concurrently,
+        nodemon, pm2, colors, inquirer, ora, minimist, async, bluebird, immer, formik, "react-router", "react-router-dom",
+        "react-hook-form", "@tanstack/react-query", swr, "firebase", "stripe", "aws-sdk", "@aws-sdk/client-s3", "@google/generative-ai",
+        "pdfkit", "xlsx", "papaparse", "sqlite3", "better-sqlite3", "jose", "passport-jwt", "express-rate-limit", "csurf"]
+  PyPI: [requests, urllib3, numpy, pandas, scipy, matplotlib, seaborn, scikit-learn, tensorflow, torch, keras, flask, django,
+         fastapi, starlette, uvicorn, gunicorn, sqlalchemy, alembic, psycopg2, psycopg2-binary, pymysql, redis, celery, boto3,
+         botocore, pydantic, jinja2, werkzeug, click, rich, typer, pyyaml, toml, python-dotenv, pytest, tox, black, flake8,
+         pylint, mypy, setuptools, wheel, pip, six, attrs, certifi, idna, charset-normalizer, cryptography, pyjwt, bcrypt,
+         passlib, paramiko, beautifulsoup4, lxml, selenium, scrapy, httpx, aiohttp, websockets, openai, anthropic, langchain,
+         langchain-core, langchain-openai, llama-index, transformers, tiktoken, huggingface-hub, sentence-transformers,
+         pillow, opencv-python, pytz, python-dateutil, arrow, tqdm, loguru, marshmallow, jsonschema, protobuf, grpcio,
+         stripe, twilio, sendgrid, pymongo, motor, elasticsearch, kafka-python, pika, docker, kubernetes, ansible, fabric,
+         streamlit, gradio, dash, plotly, bokeh, nltk, spacy, gensim, xgboost, lightgbm, catboost, statsmodels, sympy,
+         networkx, openpyxl, xlrd, reportlab, pypdf, pdfplumber, markdown, mistune, orjson, ujson, msgpack, colorama,
+         google-generativeai, mistralai, cohere, groq, ollama, chromadb, pinecone, faiss-cpu, qdrant-client, weaviate-client]
+
+# Pakketten die niet meer onderhouden of afgeraden zijn.
+verouderd:
+  npm:
+    request: "niet meer onderhouden sinds 2020"
+    request-promise: "niet meer onderhouden"
+    request-promise-native: "niet meer onderhouden"
+    node-sass: "niet meer onderhouden; gebruik sass"
+    tslint: "niet meer onderhouden; gebruik eslint"
+    bower: "niet meer onderhouden"
+    gulp-util: "niet meer onderhouden"
+    crypto: "verouderd pakket; gebruik de ingebouwde crypto-module van Node.js"
+    "@angular/http": "niet meer onderhouden"
+    csurf: "niet meer onderhouden sinds 2022"
+    angular: "AngularJS 1.x wordt niet meer ondersteund sinds januari 2022"
+  PyPI:
+    pycrypto: "niet meer onderhouden en kwetsbaar; gebruik pycryptodome of cryptography"
+    nose: "niet meer onderhouden"
+    distribute: "niet meer onderhouden"
+    pyjwt-crypto: "niet meer onderhouden"
+
+# Runtimes en frameworks: laatste dag van ondersteuning (bron: endoflife.date, stand hierboven).
+eol:
+  node: {"14": "2023-04-30", "16": "2023-09-11", "18": "2025-04-30", "19": "2023-06-01", "20": "2026-04-30", "21": "2024-06-01", "22": "2027-04-30", "23": "2025-06-01", "24": "2028-04-30"}
+  python: {"2.7": "2020-01-01", "3.6": "2021-12-23", "3.7": "2023-06-27", "3.8": "2024-10-07", "3.9": "2025-10-31", "3.10": "2026-10-31", "3.11": "2027-10-31", "3.12": "2028-10-31", "3.13": "2029-10-31"}
+  django: {"3.2": "2024-04-01", "4.0": "2023-04-01", "4.1": "2023-12-01", "4.2": "2026-04-30", "5.0": "2025-04-30", "5.1": "2025-12-31", "5.2": "2028-04-30"}
+  vue: {"2": "2023-12-31"}
+  jquery: {"1": "2016-06-09", "2": "2016-06-09"}
+
+# Copyleftlicenties en licenties die commercieel gebruik beperken.
+licenties:
+  sterk: [GPL-2.0, GPL-3.0, AGPL-3.0, GPL-2.0-only, GPL-3.0-only, GPL-2.0-or-later, GPL-3.0-or-later, AGPL-3.0-only, AGPL-3.0-or-later, SSPL-1.0, CC-BY-NC-4.0, CC-BY-NC-SA-4.0, BUSL-1.1]
+  zwak: [LGPL-2.1, LGPL-3.0, LGPL-2.1-only, LGPL-3.0-only, LGPL-2.1-or-later, LGPL-3.0-or-later, MPL-2.0, EPL-2.0, EUPL-1.2, CDDL-1.0]
+
+# Pakketten die op AI-gebruik in het product wijzen (A-09).
+ai_pakketten:
+  npm: [openai, "@anthropic-ai/sdk", langchain, "@langchain/core", "@langchain/openai", "@langchain/anthropic", ai, "@ai-sdk/openai",
+        "@ai-sdk/anthropic", "@google/generative-ai", "@google/genai", "@mistralai/mistralai", cohere-ai, groq-sdk, ollama,
+        "@huggingface/inference", "@xenova/transformers", "@modelcontextprotocol/sdk", llamaindex, "@pinecone-database/pinecone", chromadb]
+  PyPI: [openai, anthropic, langchain, langchain-core, langchain-openai, langchain-anthropic, llama-index, transformers,
+         google-generativeai, google-genai, mistralai, cohere, groq, ollama, litellm, huggingface-hub, sentence-transformers,
+         chromadb, pinecone, pinecone-client, qdrant-client, weaviate-client, mcp, crewai, autogen, pydantic-ai, instructor, tiktoken]

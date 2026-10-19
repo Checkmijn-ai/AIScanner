@@ -1,0 +1,6 @@
+# aiscan — dagversie elke nacht om 03:15 (tijd van de server). Installeren: crontab -e en deze regel plakken.
+# Paden aanpassen aan de server. De privésleutel staat buiten de webmap, leesbaar voor deze gebruiker alleen.
+15 3 * * * cd /opt/checkmijn && /usr/bin/python3 platform/build_daily.py --public /var/www/checkmijn --ghsa /opt/checkmijn/ghsa --sleutel /opt/checkmijn/sleutels/dagversie.pem --site https://checkmijn.ai --api https://api.checkmijn.ai >> /var/log/checkmijn-build.log 2>&1
+
+# Opruimen van verlopen sessiecodes (elke zondag 04:00)
+0 4 * * 0 sqlite3 /var/lib/aiscan/aiscan.db "DELETE FROM sessies WHERE aangemaakt < datetime('now','-2 days');"

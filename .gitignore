@@ -1,0 +1,8 @@
+sleutels/
+*.pem
+*.db
+public/
+__pycache__/
+.aiscan/
+!action/public-key.pem
+.venv/

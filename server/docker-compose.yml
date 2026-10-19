@@ -1,0 +1,33 @@
+# Starten op de server:  cd server && docker compose up -d --build
+services:
+  api:
+    build:
+      context: ..
+      dockerfile: server/Dockerfile
+    restart: unless-stopped
+    volumes:
+      - api-data:/data
+    environment:
+      AISCAN_SITE: https://api.checkmijn.ai
+      AISCAN_PUBLIC_URL: https://klankenreis.github.io/checkmijn-scanner
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+  caddy:
+    image: caddy:2.8
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - api
+volumes:
+  api-data:
+  caddy-data:
+  caddy-config:

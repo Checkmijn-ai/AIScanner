@@ -1,0 +1,13 @@
+[project]
+name = "aiscan"
+version = "0.3.0"
+description = "AI-code scan: controles met vaste regels op software die met AI gebouwd is, gekoppeld aan normen en wetten (concept)"
+requires-python = ">=3.11"
+dependencies = ["PyYAML>=6.0", "Jinja2>=3.1", "requests>=2.31", "packaging>=23.0"]
+
+[project.scripts]
+aiscan = "aiscan.__main__:main"
+aiscan-mcp = "aiscan.mcp_server:main"
+
+[tool.setuptools.package-data]
+aiscan = ["data/*", "templates/*"]
