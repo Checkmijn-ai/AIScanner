@@ -62,14 +62,23 @@ def log(*a):
 
 
 def update_ghsa(ghsa: Path):
-    if not ghsa.exists():
-        log("GitHub Advisory Database klonen (eenmalig, ±500 MB)")
+    def kloon():
+        log("GitHub Advisory Database klonen (±500 MB)")
         subprocess.run(["git", "clone", "-q", "--depth", "1", "--filter=blob:none", "--sparse",
                         "https://github.com/github/advisory-database", str(ghsa)], check=True)
         subprocess.run(["git", "-C", str(ghsa), "sparse-checkout", "set", "advisories/github-reviewed"], check=True)
-    else:
-        log("GitHub Advisory Database bijwerken")
-        subprocess.run(["git", "-C", str(ghsa), "pull", "-q", "--depth", "1", "--rebase=false"], check=True)
+
+    if not (ghsa / ".git").exists():
+        shutil.rmtree(ghsa, ignore_errors=True)
+        return kloon()
+    log("GitHub Advisory Database bijwerken")
+    # Een ondiepe kloon kan niet 'pullen' (geen gedeelde geschiedenis): haal de nieuwste stand op en zet die vast.
+    g = lambda *a: subprocess.run(["git", "-C", str(ghsa), *a], capture_output=True, text=True)  # noqa: E731
+    if g("fetch", "-q", "--depth", "1", "origin", "main").returncode == 0 and g("reset", "-q", "--hard", "FETCH_HEAD").returncode == 0:
+        return
+    log("Bijwerken mislukt; opnieuw klonen")
+    shutil.rmtree(ghsa, ignore_errors=True)
+    kloon()
 
 
 def bouw_index(ghsa: Path, doel: Path, dag: str):
