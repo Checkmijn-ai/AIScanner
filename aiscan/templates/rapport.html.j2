@@ -53,6 +53,19 @@ ul.plain{padding-left:18px;margin:6px 0}
 footer{margin-top:50px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);padding-top:12px}
 @media (max-width:720px){.two{grid-template-columns:1fr}.page{padding:24px 16px}}
 @media print{.page{padding:0}table{font-size:11.5px}td{padding:5px 6px}h2{break-after:avoid}.check{break-inside:avoid}a{color:inherit;text-decoration:none}}
+.chart{display:grid;grid-template-columns:minmax(150px,240px) 1fr 44px;gap:6px 12px;align-items:center;margin:10px 0 4px;font-size:12.5px}
+.bar{display:flex;height:14px;border-radius:3px;overflow:hidden;background:var(--soft)}
+.bar span{display:block;height:100%}
+.b-ok{background:var(--ok)}.b-bev{background:var(--hoog)}.b-open{background:var(--open)}.b-nvt{background:#ced4da}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin:4px 0 10px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+.overview{display:grid;grid-template-columns:170px 1fr;gap:22px;align-items:center;margin:8px 0}
+.donut{width:150px;height:150px;border-radius:50%;position:relative}
+.donut::after{content:"";position:absolute;inset:26px;background:#fff;border-radius:50%}
+.donut b{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1;font-size:26px;line-height:1}
+.donut b small{font-size:11px;color:var(--muted);font-weight:500;margin-top:4px}
+.verloop{border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin:0 0 18px}
+@media (max-width:720px){.overview{grid-template-columns:1fr}.chart{grid-template-columns:110px 1fr 36px}}
 </style>
 </head>
 <body><div class="page">
@@ -86,6 +99,13 @@ footer{margin-top:50px;color:var(--muted);font-size:12px;border-top:1px solid va
   {{ s.status['Niet gescand'] }} niet gescand, {{ s.status['Niet van toepassing'] }} niet van toepassing.
 </div>
 
+<!--checkmijn:verloop-->
+
+{% set E = s.ernst %}{% set tot = E.Kritiek + E.Hoog + E.Middel + E.Laag %}
+<div class="overview">
+  {% if tot %}{% set a1 = E.Kritiek / tot * 100 %}{% set a2 = a1 + E.Hoog / tot * 100 %}{% set a3 = a2 + E.Middel / tot * 100 %}
+  <div class="donut" style="background:conic-gradient(var(--krit) 0 {{ a1 }}%,var(--hoog) {{ a1 }}% {{ a2 }}%,var(--mid) {{ a2 }}% {{ a3 }}%,var(--laag) {{ a3 }}% 100%)"><b>{{ tot }}<small>bevindingen</small></b></div>
+  {% else %}<div class="donut" style="background:var(--ok)"><b>0<small>bevindingen</small></b></div>{% endif %}
 <div class="tiles">
   <div class="tile"><div class="n" style="color:var(--krit)">{{ s.ernst.Kritiek }}</div><div class="l">kritiek</div></div>
   <div class="tile"><div class="n" style="color:var(--hoog)">{{ s.ernst.Hoog }}</div><div class="l">hoog</div></div>
@@ -93,7 +113,20 @@ footer{margin-top:50px;color:var(--muted);font-size:12px;border-top:1px solid va
   <div class="tile"><div class="n" style="color:var(--laag)">{{ s.ernst.Laag }}</div><div class="l">laag</div></div>
   <div class="tile"><div class="n" style="color:var(--open)">{{ s.bevestigen }}</div><div class="l">te bevestigen door een analist</div></div>
 </div>
+</div>
 <p class="note">Bevindingen met de vermelding <span class="conf">te bevestigen</span> komen uit een patroon dat niet zeker is: de scan markeert, een analist bevestigt of verwerpt ze (niveau 2).</p>
+
+<h2>Per onderwerp</h2>
+<div class="legend"><span><i class="b-ok"></i>geen bevinding</span><span><i class="b-bev"></i>bevinding</span><span><i class="b-open"></i>niet gescand</span><span><i class="b-nvt"></i>niet van toepassing</span></div>
+<div class="chart">
+{% for dom, rows in domains %}{% set n = rows|length %}
+{% set ok = rows|selectattr('1.status', 'equalto', 'Geen bevinding')|list|length %}{% set bev = rows|selectattr('1.status', 'equalto', 'Bevinding')|list|length %}{% set op = rows|selectattr('1.status', 'equalto', 'Niet gescand')|list|length %}
+<div>{{ dom }}</div>
+<div class="bar"><span class="b-ok" style="width:{{ ok / n * 100 }}%"></span><span class="b-bev" style="width:{{ bev / n * 100 }}%"></span><span class="b-open" style="width:{{ op / n * 100 }}%"></span><span class="b-nvt" style="width:{{ (n - ok - bev - op) / n * 100 }}%"></span></div>
+<div class="num note">{{ ok }}/{{ n - (n - ok - bev - op) }}</div>
+{% endfor %}
+</div>
+<p class="note">Rechts: hoeveel van de gescande checks in dat onderwerp geen bevinding hadden.</p>
 
 <h2>Belangrijkste bevindingen</h2>
 {% if top %}

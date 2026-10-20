@@ -194,8 +194,8 @@ def rapport_markdown(rap: dict, m: dict, letter: str, historie: list | None = No
     return "\n".join(r)
 
 
-def rapport_in_repo(rap: dict, m: dict, letter: str, link: str | None = None) -> str:
-    """Zet .checkmijn/RAPPORT.md en rapport.json in de repository en commit ze met [skip ci] (geen nieuwe run)."""
+def werk_historie_bij(rap: dict, letter: str) -> list:
+    """Leest .checkmijn/historie.json en voegt deze scan toe (alleen als het rapport in de repo komt)."""
     doel = PAD / RAPPORT_MAP
     doel.mkdir(exist_ok=True)
     s = rap["samenvatting"]
@@ -211,6 +211,41 @@ def rapport_in_repo(rap: dict, m: dict, letter: str, link: str | None = None) ->
         historie.append(nieuw)
     historie = historie[-50:]
     hist_pad.write_text(json.dumps(historie, indent=1), encoding="utf-8")
+    return historie
+
+
+LETTERS = "ABCDEFG"
+
+
+def verloop_html(historie: list) -> str:
+    """Een kleine grafiek van de scores (zonder scripts), voor bovenaan het opgemaakte rapport."""
+    import html as _h
+    h = [x for x in historie if x.get("score") in LETTERS][-12:]
+    if len(h) < 2:
+        return ""
+    kleur = {"A": "#1b7f3b", "B": "#4f9d2a", "C": "#a4b61f", "D": "#e0b400", "E": "#e98a15", "F": "#d9480f", "G": "#b1161a"}
+    w, hg, px = 640, 170, 40
+    stap = (w - 2 * px) / (len(h) - 1)
+    y = lambda L: 18 + LETTERS.index(L) * (hg - 46) / 6  # noqa: E731
+    pts = [(px + i * stap, y(x["score"])) for i, x in enumerate(h)]
+    lijnen = "".join(f'<line x1="{px - 14}" x2="{w - px + 14}" y1="{y(L):.1f}" y2="{y(L):.1f}" stroke="#eef0f3"/>'
+                     f'<text x="6" y="{y(L) + 4:.1f}" font-size="11" fill="#5b6676">{L}</text>' for L in LETTERS)
+    pad = " ".join(f"{a:.1f},{b:.1f}" for a, b in pts)
+    eendag = len({x["datum"][:10] for x in h}) == 1
+    label = lambda x: x["datum"][11:16] if eendag else (x["datum"][8:10] + "-" + x["datum"][5:7])  # noqa: E731
+    punten = "".join(f'<circle cx="{a:.1f}" cy="{b:.1f}" r="7" fill="{kleur[x["score"]]}"/>'
+                     f'<text x="{a:.1f}" y="{hg - 8}" font-size="10" text-anchor="middle" fill="#5b6676">'
+                     f'{_h.escape(label(x))}</text>' for (a, b), x in zip(pts, h))
+    reeks = " → ".join(x["score"] for x in h)
+    return (f'<div class="verloop"><b>Verloop van de scans:</b> {reeks}'
+            f'<svg viewBox="0 0 {w} {hg}" width="100%" role="img" aria-label="Verloop: {reeks}">{lijnen}'
+            f'<polyline points="{pad}" fill="none" stroke="#16202e" stroke-width="2"/>{punten}</svg></div>')
+
+
+def rapport_in_repo(rap: dict, m: dict, letter: str, link: str | None = None, historie: list | None = None) -> str:
+    """Zet .checkmijn/RAPPORT.md en rapport.json in de repository en commit ze met [skip ci] (geen nieuwe run)."""
+    doel = PAD / RAPPORT_MAP
+    doel.mkdir(exist_ok=True)
     md = rapport_markdown(rap, m, letter, historie, link)
     (doel / "RAPPORT.md").write_text(md, encoding="utf-8")
     (doel / "rapport.json").write_text(json.dumps(rap, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -256,6 +291,9 @@ def main() -> int:
             log(f"::warning::Geen sessiecode van de API ({r.stderr.strip() or 'geen antwoord'}); er wordt niets ingeleverd.")
 
     cmd = [sys.executable, str(pyz), str(PAD), "--offline", "--out", str(OUT), "--bewijs"]
+    repo = os.environ.get("GITHUB_REPOSITORY", "")
+    if "/" in repo:
+        cmd += ["--klant", repo.split("/")[0], "--app", repo.split("/")[1]]
     if nonce:
         cmd += ["--nonce", nonce]
     scan = subprocess.run(cmd, text=True)
@@ -283,6 +321,11 @@ def main() -> int:
         if c["status"] in ("Bevinding", "Niet gescand"):
             zw = c["bevindingen"][0]["ernst"] if c["bevindingen"] else ""
             regels.append(f"| {c['id']} | {c['scan'][:90]} | {c['status']} | {len(c['bevindingen'])} {zw} |")
+    historie = werk_historie_bij(rap, letter) if rapport_in_repo_aan() else []
+    grafiek = verloop_html(historie)
+    if grafiek:
+        p = OUT / "rapport.html"
+        p.write_text(p.read_text(encoding="utf-8").replace("<!--checkmijn:verloop-->", grafiek, 1), encoding="utf-8")
     link = None
     if RAPPORT_LINK:
         link, melding = maak_rapport_link(m)
@@ -311,7 +354,7 @@ def main() -> int:
                   "of garantie dat software veilig is.*")
 
     if rapport_in_repo_aan():
-        regels += ["", rapport_in_repo(rap, m, letter, link)]
+        regels += ["", rapport_in_repo(rap, m, letter, link, historie)]
     elif RAPPORT_IN_REPO == "auto" and not PRIVE:
         regels += ["", "Het rapport is niet in de repository gezet, omdat de repository openbaar is: dan zou iedereen de "
                    "bevindingen kunnen lezen."]
