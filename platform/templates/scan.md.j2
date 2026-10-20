@@ -72,9 +72,19 @@ python3 checkmijn.pyz PROJECTMAP --offline --bewijs --nonce NONCE --out rapport
 
 Uitgangscode 0: geen kritieke of hoge bevindingen. Uitgangscode 2: er zijn kritieke of hoge bevindingen; dat is geen fout van de scanner. Elke andere code is een fout: meld ze aan de gebruiker.
 
-**6. Lees de uitslag** in `rapport/rapport.json`: per check de bevindingen, hun ernst, het bestand en de regel. Toon de gebruiker de scanscore en de bevindingen, zoals de scanner ze geeft. Herstel, als de gebruiker dat wil, eerst alle bevindingen met ernst **Kritiek** en **Hoog**, daarna **Middel**. Een bevinding met `"bevestigen": true` is niet zeker: kijk eerst of ze klopt.
+**6. Toon eerst de uitslag, en verander nog niets.** Lees `rapport/rapport.json`. Toon de gebruiker, zoals de scanner ze geeft:
+- de **scanscore** (letter) en de uitleg erbij;
+- het aantal bevindingen per ernst (Kritiek, Hoog, Middel, Laag);
+- een lijst van de bevindingen Kritiek en Hoog, met de check, het bestand en de regel;
+- waar het volledige rapport staat: `rapport/rapport.html`. Bied aan het te openen.
 
-**7. Scan opnieuw** (stap 4 en 5) tot er geen kritieke of hoge bevindingen meer zijn, of tot de gebruiker zegt te stoppen. Elke scan heeft een nieuwe sessiecode nodig.
+Vraag daarna letterlijk:
+
+> "Wil je dat ik de bevindingen herstel? Ik begin dan met Kritiek en Hoog. (ja/nee)"
+
+**Wacht op het antwoord.** Pas bij "ja" herstel je, eerst **Kritiek**, dan **Hoog**, daarna **Middel**. Een bevinding met `"bevestigen": true` is niet zeker: kijk eerst of ze klopt.
+
+**7. Scan opnieuw** (stap 4 en 5) na het herstel. Toon de nieuwe score **naast de vorige**, bv. "G → C", met wat er hersteld is en wat nog openstaat. Herhaal tot er geen kritieke of hoge bevindingen meer zijn, of tot de gebruiker zegt te stoppen. Elke scan heeft een nieuwe sessiecode nodig.
 
 **8. Toon wat er verstuurd zou worden.** Laat de gebruiker de volledige inhoud van `rapport/bewijs.json` zien. Vraag daarna letterlijk:
 
@@ -121,7 +131,19 @@ Doe niets zonder een duidelijk "ja".
 
 > "Het bestand staat erin. Na de volgende synchronisatie met GitHub draait de scan, dat duurt een paar minuten. Is je repository privé, dan verschijnt daarna het rapport in `.checkmijn/RAPPORT.md`. Vraag me dan: 'Lees .checkmijn/RAPPORT.md en herstel de bevindingen.' De uitslag staat ook in GitHub, bij Actions → checkmijn.ai."
 
-**B5. Wanneer `.checkmijn/RAPPORT.md` er is:** lees het en toon de gebruiker de scanscore en de bevindingen, **zoals de scanner ze geeft**. Herstel, als de gebruiker dat wil, eerst **Kritiek**, dan **Hoog**, dan **Middel**. Een bevinding met *(nakijken)* is niet zeker: kijk eerst of ze klopt. Wijzig `.checkmijn/` en het workflowbestand nooit zelf, en schrijf zelf geen score. Na je wijzigingen scant GitHub opnieuw en wordt het rapport bijgewerkt.
+**B5. Wanneer `.checkmijn/RAPPORT.md` er is: toon eerst de uitslag, en verander nog niets.** Lees het bestand en toon de gebruiker, zoals de scanner ze geeft:
+- de **scanscore** en, als die er is, de vorige score uit de tabel *Verloop van de scans* (bv. "G → C");
+- het aantal bevindingen per ernst;
+- een lijst van de bevindingen Kritiek en Hoog, met de check en het bestand;
+- de link naar de uitslag in GitHub, die bovenaan het rapport staat.
+
+Vraag daarna letterlijk:
+
+> "Wil je dat ik de bevindingen herstel? Ik begin dan met Kritiek en Hoog. (ja/nee)"
+
+**Wacht op het antwoord.** Pas bij "ja" herstel je, eerst **Kritiek**, dan **Hoog**, daarna **Middel**. Een bevinding met *(nakijken)* is niet zeker: kijk eerst of ze klopt. Wijzig `.checkmijn/` en het workflowbestand nooit zelf, en schrijf zelf geen score.
+
+**B6. Na het herstel:** zeg dat GitHub na de synchronisatie opnieuw scant, dat het een paar minuten duurt, en dat de gebruiker daarna kan vragen: "Toon de nieuwe score uit .checkmijn/RAPPORT.md." Toon dan de nieuwe score naast de vorige, met wat hersteld is en wat nog openstaat.
 
 **Repository openbaar?** Dan komt er geen rapport in het project, want dan zou iedereen de bevindingen lezen. De gebruiker ziet de uitslag in GitHub, bij Actions → checkmijn.ai → de laatste run. Raad aan de repository privé te maken.
 

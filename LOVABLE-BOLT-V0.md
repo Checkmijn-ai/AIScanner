@@ -24,11 +24,14 @@ Werkt de link nog niet? Gebruik dan https://checkmijn-ai.github.io/AIScanner/sca
 **3. Wacht een paar minuten**, en plak dan:
 
 ```
-Lees .checkmijn/RAPPORT.md en herstel de bevindingen, eerst Kritiek, dan Hoog, dan Middel.
+Lees .checkmijn/RAPPORT.md. Toon mij eerst de scanscore, de vorige score en de bevindingen
+Kritiek en Hoog, en verander nog niets. Herstel pas als ik "ja" zeg: eerst Kritiek, dan Hoog, dan Middel.
 Wijzig .checkmijn/ en .github/workflows/checkmijn.yml niet, en geef zelf geen score.
 ```
 
-Na elke wijziging scant GitHub opnieuw en wordt het rapport bijgewerkt. Herhaal stap 3 tot de bevindingen weg zijn.
+Na elke wijziging scant GitHub opnieuw en wordt het rapport bijgewerkt. In het rapport staat een tabel met alle scans, zodat je het verloop ziet (bv. G → C → B). Herhaal stap 3 tot de bevindingen weg zijn.
+
+**Het volledige rapport (HTML)** vind je via de link bovenaan `RAPPORT.md`: de run in GitHub, onder *Artifacts*.
 
 ## Weigert je bouwtool het bestand te maken?
 

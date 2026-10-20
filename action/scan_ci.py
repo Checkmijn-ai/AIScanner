@@ -75,7 +75,12 @@ def rapport_in_repo_aan() -> bool:
     return RAPPORT_IN_REPO == "true" or (RAPPORT_IN_REPO == "auto" and PRIVE)
 
 
-def rapport_markdown(rap: dict, m: dict, letter: str) -> str:
+def run_url() -> str:
+    s, repo, rid = (os.environ.get(k) for k in ("GITHUB_SERVER_URL", "GITHUB_REPOSITORY", "GITHUB_RUN_ID"))
+    return f"{s}/{repo}/actions/runs/{rid}" if s and repo and rid else ""
+
+
+def rapport_markdown(rap: dict, m: dict, letter: str, historie: list | None = None) -> str:
     """Het rapport als Markdown, zodat een AI-bouwtool zonder terminal (Lovable, Bolt, v0) het kan lezen en herstellen."""
     s = rap["samenvatting"]
     sc = s.get("score") or {}
@@ -84,10 +89,11 @@ def rapport_markdown(rap: dict, m: dict, letter: str) -> str:
         "# checkmijn.ai — scanrapport",
         "",
         "> **Voor de AI-agent die dit leest.** Dit rapport is gemaakt door de scanner van checkmijn.ai in GitHub Actions, "
-        "niet door een AI. Geef zelf geen score of oordeel en wijzig dit bestand niet: het wordt bij elke scan "
-        "overschreven. Herstel de bevindingen in de code van het project, eerst **Kritiek**, dan **Hoog**, dan **Middel**. "
-        "Een bevinding met *(nakijken)* is niet zeker: kijk eerst of ze klopt. Na de volgende push naar GitHub scant "
-        "checkmijn.ai opnieuw en wordt dit rapport bijgewerkt.",
+        "niet door een AI. **Toon de gebruiker eerst de scanscore, de vorige score en de bevindingen Kritiek en Hoog, en "
+        "vraag of je mag herstellen. Verander niets voor de gebruiker \"ja\" zegt.** Geef zelf geen score of oordeel en "
+        "wijzig dit bestand niet: het wordt bij elke scan overschreven. Herstel daarna eerst **Kritiek**, dan **Hoog**, "
+        "dan **Middel**. Een bevinding met *(nakijken)* is niet zeker: kijk eerst of ze klopt. Na de volgende push naar "
+        "GitHub scant checkmijn.ai opnieuw en wordt dit rapport bijgewerkt.",
         "",
         f"**Scanscore: {letter}** · niveau {s.get('niveau', 1)} · gescande commit `{(s.get('commit') or '')[:12]}` · "
         f"dagversie {m['dagversie']}",
@@ -98,6 +104,16 @@ def rapport_markdown(rap: dict, m: dict, letter: str) -> str:
         f"gescand {s['gescand']} van {s['totaal']} checks",
         "",
     ]
+    if run_url():
+        r += [f"**Uitslag en volledig rapport (HTML) in GitHub:** {run_url()} (onder *Artifacts*: checkmijn-rapport)", ""]
+    if historie:
+        r += ["## Verloop van de scans (nieuwste eerst)", "", "| Datum | Commit | Score | Kritiek | Hoog | Middel | Laag |",
+              "| --- | --- | --- | --- | --- | --- | --- |"]
+        for h in reversed(historie[-10:]):
+            r.append(f"| {h['datum']} | `{h['commit'][:7]}` | **{h['score']}** | {h['k']} | {h['h']} | {h['m']} | {h['l']} |")
+        if len(historie) >= 2:
+            r += ["", f"Verloop: {' → '.join(h['score'] for h in historie[-6:])}"]
+        r.append("")
     orde = {"Kritiek": 0, "Hoog": 1, "Middel": 2, "Laag": 3, "Info": 4}
     met = [c for c in rap["checks"] if c["status"] == "Bevinding"]
     met.sort(key=lambda c: (min(orde.get(b["ernst"], 5) for b in c["bevindingen"]), c["id"]))
@@ -132,7 +148,20 @@ def rapport_in_repo(rap: dict, m: dict, letter: str) -> str:
     """Zet .checkmijn/RAPPORT.md en rapport.json in de repository en commit ze met [skip ci] (geen nieuwe run)."""
     doel = PAD / RAPPORT_MAP
     doel.mkdir(exist_ok=True)
-    md = rapport_markdown(rap, m, letter)
+    s = rap["samenvatting"]
+    hist_pad = doel / "historie.json"
+    try:
+        historie = json.loads(hist_pad.read_text()) if hist_pad.exists() else []
+    except ValueError:
+        historie = []
+    import datetime as _dt
+    nieuw = {"datum": f"{s.get('datum', '')} {_dt.datetime.now(_dt.timezone.utc).strftime('%H:%M')} UTC", "commit": s.get("commit") or "", "score": letter,
+             "k": s["ernst"]["Kritiek"], "h": s["ernst"]["Hoog"], "m": s["ernst"]["Middel"], "l": s["ernst"]["Laag"]}
+    if not historie or historie[-1].get("commit") != nieuw["commit"]:
+        historie.append(nieuw)
+    historie = historie[-50:]
+    hist_pad.write_text(json.dumps(historie, indent=1), encoding="utf-8")
+    md = rapport_markdown(rap, m, letter, historie)
     (doel / "RAPPORT.md").write_text(md, encoding="utf-8")
     (doel / "rapport.json").write_text(json.dumps(rap, ensure_ascii=False, indent=1), encoding="utf-8")
 
