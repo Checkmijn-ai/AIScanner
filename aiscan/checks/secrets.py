@@ -12,6 +12,8 @@ MOBILE_HINT = ("android/", "ios/", "app/src/main", ".xcodeproj", "Info.plist", "
 def _current(proj):
     if hasattr(proj, "_secrets"):
         return proj._secrets
+    from ..secretscan import PUBLIEK
+    PUBLIEK.clear()
     hits = []
     for p in proj.files:
         rel = proj.rel(p)
@@ -47,6 +49,11 @@ def secrets(proj, meta):
     if agent_rel & {x[0] for x in cur}:
         r.info.append("Geheimen in agentconfiguratie staan bij B-05.")
     r.info.append(f"{len(proj.files)} bestanden doorzocht met {221} regels voor geheimen (gebaseerd op gitleaks).")
+    from ..secretscan import PUBLIEK
+    publiek = sorted({(pad, uitleg) for pad, ln, uitleg in PUBLIEK})
+    for pad, uitleg in publiek[:5]:
+        r.info.append(f"{pad}: {uitleg}. Die mag in de frontend staan, maar alleen als Row Level Security aan staat "
+                      f"op elke tabel met gebruikersgegevens.")
     if proj.git:
         hist = scan_history(proj.root)
         if hist is None:

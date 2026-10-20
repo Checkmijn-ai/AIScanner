@@ -48,6 +48,31 @@ def entropy(s: str) -> float:
     return -sum(n / len(s) * math.log2(n / len(s)) for n in c.values())
 
 
+PUBLIEK: list = []  # (pad, regel, uitleg) van publieke sleutels die niet als geheim tellen
+
+
+def publieke_sleutel(secret: str) -> str | None:
+    """Sleutels die bedoeld zijn om in de browser te staan. Geeft een korte uitleg terug, of None.
+
+    - Supabase: de 'anon'- of 'publishable'-sleutel (JWT met role=anon, of sb_publishable_...). Veilig zolang
+      Row Level Security aan staat. De 'service_role'- of 'sb_secret_'-sleutel is wel geheim.
+    """
+    import base64
+    import json as _json
+    s = secret.strip().strip("'\"")
+    if s.startswith("sb_publishable_"):
+        return "publieke sleutel van Supabase (publishable)"
+    if s.startswith("eyJ") and s.count(".") == 2:
+        try:
+            p = s.split(".")[1]
+            d = _json.loads(base64.urlsafe_b64decode(p + "=" * (-len(p) % 4)))
+        except Exception:  # noqa: BLE001
+            return None
+        if d.get("iss") == "supabase" and d.get("role") == "anon":
+            return "publieke sleutel van Supabase (anon)"
+    return None
+
+
 def scan_text(text: str, path: str = ""):
     """Geeft (regelnummer, rule_id, beschrijving, geheim, regel) terug."""
     rs, allow_paths, allow_rx = rules()
@@ -76,6 +101,9 @@ def scan_text(text: str, path: str = ""):
                 if r.get("entropy") and entropy(secret) < float(r["entropy"]):
                     continue
                 if PLACEHOLDER.search(secret) or any(a.search(secret) for a in r["allow_rx"]) or any(a.search(secret) for a in allow_rx):
+                    continue
+                if publieke_sleutel(secret) or publieke_sleutel(m.group(0).split("=", 1)[-1]):
+                    PUBLIEK.append((path, i, publieke_sleutel(secret) or publieke_sleutel(m.group(0).split("=", 1)[-1])))
                     continue
                 out.append((i, r["id"], r["desc"], secret, line))
                 break

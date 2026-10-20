@@ -102,12 +102,15 @@ def _bun_lock(proj, lock: Path, direct, dev):
         return [], False
     comps, integ = {}, True
     # welke pakketten zijn alleen nodig voor ontwikkeling? (niet bereikbaar vanuit de gewone dependencies)
+    # Een peer-afhankelijkheid levert het project zelf. Staat ze bij de devDependencies van het project (bv.
+    # tailwindcss onder tailwindcss-animate), dan is ze alleen voor ontwikkeling en volgen we ze niet.
     graaf = {}
     for key, entry in (d.get("packages") or {}).items():
         if isinstance(entry, list) and len(entry) > 2 and isinstance(entry[2], dict):
             naam = entry[0][:entry[0].rfind("@")] if isinstance(entry[0], str) and entry[0].rfind("@") > 0 else key
-            for sect in ("dependencies", "optionalDependencies", "peerDependencies"):
+            for sect in ("dependencies", "optionalDependencies"):
                 graaf.setdefault(naam, set()).update((entry[2].get(sect) or {}).keys())
+            graaf.setdefault(naam, set()).update(n for n in (entry[2].get("peerDependencies") or {}) if n not in dev)
     prod, stapel = set(), [n for n in direct if n not in dev]
     while stapel:
         n = stapel.pop()
