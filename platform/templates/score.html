@@ -59,8 +59,8 @@ ul{margin:6px 0 0;padding-left:18px}
   <div class="card">
     <h2 style="margin:0 0 10px;font-size:18px">Uitslag per onderwerp</h2>
     <div class="tbl"><table>
-      <tr><th>Onderwerp</th><th class="n">Gehaald</th><th class="n">Bevinding</th><th class="n">Niet gescand</th><th class="n">N.v.t.</th></tr>
-      {% for d, c in domeinen %}<tr><td>{{ d }}</td><td class="n">{{ c['Gehaald'] }}</td><td class="n">{{ c['Bevinding'] }}</td><td class="n">{{ c['Niet gescand'] }}</td><td class="n">{{ c['Niet van toepassing'] }}</td></tr>{% endfor %}
+      <tr><th>Onderwerp</th><th class="n">Geen bevinding</th><th class="n">Bevinding</th><th class="n">Niet gescand</th><th class="n">N.v.t.</th></tr>
+      {% for d, c in domeinen %}<tr><td>{{ d }}</td><td class="n">{{ c['Geen bevinding'] }}</td><td class="n">{{ c['Bevinding'] }}</td><td class="n">{{ c['Niet gescand'] }}</td><td class="n">{{ c['Niet van toepassing'] }}</td></tr>{% endfor %}
     </table></div>
     <p class="note">Bevindingen per ernst: {{ b.ernst.Kritiek }} kritiek · {{ b.ernst.Hoog }} hoog · {{ b.ernst.Middel }} middel · {{ b.ernst.Laag }} laag. Details staan in het rapport van de eigenaar; deze pagina toont geen code of bevindingen.</p>
   </div>

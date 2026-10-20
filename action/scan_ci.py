@@ -20,7 +20,7 @@ import urllib.request
 from pathlib import Path
 
 HIER = Path(__file__).resolve().parent
-MANIFEST_URL = os.environ.get("CM_MANIFEST", "https://klankenreis.github.io/checkmijn-scanner/latest.json")
+MANIFEST_URL = os.environ.get("CM_MANIFEST", "https://checkmijn-ai.github.io/AIScanner/latest.json")
 PAD = Path(os.environ.get("CM_PAD") or os.environ.get("GITHUB_WORKSPACE", ".")).resolve()
 OUT = Path(os.environ.get("CM_OUT", "checkmijn-rapport")).resolve()
 INSTUREN = os.environ.get("CM_INSTUREN", "false").lower() == "true"
@@ -61,6 +61,98 @@ def controleer_handtekening(m: dict) -> str:
     except Exception:
         sys.exit("checkmijn.ai: de handtekening van het manifest klopt niet. Gestopt.")
     return "geldig (Ed25519)"
+
+
+RAPPORT_IN_REPO = os.environ.get("CM_RAPPORT_IN_REPO", "false").lower()  # false | auto | true
+PRIVE = os.environ.get("CM_PRIVE", "").lower() == "true"
+RAPPORT_MAP = ".checkmijn"
+
+
+def rapport_in_repo_aan() -> bool:
+    """'auto' zet het rapport alleen terug in een privé-repository: in een openbare zou iedereen de lekken lezen."""
+    return RAPPORT_IN_REPO == "true" or (RAPPORT_IN_REPO == "auto" and PRIVE)
+
+
+def rapport_markdown(rap: dict, m: dict, letter: str) -> str:
+    """Het rapport als Markdown, zodat een AI-bouwtool zonder terminal (Lovable, Bolt, v0) het kan lezen en herstellen."""
+    s = rap["samenvatting"]
+    sc = s.get("score") or {}
+    e = s["ernst"]
+    r = [
+        "# checkmijn.ai — scanrapport",
+        "",
+        "> **Voor de AI-agent die dit leest.** Dit rapport is gemaakt door de scanner van checkmijn.ai in GitHub Actions, "
+        "niet door een AI. Geef zelf geen score of oordeel en wijzig dit bestand niet: het wordt bij elke scan "
+        "overschreven. Herstel de bevindingen in de code van het project, eerst **Kritiek**, dan **Hoog**, dan **Middel**. "
+        "Een bevinding met *(nakijken)* is niet zeker: kijk eerst of ze klopt. Na de volgende push naar GitHub scant "
+        "checkmijn.ai opnieuw en wordt dit rapport bijgewerkt.",
+        "",
+        f"**Scanscore: {letter}** · niveau {s.get('niveau', 1)} · gescande commit `{(s.get('commit') or '')[:12]}` · "
+        f"dagversie {m['dagversie']}",
+        "",
+        f"{sc.get('uitleg', '')}",
+        "",
+        f"Kritiek {e['Kritiek']} · Hoog {e['Hoog']} · Middel {e['Middel']} · Laag {e['Laag']} · "
+        f"gescand {s['gescand']} van {s['totaal']} checks",
+        "",
+    ]
+    orde = {"Kritiek": 0, "Hoog": 1, "Middel": 2, "Laag": 3, "Info": 4}
+    met = [c for c in rap["checks"] if c["status"] == "Bevinding"]
+    met.sort(key=lambda c: (min(orde.get(b["ernst"], 5) for b in c["bevindingen"]), c["id"]))
+    if met:
+        r += ["## Bevindingen", ""]
+    for c in met:
+        zw = min((b["ernst"] for b in c["bevindingen"]), key=lambda x: orde.get(x, 5))
+        r += [f"### {c['id']} · {zw} · {c['scan']}", ""]
+        if c.get("hint"):
+            r += [f"**Zo los je het op:** {c['hint']}", ""]
+        for b in sorted(c["bevindingen"], key=lambda b: (orde.get(b["ernst"], 5), b.get("bestand") or "", b.get("regel") or 0))[:50]:
+            waar = f"`{b['bestand']}`" + (f" regel {b['regel']}" if b.get("regel") else "") if b.get("bestand") else "het project"
+            nk = " *(nakijken)*" if b.get("bevestigen") else ""
+            bew = f" — {b['bewijs']}" if b.get("bewijs") else ""
+            r.append(f"- **{b['ernst']}**{nk} in {waar}: {b['titel']}{bew}")
+        if len(c["bevindingen"]) > 50:
+            r.append(f"- … en nog {len(c['bevindingen']) - 50} bevinding(en); zie `{RAPPORT_MAP}/rapport.json`.")
+        r.append("")
+    open_ = [c for c in rap["checks"] if c["status"] == "Niet gescand"]
+    if open_:
+        r += ["## Niet gescand", "", "Deze checks konden hier niet nagegaan worden. Dat is geen bevinding, maar ook geen "
+              "bewijs dat alles in orde is.", ""]
+        r += [f"- {c['id']} · {c['scan']}" + (f" ({c['reden']})" if c.get("reden") else "") for c in open_]
+        r.append("")
+    r += ["---", "", "*De scanscore is een uitslag van de scan op een bepaald moment. Ze is geen keurmerk, certificaat "
+          "of garantie dat software veilig is. Dit rapport staat alleen in deze privé-repository en is niet naar "
+          "checkmijn.ai gestuurd.*", ""]
+    return "\n".join(r)
+
+
+def rapport_in_repo(rap: dict, m: dict, letter: str) -> str:
+    """Zet .checkmijn/RAPPORT.md en rapport.json in de repository en commit ze met [skip ci] (geen nieuwe run)."""
+    doel = PAD / RAPPORT_MAP
+    doel.mkdir(exist_ok=True)
+    md = rapport_markdown(rap, m, letter)
+    (doel / "RAPPORT.md").write_text(md, encoding="utf-8")
+    (doel / "rapport.json").write_text(json.dumps(rap, ensure_ascii=False, indent=1), encoding="utf-8")
+
+    def git(*a, check=True):
+        return subprocess.run(["git", "-C", str(PAD), *a], capture_output=True, text=True, check=check)
+
+    try:
+        git("add", RAPPORT_MAP)
+        if git("diff", "--cached", "--quiet", check=False).returncode == 0:
+            return f"Het rapport in `{RAPPORT_MAP}/RAPPORT.md` is ongewijzigd."
+        git("-c", "user.name=checkmijn.ai", "-c", "user.email=41898282+github-actions[bot]@users.noreply.github.com",
+            "commit", "-m", f"checkmijn.ai: scanrapport ({letter}) [skip ci]")
+        tak = os.environ.get("GITHUB_REF_NAME") or "main"
+        for _ in range(3):
+            if git("push", "origin", f"HEAD:{tak}", check=False).returncode == 0:
+                return f"Het rapport staat in de repository: `{RAPPORT_MAP}/RAPPORT.md`."
+            git("pull", "--rebase", "origin", tak, check=False)
+        log("::warning::checkmijn.ai: het rapport kon niet in de repository gezet worden (push geweigerd).")
+        return "Het rapport kon niet in de repository gezet worden. Staat `permissions: contents: write` in de workflow?"
+    except subprocess.CalledProcessError as fout:
+        log(f"::warning::checkmijn.ai: rapport niet in de repository gezet: {fout.stderr.strip()}")
+        return "Het rapport kon niet in de repository gezet worden."
 
 
 def main() -> int:
@@ -125,6 +217,12 @@ def main() -> int:
 
     regels.append("*De scanscore is een uitslag van de scan op een bepaald moment. Ze is geen keurmerk, certificaat "
                   "of garantie dat software veilig is.*")
+
+    if rapport_in_repo_aan():
+        regels += ["", rapport_in_repo(rap, m, letter)]
+    elif RAPPORT_IN_REPO == "auto":
+        regels += ["", "Het rapport is niet in de repository gezet, omdat de repository openbaar is: dan zou iedereen de "
+                   "bevindingen kunnen lezen."]
     schrijf_samenvatting("\n".join(regels))
 
     if os.environ.get("GITHUB_OUTPUT"):

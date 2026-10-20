@@ -58,7 +58,7 @@ De uitgangscode is 0 als er geen kritieke of hoge bevindingen zijn, anders 2. Zo
 
 | Status | Betekenis |
 | --- | --- |
-| Gehaald | De scan draaide en vond niets |
+| Geen bevinding | De scan draaide en vond niets. Dat is geen bewijs dat alles in orde is: alleen dat deze controle niets vond |
 | Bevinding | De scan vond minstens één punt; zie de details |
 | Niet van toepassing | Bijvoorbeeld geen mobiele app, of geen AI in het product |
 | Niet gescand | Er ontbrak iets: geen URL, geen token, geen lockfile, geen netwerk. De reden staat erbij |

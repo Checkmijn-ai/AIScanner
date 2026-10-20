@@ -90,7 +90,7 @@ def _ports(proj):
 @check("D-12")
 def attack_surface(proj, meta):
     r = _need(proj, "D-12")
-    if r.status != "Gehaald":
+    if r.status != "Geen bevinding":
         return r
     live = _ctx(proj)
     open_ports = {p: b for p, b in _ports(proj).items() if b is not None}
@@ -116,7 +116,7 @@ HEADERS = [("strict-transport-security", "Hoog", "HSTS ontbreekt"),
 @check("E-08")
 def headers(proj, meta):
     r = _need(proj, "E-08")
-    if r.status != "Gehaald":
+    if r.status != "Geen bevinding":
         return r
     live = _ctx(proj)
     if live["error"]:
@@ -175,7 +175,7 @@ def _tls_try(host, **kw):
 @check("Y-01")
 def tls(proj, meta):
     r = _need(proj, "Y-01")
-    if r.status != "Gehaald":
+    if r.status != "Geen bevinding":
         return r
     host = _ctx(proj)["host"]
     ctx = ssl.create_default_context()
@@ -215,7 +215,7 @@ def tls(proj, meta):
 @check("Y-02")
 def plaintext(proj, meta):
     r = _need(proj, "Y-02")
-    if r.status != "Gehaald":
+    if r.status != "Geen bevinding":
         return r
     import requests
     host = _ctx(proj)["host"]
@@ -236,7 +236,7 @@ def plaintext(proj, meta):
 @check("Y-04")
 def legacy(proj, meta):
     r = _need(proj, "Y-04")
-    if r.status != "Gehaald":
+    if r.status != "Geen bevinding":
         return r
     host = _ctx(proj)["host"]
     ports = _ports(proj)
@@ -258,7 +258,7 @@ def legacy(proj, meta):
 @check("O-04")
 def cookies_before_consent(proj, meta):
     r = _need(proj, "O-04")
-    if r.status != "Gehaald":
+    if r.status != "Geen bevinding":
         return r
     live = _ctx(proj)
     if live["error"]:
@@ -290,7 +290,7 @@ PROBES = [("/.git/HEAD", re.compile(r"^ref: refs/"), "Kritiek", "Git-map publiek
 @check("O-05")
 def site_safe(proj, meta):
     r = _need(proj, "O-05")
-    if r.status != "Gehaald":
+    if r.status != "Geen bevinding":
         return r
     import requests
     live = _ctx(proj)
@@ -372,7 +372,7 @@ def dns(name, qtype):
 @check("O-06")
 def mail_domain(proj, meta):
     r = _need(proj, "O-06")
-    if r.status != "Gehaald":
+    if r.status != "Geen bevinding":
         return r
     host = _ctx(proj)["host"]
     domain = ".".join(host.split(".")[-2:]) if not host.endswith((".co.uk", ".com.au")) else ".".join(host.split(".")[-3:])

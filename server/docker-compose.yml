@@ -9,7 +9,7 @@ services:
       - api-data:/data
     environment:
       AISCAN_SITE: https://api.checkmijn.ai
-      AISCAN_PUBLIC_URL: https://klankenreis.github.io/checkmijn-scanner
+      AISCAN_PUBLIC_URL: https://checkmijn-ai.github.io/AIScanner
     read_only: true
     tmpfs:
       - /tmp

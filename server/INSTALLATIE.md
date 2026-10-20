@@ -5,14 +5,14 @@ Dit zijn drie onderdelen, elk op een eigen plek:
 | Onderdeel | Adres | Waar |
 | --- | --- | --- |
 | Website | checkmijn.ai | Lovable (publiceren vanuit Lovable) |
-| Dagversie van de scanner | klankenreis.github.io/checkmijn-scanner | GitHub Pages, elke nacht automatisch |
+| Dagversie van de scanner | checkmijn-ai.github.io/AIScanner | GitHub Pages, elke nacht automatisch |
 | API voor scorepagina's en badges | api.checkmijn.ai | Je eigen server in de EU, met dit pakket |
 
 ---
 
 ## 1. GitHub (eenmalig, ±5 minuten)
 
-In de repository **klankenreis/checkmijn-scanner**:
+In de repository **Checkmijn-ai/AIScanner**:
 
 1. **Pages aanzetten.** Ga naar *Settings → Pages* en kies bij *Source* "**GitHub Actions**".
 2. **De sleutel om de dagversie te ondertekenen.** Ga naar *Settings → Secrets and variables → Actions → New repository secret*:
@@ -21,7 +21,7 @@ In de repository **klankenreis/checkmijn-scanner**:
 
    Bewaar daarna een kopie van dat bestand offline, bv. in je wachtwoordbeheerder, en verwijder het uit je downloads.
 3. **De eerste dagversie bouwen.** Ga naar *Actions → Dagversie → Run workflow*. Na ±5 minuten staat de dagversie op
-   https://klankenreis.github.io/checkmijn-scanner/latest.json. Daarna gebeurt dit elke nacht om 03:15.
+   https://checkmijn-ai.github.io/AIScanner/latest.json. Daarna gebeurt dit elke nacht om 03:15.
 
 ---
 
@@ -38,7 +38,7 @@ gelijkaardige server bij Scaleway, OVHcloud of Combell kan ook.
    ssh root@203.0.113.10
    apt update && apt -y upgrade
    curl -fsSL https://get.docker.com | sh
-   git clone https://github.com/klankenreis/checkmijn-scanner /opt/checkmijn
+   git clone https://github.com/Checkmijn-ai/AIScanner /opt/checkmijn
    ```
 
 4. **Eerst DNS instellen** (stap 3 hieronder), en dan pas starten:
@@ -105,7 +105,7 @@ Verstuur je later mail vanaf checkmijn.ai, bv. via Google Workspace of Microsoft
 
 ## Nakijken
 
-- https://klankenreis.github.io/checkmijn-scanner/latest.json → toont de dagversie met `"handtekening"`.
+- https://checkmijn-ai.github.io/AIScanner/latest.json → toont de dagversie met `"handtekening"`.
 - https://api.checkmijn.ai/api/v1/versie → toont hetzelfde.
 - https://checkmijn.ai/scan.md → toont de instructie van vandaag (na het samenvoegen van de pull request van de website).
 - Scan je eigen site: `python -m aiscan . --url https://checkmijn.ai` → het doel is minstens een B.

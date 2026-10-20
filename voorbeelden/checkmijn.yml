@@ -1,0 +1,35 @@
+# checkmijn.ai — scan in GitHub, ook voor projecten uit Lovable, Bolt en v0.
+# Zet dit bestand in je project als .github/workflows/checkmijn.yml.
+#
+# Wat het doet:
+# - scant je project bij elke wijziging op de hoofdtak, en elke maandag opnieuw (nieuwe lekken);
+# - de code verlaat GitHub niet;
+# - in een privé-repository zet het rapport zich in .checkmijn/RAPPORT.md, zodat je AI-bouwtool het kan lezen
+#   en de bevindingen kan herstellen. In een openbare repository gebeurt dat niet (dan zou iedereen het lezen):
+#   daar staat de uitslag alleen bij de run in GitHub.
+name: checkmijn.ai
+on:
+  push:
+    branches: [main]
+    paths-ignore: [".checkmijn/**"]
+  workflow_dispatch: {}
+  schedule:
+    - cron: "30 4 * * 1"
+permissions:
+  contents: write   # nodig om .checkmijn/RAPPORT.md terug te zetten
+concurrency:
+  group: checkmijn
+  cancel-in-progress: true
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5.0.0
+        with:
+          fetch-depth: 0   # volledige geschiedenis: ook oude geheimen worden gevonden
+      - uses: Checkmijn-ai/AIScanner@main
+        with:
+          rapport-in-repo: auto
+          insturen: "false"   # "true" = bewijsbestand (zonder code) inleveren voor een openbare scorepagina
+          faal-bij: nooit

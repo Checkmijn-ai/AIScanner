@@ -52,7 +52,7 @@ MAX_LEEFTIJD = int(os.environ.get("AISCAN_MAX_LEEFTIJD_DAGEN", "7"))
 NONCE_GELDIG = dt.timedelta(hours=2)
 SCORE_GELDIG = dt.timedelta(days=int(os.environ.get("AISCAN_SCORE_GELDIG_DAGEN", "30")))
 LIMIET_PER_UUR = int(os.environ.get("AISCAN_LIMIET_PER_UUR", "60"))
-STATUSSEN = {"Gehaald", "Bevinding", "Niet van toepassing", "Niet gescand"}
+STATUSSEN = {"Geen bevinding", "Bevinding", "Niet van toepassing", "Niet gescand", "Gehaald"}  # "Gehaald" = oude naam (tot 2026-10-20)
 ERNST = {None, "Info", "Laag", "Middel", "Hoog", "Kritiek"}
 KLEUR = {"A": "#1b7f3b", "B": "#4f9d2a", "C": "#97a91d", "D": "#c9a200", "E": "#e07f12", "F": "#d9480f", "G": "#b1161a"}
 
@@ -253,8 +253,8 @@ def pagina(sid):
     domeinen = {}
     for x in b["resultaten"]:
         dname = cat.get(x["id"], {}).get("domein", x["id"][0])
-        d = domeinen.setdefault(dname, {"Gehaald": 0, "Bevinding": 0, "Niet van toepassing": 0, "Niet gescand": 0})
-        d[x["status"]] += 1
+        d = domeinen.setdefault(dname, {"Geen bevinding": 0, "Bevinding": 0, "Niet van toepassing": 0, "Niet gescand": 0})
+        d["Geen bevinding" if x["status"] == "Gehaald" else x["status"]] += 1
     return render_template("score.html", r=r, b=b, domeinen=sorted(domeinen.items()), kleur=KLEUR,
                            verlopen=nu().isoformat() > r["geldig_tot"], site=SITE)
 

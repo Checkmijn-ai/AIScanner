@@ -69,7 +69,7 @@ def run(target: str, niveau: int = 1, url=None, offline=True, github_token=None,
                 seen.add(f.key())
                 uniq.append(f)
         res.findings = sorted(uniq, key=lambda f: (-ERNST_ORDE.get(f.ernst, 0), f.bestand, f.regel))
-        if res.status == "Gehaald" and any(f.ernst != "Info" for f in res.findings):
+        if res.status == "Geen bevinding" and any(f.ernst != "Info" for f in res.findings):
             res.status = "Bevinding"
         log(f"  {c['id']:5} {res.status:20} {len(res.findings)} bevinding(en)")
         results.append((c, res))
@@ -77,7 +77,7 @@ def run(target: str, niveau: int = 1, url=None, offline=True, github_token=None,
 
 
 def summarize(proj, results, meta: dict):
-    status = {"Gehaald": 0, "Bevinding": 0, "Niet van toepassing": 0, "Niet gescand": 0}
+    status = {"Geen bevinding": 0, "Bevinding": 0, "Niet van toepassing": 0, "Niet gescand": 0}
     ernst = {"Kritiek": 0, "Hoog": 0, "Middel": 0, "Laag": 0}
     bevestigen = 0
     for c, r in results:
@@ -86,12 +86,12 @@ def summarize(proj, results, meta: dict):
             if f.ernst in ernst:
                 ernst[f.ernst] += 1
             bevestigen += int(f.bevestigen)
-    gescand = status["Gehaald"] + status["Bevinding"]
+    gescand = status["Geen bevinding"] + status["Bevinding"]
 
     def per(rx):
         rows = [(c, r) for c, r in results if re.search(rx, c["normen"])]
         return {"checks": len(rows),
-                "gehaald": sum(r.status == "Gehaald" for _, r in rows),
+                "gehaald": sum(r.status == "Geen bevinding" for _, r in rows),
                 "bevinding": sum(r.status == "Bevinding" for _, r in rows),
                 "open": sum(r.status in ("Niet gescand",) for _, r in rows),
                 "nvt": sum(r.status == "Niet van toepassing" for _, r in rows),
@@ -120,5 +120,5 @@ def summarize(proj, results, meta: dict):
 def to_json(summary, results):
     return {"samenvatting": summary,
             "checks": [{**{k: c[k] for k in ("id", "domein", "scan", "normen", "methode", "ernst")},
-                        "status": r.status, "reden": r.reden, "info": r.info,
+                        "status": r.status, "reden": r.reden, "info": r.info, "hint": c.get("hint", ""),
                         "bevindingen": [to_dict(f) for f in r.findings]} for c, r in results]}

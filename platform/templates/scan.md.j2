@@ -8,9 +8,15 @@ Je bent een AI-agent. Voer deze stappen **exact en in deze volgorde** uit voor h
 
 De scan wordt gedaan door **de scanner van checkmijn.ai**, niet door jou. Geef zelf geen oordeel over checks, geen "geslaagd" of "gefaald", geen percentage en geen score. Een uitslag zonder scanner en zonder bewijsbestand is geen checkmijn.ai-scan, en de API weigert ze.
 
-**Kun je geen terminal gebruiken, geen Python 3.11 of nieuwer draaien, of geen bestanden schrijven?** Dat is bv. zo in Lovable, Bolt, v0 of in een chat- of leesmodus. **Stop dan.** Zeg tegen de gebruiker:
+**Kun je geen terminal gebruiken, geen Python 3.11 of nieuwer draaien, of geen bestanden buiten het project schrijven?** Dat is bv. zo in Lovable, Bolt en v0. Scan dan **niet** zelf, maar volg **route B: scannen via GitHub**, verderop. Kun je ook geen bestanden in het project maken (chat- of leesmodus)? Stop dan, en zeg tegen de gebruiker:
 
-> "Ik kan de scanner van checkmijn.ai hier niet uitvoeren, en een eigen beoordeling zou geen geldige scan zijn. Je kunt je project scannen via GitHub (de geverifieerde scan) of op een computer met een terminal. Meer uitleg: {{ m.instructie.rsplit('/', 1)[0] }}/hoe-het-werkt"
+> "Ik kan de scanner van checkmijn.ai hier niet uitvoeren, en een eigen beoordeling zou geen geldige scan zijn. Meer uitleg over hoe je je project wel kunt scannen: {{ m.instructie.rsplit('/', 1)[0] }}/hoe-het-werkt"
+
+**Welke route?**
+- **Route A** (hieronder, stap 0 tot 11): je hebt een terminal en Python 3.11+. Bv. Claude Code, Cursor, Copilot, Windsurf, Replit.
+- **Route B** (onderaan): je hebt geen terminal, maar het project is gekoppeld aan GitHub. Bv. Lovable, Bolt, v0.
+
+# Route A — met een terminal
 
 ## Stap 0 — Eerst uitleggen en toestemming vragen
 
@@ -91,6 +97,33 @@ Weigert de API het bewijs, dan staat de reden in de melding. Volg die, bijvoorbe
 - dat het volledige rapport lokaal staat in `rapport/rapport.html`. Bied aan het te bewaren voor je de tijdelijke map opruimt.
 
 **11. Verwijder de tijdelijke map**, behalve wat de gebruiker wil bewaren.
+
+# Route B — via GitHub (Lovable, Bolt, v0)
+
+De scanner draait dan in GitHub Actions, op elke wijziging. De code verlaat GitHub niet. In een **privé**-repository zet de scan zijn rapport terug in het project, als `.checkmijn/RAPPORT.md`. Dat bestand kun jij lezen, en daarmee de bevindingen herstellen.
+
+**B1. Kijk of het project aan GitHub gekoppeld is.** Weet je het niet, vraag het de gebruiker. Is het niet gekoppeld, zeg dan:
+
+> "Om je project te scannen, moet het eerst aan GitHub gekoppeld zijn. Gebruik de GitHub-koppeling van je bouwtool (in Lovable: de GitHub-knop of de projectinstellingen → GitHub → Connect) en kies een **privé**-repository. Zeg het me als dat gelukt is."
+
+**B2. Leg uit en vraag toestemming.** Zeg:
+
+> "Ik zet één bestand in je project: `.github/workflows/checkmijn.yml`. Daarmee scant checkmijn.ai je project in GitHub, bij elke wijziging en elke maandag. De code verlaat GitHub niet en er wordt niets naar checkmijn.ai gestuurd. Is je repository privé, dan komt het rapport in `.checkmijn/RAPPORT.md`, zodat ik de bevindingen kan herstellen. Mag ik dat bestand toevoegen? (ja/nee)"
+
+Doe niets zonder een duidelijk "ja".
+
+**B3. Maak het bestand `.github/workflows/checkmijn.yml`** met **exact** deze inhoud. Verander er niets aan, en verander verder niets in het project.
+
+```yaml
+{{ workflow }}```
+
+**B4. Zeg tegen de gebruiker:**
+
+> "Het bestand staat erin. Na de volgende synchronisatie met GitHub draait de scan, dat duurt een paar minuten. Is je repository privé, dan verschijnt daarna het rapport in `.checkmijn/RAPPORT.md`. Vraag me dan: 'Lees .checkmijn/RAPPORT.md en herstel de bevindingen.' De uitslag staat ook in GitHub, bij Actions → checkmijn.ai."
+
+**B5. Wanneer `.checkmijn/RAPPORT.md` er is:** lees het en toon de gebruiker de scanscore en de bevindingen, **zoals de scanner ze geeft**. Herstel, als de gebruiker dat wil, eerst **Kritiek**, dan **Hoog**, dan **Middel**. Een bevinding met *(nakijken)* is niet zeker: kijk eerst of ze klopt. Wijzig `.checkmijn/` en het workflowbestand nooit zelf, en schrijf zelf geen score. Na je wijzigingen scant GitHub opnieuw en wordt het rapport bijgewerkt.
+
+**Repository openbaar?** Dan komt er geen rapport in het project, want dan zou iedereen de bevindingen lezen. De gebruiker ziet de uitslag in GitHub, bij Actions → checkmijn.ai → de laatste run. Raad aan de repository privé te maken.
 
 ## De scanscore
 

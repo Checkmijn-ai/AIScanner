@@ -63,7 +63,7 @@ def bereken(results, niveau: int = 1, deel: bool | None = None):
     if niveau == 1 and letter == "A":
         letter, begrensd = "B", True
     toepasselijk = [r for _, r in results if r.status != "Niet van toepassing"]
-    gescand = [r for r in toepasselijk if r.status in ("Gehaald", "Bevinding")]
+    gescand = [r for r in toepasselijk if r.status in ("Geen bevinding", "Bevinding")]
     dekking = len(gescand) / len(toepasselijk) if toepasselijk else 0.0
     voldoende = dekking >= MIN_DEKKING
     if deel is None:
@@ -109,7 +109,7 @@ def uit_bewijs(resultaten: list, niveau: int = 1):
     zw = [r.get("zwaarste") for r in resultaten]
     k, h, m = zw.count("Kritiek"), zw.count("Hoog"), zw.count("Middel")
     toep = [r for r in resultaten if r.get("status") != "Niet van toepassing"]
-    gescand = [r for r in toep if r.get("status") in ("Gehaald", "Bevinding")]
+    gescand = [r for r in toep if r.get("status") in ("Geen bevinding", "Gehaald", "Bevinding")]
     dekking = len(gescand) / len(toep) if toep else 0.0
     letter = letter_uit(k, h, m, niveau)
     return {"letter": letter if dekking >= MIN_DEKKING else None, "dekking": round(dekking, 2),

@@ -17,10 +17,14 @@ inputs:
     description: "nooit | kritiek | hoog — laat de run falen bij bevindingen van deze ernst"
     required: false
     default: "nooit"
+  rapport-in-repo:
+    description: "false | auto | true — zet het rapport als .checkmijn/RAPPORT.md terug in de repository, zodat een AI-bouwtool zonder terminal (Lovable, Bolt, v0) het kan lezen en de bevindingen herstellen. 'auto' doet dat alleen in een privé-repository. Vraagt permissions: contents: write."
+    required: false
+    default: "false"
   manifest:
     description: Adres van het manifest van de dagversie
     required: false
-    default: https://klankenreis.github.io/checkmijn-scanner/latest.json
+    default: https://checkmijn-ai.github.io/AIScanner/latest.json
 outputs:
   score:
     description: De scanscore (A–G), of "geen" als er niet genoeg gescand kon worden
@@ -42,6 +46,8 @@ runs:
         CM_INSTUREN: ${{ inputs.insturen }}
         CM_FAAL_BIJ: ${{ inputs.faal-bij }}
         CM_MANIFEST: ${{ inputs.manifest }}
+        CM_RAPPORT_IN_REPO: ${{ inputs.rapport-in-repo }}
+        CM_PRIVE: ${{ github.event.repository.private }}
         CM_OUT: ${{ runner.temp }}/checkmijn-rapport
       run: python "${{ github.action_path }}/action/scan_ci.py"
     - name: Rapport bewaren bij deze run

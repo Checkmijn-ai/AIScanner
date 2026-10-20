@@ -12,7 +12,7 @@ TPL = Path(__file__).resolve().parent / "templates"
 
 
 def statusclass(s):
-    return {"Gehaald": "st-Gehaald", "Bevinding": "st-Bevinding", "Niet van toepassing": "st-nvt"}.get(s, "st-open")
+    return {"Geen bevinding": "st-ok", "Bevinding": "st-Bevinding", "Niet van toepassing": "st-nvt"}.get(s, "st-open")
 
 
 def write_html(path: Path, summary, results):

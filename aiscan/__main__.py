@@ -64,7 +64,7 @@ def main(argv=None):
         print(f"Bewijs: {out / 'bewijs.json'}")
     sc = summary["score"]
     print(f"\nScanscore: {sc['letter'] or 'geen (te weinig gescand)'} — {sc['uitleg']}")
-    print(f"{summary['uitslag']}. Gehaald {summary['status']['Gehaald']} · bevinding {summary['status']['Bevinding']} · "
+    print(f"{summary['uitslag']}. Geen bevinding {summary['status']['Geen bevinding']} · bevinding {summary['status']['Bevinding']} · "
           f"niet gescand {summary['status']['Niet gescand']} · n.v.t. {summary['status']['Niet van toepassing']}")
     print(f"Bevindingen: {summary['ernst']}")
     print(f"Rapport: {out / 'rapport.html'} · data: {out / 'rapport.json'} · SBOM: {out / 'sbom.json'} ({n} componenten)")

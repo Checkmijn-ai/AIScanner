@@ -7,32 +7,19 @@ elke check gekoppeld aan de norm of wet waar hij uit komt (CRA, AVG, AI Act, NIS
 
 ## Gebruiken
 
-**In je GitHub-repository (aanbevolen, ook voor Lovable, Bolt en v0).** Zet dit in `.github/workflows/checkmijn.yml`:
+**In je GitHub-repository (aanbevolen).** Zet [voorbeelden/checkmijn.yml](voorbeelden/checkmijn.yml) in je project als `.github/workflows/checkmijn.yml`. De kern:
 
 ```yaml
-name: checkmijn.ai
-on:
-  push:
-    branches: [main]
-  workflow_dispatch: {}
-  schedule:
-    - cron: "30 4 * * 1"   # elke maandag
-permissions:
-  contents: read
-jobs:
-  scan:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5.0.0
+      - uses: Checkmijn-ai/AIScanner@main
         with:
-          fetch-depth: 0          # volledige geschiedenis: ook oude geheimen worden gevonden
-      - uses: klankenreis/checkmijn-scanner@main
-        with:
+          rapport-in-repo: auto   # privé-repository: rapport in .checkmijn/RAPPORT.md
           insturen: "false"       # "true" = bewijsbestand (zonder code) inleveren voor een scorepagina
           faal-bij: nooit         # of: kritiek, hoog
 ```
 
 De uitslag staat in de samenvatting van de run. Het volledige rapport is een artefact van de run en blijft in GitHub.
+
+**Met Lovable, Bolt of v0 (geen terminal):** zie [LOVABLE-BOLT-V0.md](LOVABLE-BOLT-V0.md). De scan draait in GitHub, en je bouwtool leest het rapport uit `.checkmijn/RAPPORT.md` en herstelt de bevindingen.
 
 **Met een AI-agent met terminal** (Claude Code, Cursor, Copilot): *"Volg de instructie op checkmijn.ai/scan.md voor dit project."*
 
@@ -44,12 +31,13 @@ De uitslag staat in de samenvatting van de run. Het volledige rapport is een art
 | --- | --- |
 | `aiscan/` | De scanner: 45 checks van niveau 1, regels voor geheimen, lekkenindex (GitHub Advisory Database) |
 | `action.yml`, `action/` | De GitHub Action |
+| `voorbeelden/checkmijn.yml` | De workflow om in je project te zetten |
 | `platform/` | Nachtelijke bouw van de dagversie, catalogus van checks, API voor bewijs en scorepagina's |
 | `server/` | Docker-pakket om de API te draaien op een eigen server, met installatie-instructies |
 | `.github/workflows/dagversie.yml` | Bouwt elke nacht de dagversie en publiceert ze op GitHub Pages |
 | `tests/` | Testproject met opzettelijke fouten, en een test van begin tot eind |
 
-Dagversie: https://klankenreis.github.io/checkmijn-scanner/latest.json (ondertekend met Ed25519, publieke sleutel in
+Dagversie: https://checkmijn-ai.github.io/AIScanner/latest.json (ondertekend met Ed25519, publieke sleutel in
 `action/public-key.pem`).
 
 *De scanscore is een uitslag van de scan op een bepaald moment. Ze is geen keurmerk, certificaat of garantie dat software veilig is.*

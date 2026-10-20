@@ -45,7 +45,7 @@ def _precheck(proj, cid):
 @check("R-03")
 def branch_protection(proj, meta):
     r, rem = _precheck(proj, "R-03")
-    if r.status != "Gehaald":
+    if r.status != "Geen bevinding":
         return r
     o, n = rem
     try:
@@ -79,7 +79,7 @@ def branch_protection(proj, meta):
 @check("R-13")
 def repo_settings(proj, meta):
     r, rem = _precheck(proj, "R-13")
-    if r.status != "Gehaald":
+    if r.status != "Geen bevinding":
         return r
     o, n = rem
     try:

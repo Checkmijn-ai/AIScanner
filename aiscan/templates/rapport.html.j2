@@ -32,7 +32,7 @@ th{text-align:left;font-weight:600;color:var(--muted);border-bottom:1px solid va
 td{border-bottom:1px solid var(--line);padding:7px 8px;vertical-align:top}
 td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
 .badge{display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap;border:1px solid}
-.st-Gehaald{color:var(--ok);border-color:var(--ok)}.st-Bevinding{color:var(--hoog);border-color:var(--hoog)}
+.st-ok{color:var(--ok);border-color:var(--ok)}.st-Bevinding{color:var(--hoog);border-color:var(--hoog)}
 .st-nvt{color:var(--nvt);border-color:var(--nvt)}.st-open{color:var(--open);border-color:var(--open)}
 .e-Kritiek{background:var(--krit);border-color:var(--krit);color:#fff}.e-Hoog{background:var(--hoog);border-color:var(--hoog);color:#fff}
 .e-Middel{background:var(--mid);border-color:var(--mid);color:#fff}.e-Laag{background:var(--laag);border-color:var(--laag);color:#fff}
@@ -82,7 +82,7 @@ footer{margin-top:50px;color:var(--muted);font-size:12px;border-top:1px solid va
 </div>
 
 <div class="verdict {{ 'bad' if (s.ernst.Kritiek + s.ernst.Hoog) else 'good' }}">
-  <b>{{ s.uitslag }}.</b> {{ s.status.Gehaald }} van de {{ s.gescand }} gescande controles zonder bevindingen;
+  <b>{{ s.uitslag }}.</b> {{ s.status["Geen bevinding"] }} van de {{ s.gescand }} gescande controles zonder bevindingen;
   {{ s.status['Niet gescand'] }} niet gescand, {{ s.status['Niet van toepassing'] }} niet van toepassing.
 </div>
 
@@ -108,10 +108,10 @@ footer{margin-top:50px;color:var(--muted);font-size:12px;border-top:1px solid va
 <h2>Per wet en norm</h2>
 <p class="note">Het aantal scans dat een wet of norm als bron heeft. Dit zegt niet hoeveel van die wet gedekt is, en niet dat de app eraan voldoet.</p>
 <div class="two">
-<table><tr><th>Wet</th><th class="num">Scans</th><th class="num">Gehaald</th><th class="num">Bevinding</th><th class="num">Open</th></tr>
+<table><tr><th>Wet</th><th class="num">Scans</th><th class="num">Geen bevinding</th><th class="num">Bevinding</th><th class="num">Open</th></tr>
 {% for w in s.wetten %}<tr><td>{{ w.naam }}{% if w.noot %}<div class="note">{{ w.noot }}</div>{% endif %}</td><td class="num">{{ w.checks }}</td><td class="num">{{ w.gehaald }}</td><td class="num">{{ w.bevinding }}</td><td class="num">{{ w.open }}</td></tr>{% endfor %}
 </table>
-<table><tr><th>Norm</th><th class="num">Scans</th><th class="num">Gehaald</th><th class="num">Bevinding</th><th class="num">Open</th></tr>
+<table><tr><th>Norm</th><th class="num">Scans</th><th class="num">Geen bevinding</th><th class="num">Bevinding</th><th class="num">Open</th></tr>
 {% for w in s.normen %}<tr><td>{{ w.naam }}</td><td class="num">{{ w.checks }}</td><td class="num">{{ w.gehaald }}</td><td class="num">{{ w.bevinding }}</td><td class="num">{{ w.open }}</td></tr>{% endfor %}
 </table>
 </div>

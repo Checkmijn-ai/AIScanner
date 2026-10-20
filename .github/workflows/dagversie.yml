@@ -1,5 +1,5 @@
 # Bouwt elke nacht de dagversie van de scanner en publiceert ze op GitHub Pages:
-#   https://klankenreis.github.io/checkmijn-scanner/  (latest.json, scan.md, checkmijn-JJJJ-MM-DD.pyz, ...)
+#   https://checkmijn-ai.github.io/AIScanner/  (latest.json, scan.md, checkmijn-JJJJ-MM-DD.pyz, ...)
 # Nodig:
 #   - Settings → Pages → Source: "GitHub Actions"
 #   - Settings → Secrets and variables → Actions → secret DAGVERSIE_SLEUTEL (privésleutel, PEM, Ed25519)
@@ -14,7 +14,7 @@ concurrency:
   group: dagversie
   cancel-in-progress: false
 env:
-  BASIS: https://klankenreis.github.io/checkmijn-scanner
+  BASIS: https://checkmijn-ai.github.io/AIScanner
 jobs:
   bouw:
     runs-on: ubuntu-latest

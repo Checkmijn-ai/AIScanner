@@ -16,7 +16,7 @@ ERNST_ORDE = {"Kritiek": 4, "Hoog": 3, "Middel": 2, "Laag": 1, "Info": 0}
 
 # Mappen die we nooit als broncode lezen (wel apart, zie bundle en hygiene).
 SKIP_DIRS = {
-    ".git", ".aiscan", "node_modules", ".venv", "venv", "env", "__pycache__", ".tox", ".mypy_cache",
+    ".git", ".aiscan", ".checkmijn", "node_modules", ".venv", "venv", "env", "__pycache__", ".tox", ".mypy_cache",
     ".pytest_cache", ".next", ".nuxt", "dist", "build", "out", "coverage", ".gradle",
     "Pods", "vendor", "bower_components", ".idea", ".vscode", "target", ".cache",
 }
@@ -48,7 +48,7 @@ class Finding:
 @dataclass
 class Result:
     check: str
-    status: str = "Gehaald"  # Gehaald | Bevinding | Niet van toepassing | Niet gescand
+    status: str = "Geen bevinding"  # Geen bevinding | Bevinding | Niet van toepassing | Niet gescand
     reden: str = ""
     findings: list = field(default_factory=list)
     info: list = field(default_factory=list)  # wat de scan bekeek, voor het rapport
@@ -80,7 +80,7 @@ class Project:
         for dirpath, dirnames, filenames in os.walk(self.root):
             rel = Path(dirpath).relative_to(self.root)
             parts = set(rel.parts)
-            if ".git" in parts or "node_modules" in parts or ".aiscan" in parts:
+            if ".git" in parts or "node_modules" in parts or ".aiscan" in parts or ".checkmijn" in parts:
                 dirnames[:] = []
                 continue
             in_build = bool(parts & {"dist", "build", "out", ".next", "public", "static", "www"})
@@ -97,7 +97,7 @@ class Project:
                     self.build_files.append(p)
                 if not skip_src:
                     self.files.append(p)
-            dirnames[:] = [d for d in dirnames if d not in {".git", "node_modules", ".aiscan"}]
+            dirnames[:] = [d for d in dirnames if d not in {".git", "node_modules", ".aiscan", ".checkmijn"}]
 
     def _git_tracked(self):
         if not self.git:

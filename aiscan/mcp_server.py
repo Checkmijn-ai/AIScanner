@@ -124,7 +124,7 @@ def tool_scan(args):
         f"# aiscan — {pad.name}",
         f"Scanscore: **{sc['letter'] or 'geen (te weinig gescand)'}** (zelfcontrole, niveau 1; hoogstens B). {sc['uitleg']}",
         f"Bevindingen: {summary['ernst']['Kritiek']} kritiek, {summary['ernst']['Hoog']} hoog, {summary['ernst']['Middel']} middel, "
-        f"{summary['ernst']['Laag']} laag · {summary['status']['Gehaald']} scans gehaald, {summary['status']['Bevinding']} met bevinding, "
+        f"{summary['ernst']['Laag']} laag · {summary['status']['Geen bevinding']} scans zonder bevinding, {summary['status']['Bevinding']} met bevinding, "
         f"{summary['status']['Niet gescand']} niet gescand, {summary['status']['Niet van toepassing']} niet van toepassing.",
         f"Privacy: lokaal gescand in {time.time() - t0:.1f} s; netwerk geblokkeerd ({'bevestigd' if netwerk_is_dicht() else 'NIET bevestigd'}); "
         f"er is niets verstuurd. Geheimen staan gemaskeerd.",

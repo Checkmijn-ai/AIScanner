@@ -9,7 +9,7 @@ COPY platform ./platform
 RUN mkdir -p /data && chown checkmijn /data
 USER checkmijn
 ENV AISCAN_DB=/data/checkmijn.db \
-    AISCAN_PUBLIC_URL=https://klankenreis.github.io/checkmijn-scanner \
+    AISCAN_PUBLIC_URL=https://checkmijn-ai.github.io/AIScanner \
     AISCAN_SITE=https://api.checkmijn.ai
 EXPOSE 8000
 # één proces (de limiet per IP en SQLite zitten in het geheugen van dat proces), meerdere threads
