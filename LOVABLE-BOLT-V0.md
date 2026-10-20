@@ -2,7 +2,8 @@
 
 Deze tools hebben geen terminal, dus de scanner kan er niet in draaien. Daarom draait hij in **GitHub**, op elke wijziging. Je bouwtool leest daarna het rapport en herstelt de bevindingen.
 
-- De code verlaat GitHub niet. Er gaat niets naar checkmijn.ai, tenzij je dat later zelf aanzet.
+- De code verlaat GitHub niet.
+- Het opgemaakte rapport bewaren we **versleuteld**. De sleutel zit alleen in jouw persoonlijke link (na `#`), dus wij kunnen het niet lezen. Wil je dat niet, zet dan `rapport-link: "false"` in het workflowbestand.
 - Het rapport komt alleen in je project als je repository **privé** is. In een openbare repository zou iedereen de lekken lezen.
 
 ## In drie stappen
@@ -44,6 +45,7 @@ Maak het dan zelf, in GitHub:
 
 | Waar | Wat |
 | --- | --- |
+| De persoonlijke link bovenaan `RAPPORT.md` | Het opgemaakte rapport, zoals een keurder het ziet. Je kunt het ook downloaden. Niet aan een account gekoppeld: 90 dagen bewaard |
 | `.checkmijn/RAPPORT.md` in je project | Score en alle bevindingen, met bestand, regel en hoe je ze oplost (alleen in een privé-repository) |
 | GitHub → **Actions** → *checkmijn.ai* → de laatste run | Score en een overzicht, plus het volledige rapport onder *Artifacts* |
 

@@ -7,6 +7,14 @@ Eindpunten
   GET  /api/v1/score/<id>        de score als JSON
   GET  /score/<id>               publieke scorepagina
   GET  /score/<id>.svg           badge voor een README of website
+  POST /api/v1/rapport           versleuteld volledig rapport inleveren (alleen vanuit GitHub Actions, met OIDC-token)
+  GET  /api/v1/rapport/<id>      het versleutelde rapport ophalen; ontsleutelen gebeurt in de browser
+
+Versleutelde rapporten
+  De Action versleutelt het rapport met AES-256-GCM en een willekeurige sleutel die alleen in de link staat
+  (https://checkmijn.ai/rapport/<id>#k=<sleutel>). Het deel na # gaat nooit naar een server. Wij bewaren dus
+  alleen gegevens die we niet kunnen lezen, plus het nummer van de repository (om te beperken en later aan een
+  account te koppelen). Niet aan een account gekoppelde rapporten worden na RAPPORT_DAGEN dagen gewist.
 
 Wat de API controleert bij een bewijs
   - formaat en verplichte velden;
@@ -57,7 +65,15 @@ ERNST = {None, "Info", "Laag", "Middel", "Hoog", "Kritiek"}
 KLEUR = {"A": "#1b7f3b", "B": "#4f9d2a", "C": "#97a91d", "D": "#c9a200", "E": "#e07f12", "F": "#d9480f", "G": "#b1161a"}
 
 app = Flask(__name__, template_folder=str(ROOT / "platform" / "templates"))
-app.config["MAX_CONTENT_LENGTH"] = 256 * 1024  # een bewijs is klein; nooit code
+app.config["MAX_CONTENT_LENGTH"] = 6 * 1024 * 1024  # versleuteld rapport; een bewijs wordt apart beperkt
+MAX_BEWIJS = 256 * 1024  # een bewijs is klein; nooit code
+MAX_RAPPORT = 5 * 1024 * 1024
+RAPPORT_DAGEN = int(os.environ.get("AISCAN_RAPPORT_DAGEN", "90"))
+RAPPORTEN_PER_DAG = int(os.environ.get("AISCAN_RAPPORTEN_PER_DAG", "50"))  # per repository
+OIDC_ISSUER = os.environ.get("AISCAN_OIDC_ISSUER", "https://token.actions.githubusercontent.com")
+OIDC_JWKS = os.environ.get("AISCAN_OIDC_JWKS", OIDC_ISSUER + "/.well-known/jwks")
+OIDC_AUD = os.environ.get("AISCAN_OIDC_AUD", "checkmijn.ai")
+SITE_ORIGIN = os.environ.get("AISCAN_SITE_ORIGIN", "https://checkmijn.ai")
 
 
 # ------------------------------------------------------------------ opslag
@@ -69,6 +85,9 @@ def db():
             CREATE TABLE IF NOT EXISTS sessies (nonce TEXT PRIMARY KEY, aangemaakt TEXT, gebruikt INTEGER DEFAULT 0, ip TEXT);
             CREATE TABLE IF NOT EXISTS scores (id TEXT PRIMARY KEY, aangemaakt TEXT, geldig_tot TEXT, letter TEXT, soort TEXT,
                 project TEXT, commit_hash TEXT, boom TEXT, dagversie TEXT, databank TEXT, bewijs TEXT);
+            CREATE TABLE IF NOT EXISTS rapporten (id TEXT PRIMARY KEY, aangemaakt TEXT, verloopt TEXT,
+                repo_id TEXT, iv TEXT, data TEXT, grootte INTEGER, account TEXT);
+            CREATE INDEX IF NOT EXISTS rapporten_repo ON rapporten (repo_id, aangemaakt);
         """)
     return g.db
 
@@ -149,6 +168,8 @@ def sessie():
 
 @app.post("/api/v1/resultaat")
 def resultaat():
+    if (request.content_length or 0) > MAX_BEWIJS:
+        return fout("Een bewijs is hoogstens 256 kB.", 413)
     limiet()
     b = request.get_json(silent=True)
     if not isinstance(b, dict) or b.get("formaat") != "aiscan-bewijs/1":
@@ -259,6 +280,100 @@ def pagina(sid):
                            verlopen=nu().isoformat() > r["geldig_tot"], site=SITE)
 
 
+# ------------------------------------------------------------------ versleutelde rapporten
+_JWKS: dict = {"tijd": 0, "sleutels": {}}
+
+
+def _b64url(s: str) -> bytes:
+    import base64
+    return base64.urlsafe_b64decode(s + "=" * (-len(s) % 4))
+
+
+def oidc_claims(token: str) -> dict:
+    """Controleert een OIDC-token van GitHub Actions (RS256) en geeft de claims terug."""
+    import urllib.request
+    from cryptography.hazmat.primitives import hashes
+    from cryptography.hazmat.primitives.asymmetric import padding, rsa
+    try:
+        kop_b, inhoud_b, sig_b = token.split(".")
+        kop = json.loads(_b64url(kop_b))
+        claims = json.loads(_b64url(inhoud_b))
+    except Exception:
+        raise ValueError("ongeldig token")
+    if kop.get("alg") != "RS256":
+        raise ValueError("onbekend algoritme")
+    if time.time() - _JWKS["tijd"] > 3600 or kop.get("kid") not in _JWKS["sleutels"]:
+        with urllib.request.urlopen(OIDC_JWKS, timeout=10) as r:
+            _JWKS["sleutels"] = {k["kid"]: k for k in json.loads(r.read())["keys"] if k.get("kty") == "RSA"}
+        _JWKS["tijd"] = time.time()
+    jwk = _JWKS["sleutels"].get(kop.get("kid"))
+    if not jwk:
+        raise ValueError("onbekende sleutel")
+    pub = rsa.RSAPublicNumbers(int.from_bytes(_b64url(jwk["e"]), "big"), int.from_bytes(_b64url(jwk["n"]), "big")).public_key()
+    pub.verify(_b64url(sig_b), f"{kop_b}.{inhoud_b}".encode(), padding.PKCS1v15(), hashes.SHA256())
+    t = time.time()
+    if claims.get("iss") != OIDC_ISSUER:
+        raise ValueError("verkeerde uitgever")
+    aud = claims.get("aud")
+    if OIDC_AUD not in (aud if isinstance(aud, list) else [aud]):
+        raise ValueError("verkeerde doelgroep")
+    if not (claims.get("nbf", 0) - 60 <= t <= claims.get("exp", 0) + 60):
+        raise ValueError("verlopen token")
+    if not claims.get("repository_id"):
+        raise ValueError("geen repository in het token")
+    return claims
+
+
+def _ruim_op():
+    db().execute("DELETE FROM rapporten WHERE account IS NULL AND verloopt < ?", (nu().isoformat(),))
+    db().commit()
+
+
+@app.post("/api/v1/rapport")
+def rapport_inleveren():
+    limiet()
+    if (request.content_length or 0) > MAX_RAPPORT + 4096:
+        return fout("Het rapport is te groot (hoogstens 5 MB).", 413)
+    auth = request.headers.get("Authorization", "")
+    if not auth.startswith("Bearer "):
+        return fout("Alleen vanuit GitHub Actions, met een OIDC-token (permissions: id-token: write).", 401)
+    try:
+        claims = oidc_claims(auth[7:].strip())
+    except Exception as e:  # noqa: BLE001
+        return fout(f"Token geweigerd: {e}.", 401)
+    b = request.get_json(silent=True) or {}
+    iv, data = b.get("iv"), b.get("data")
+    if b.get("versie") != 1 or b.get("alg") != "A256GCM" or not isinstance(iv, str) or not isinstance(data, str):
+        return fout("Verwacht: {versie: 1, alg: 'A256GCM', iv, data} (base64url).")
+    try:
+        if len(_b64url(iv)) != 12 or len(_b64url(data)) < 17:
+            raise ValueError
+    except Exception:
+        return fout("iv of data is geen geldige base64url.")
+    repo_id = str(claims["repository_id"])
+    _ruim_op()
+    dag = (nu() - dt.timedelta(days=1)).isoformat()
+    n = db().execute("SELECT COUNT(*) FROM rapporten WHERE repo_id = ? AND aangemaakt > ?", (repo_id, dag)).fetchone()[0]
+    if n >= RAPPORTEN_PER_DAG:
+        return fout("Te veel rapporten voor deze repository vandaag.", 429)
+    rid = secrets.token_urlsafe(16)
+    verloopt = nu() + dt.timedelta(days=RAPPORT_DAGEN)
+    db().execute("INSERT INTO rapporten (id, aangemaakt, verloopt, repo_id, iv, data, grootte) VALUES (?,?,?,?,?,?,?)",
+                 (rid, nu().isoformat(), verloopt.isoformat(), repo_id, iv, data, len(data)))
+    db().commit()
+    return jsonify({"id": rid, "pagina": f"{SITE_ORIGIN}/rapport/{rid}", "verloopt": verloopt.date().isoformat()}), 201
+
+
+@app.get("/api/v1/rapport/<rid>")
+def rapport_ophalen(rid):
+    limiet()
+    r = db().execute("SELECT aangemaakt, verloopt, iv, data, account FROM rapporten WHERE id = ?", (rid,)).fetchone()
+    if not r or (r["account"] is None and r["verloopt"] < nu().isoformat()):
+        return fout("Dit rapport bestaat niet (meer).", 404)
+    return jsonify({"versie": 1, "alg": "A256GCM", "iv": r["iv"], "data": r["data"],
+                    "aangemaakt": r["aangemaakt"][:10], "verloopt": r["verloopt"][:10]})
+
+
 @app.after_request
 def headers(resp):
     resp.headers["X-Content-Type-Options"] = "nosniff"
@@ -266,6 +381,9 @@ def headers(resp):
     resp.headers["Content-Security-Policy"] = "default-src 'none'; style-src 'unsafe-inline'; img-src 'self'"
     if request.path.startswith(("/api/v1/score", "/score/")):
         resp.headers["Access-Control-Allow-Origin"] = "*"
+    if request.path.startswith("/api/v1/rapport/"):
+        resp.headers["Access-Control-Allow-Origin"] = SITE_ORIGIN
+        resp.headers["Cache-Control"] = "private, no-store"
     return resp
 
 

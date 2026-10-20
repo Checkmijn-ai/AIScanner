@@ -13,7 +13,7 @@ api.checkmijn.ai {
 		-Server
 	}
 	request_body {
-		max_size 256KB
+		max_size 6MB
 	}
 	reverse_proxy api:8000 {
 		header_up -CF-Connecting-IP

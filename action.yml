@@ -21,6 +21,10 @@ inputs:
     description: "false | auto | true — zet het rapport als .checkmijn/RAPPORT.md terug in de repository, zodat een AI-bouwtool zonder terminal (Lovable, Bolt, v0) het kan lezen en de bevindingen herstellen. 'auto' doet dat alleen in een privé-repository. Vraagt permissions: contents: write."
     required: false
     default: "false"
+  rapport-link:
+    description: "true = het volledige rapport versleuteld bewaren bij checkmijn.ai en een persoonlijke link maken (de sleutel zit alleen in de link; checkmijn.ai kan het niet lezen). Vraagt permissions: id-token: write."
+    required: false
+    default: "false"
   manifest:
     description: Adres van het manifest van de dagversie
     required: false
@@ -48,6 +52,7 @@ runs:
         CM_MANIFEST: ${{ inputs.manifest }}
         CM_RAPPORT_IN_REPO: ${{ inputs.rapport-in-repo }}
         CM_PRIVE: ${{ github.event.repository.private }}
+        CM_RAPPORT_LINK: ${{ inputs.rapport-link }}
         CM_OUT: ${{ runner.temp }}/checkmijn-rapport
       run: python "${{ github.action_path }}/action/scan_ci.py"
     - name: Rapport bewaren bij deze run

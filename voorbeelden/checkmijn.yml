@@ -3,7 +3,7 @@
 #
 # Wat het doet:
 # - scant je project bij elke wijziging op de hoofdtak, en elke maandag opnieuw (nieuwe lekken);
-# - de code verlaat GitHub niet;
+# - de code verlaat GitHub niet; het opgemaakte rapport wordt versleuteld bewaard, met de sleutel alleen in jouw link;
 # - in een privé-repository zet het rapport zich in .checkmijn/RAPPORT.md, zodat je AI-bouwtool het kan lezen
 #   en de bevindingen kan herstellen. In een openbare repository gebeurt dat niet (dan zou iedereen het lezen):
 #   daar staat de uitslag alleen bij de run in GitHub.
@@ -17,6 +17,7 @@ on:
     - cron: "30 4 * * 1"
 permissions:
   contents: write   # nodig om .checkmijn/RAPPORT.md terug te zetten
+  id-token: write   # bewijst aan checkmijn.ai dat de scan echt uit deze repository komt (voor de rapportlink)
 concurrency:
   group: checkmijn
   cancel-in-progress: true
@@ -31,5 +32,6 @@ jobs:
       - uses: Checkmijn-ai/AIScanner@main
         with:
           rapport-in-repo: auto
+          rapport-link: "true"   # opgemaakt rapport via een persoonlijke link, versleuteld (wij kunnen het niet lezen)
           insturen: "false"   # "true" = bewijsbestand (zonder code) inleveren voor een openbare scorepagina
           faal-bij: nooit

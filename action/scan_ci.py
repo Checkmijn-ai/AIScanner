@@ -65,6 +65,7 @@ def controleer_handtekening(m: dict) -> str:
 
 RAPPORT_IN_REPO = os.environ.get("CM_RAPPORT_IN_REPO", "false").lower()  # false | auto | true
 PRIVE = os.environ.get("CM_PRIVE", "").lower() == "true"
+RAPPORT_LINK = os.environ.get("CM_RAPPORT_LINK", "false").lower() == "true"
 RAPPORT_MAP = ".checkmijn"
 
 
@@ -75,12 +76,57 @@ def rapport_in_repo_aan() -> bool:
     return RAPPORT_IN_REPO == "true" or (RAPPORT_IN_REPO == "auto" and PRIVE)
 
 
+def maak_rapport_link(m: dict):
+    """Versleutelt rapport.html met een nieuwe sleutel (AES-256-GCM) en levert alleen de versleutelde data in.
+
+    De sleutel staat alleen in de link, na '#', en komt dus nooit bij checkmijn.ai. Geeft (link, melding) terug.
+    """
+    import base64
+    import gzip
+    import urllib.error
+    import urllib.request
+    from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+
+    if os.environ.get("GITHUB_EVENT_NAME", "").startswith("pull_request"):
+        return None, "Bij een pull request wordt geen rapportlink gemaakt."
+    url, tok = os.environ.get("ACTIONS_ID_TOKEN_REQUEST_URL"), os.environ.get("ACTIONS_ID_TOKEN_REQUEST_TOKEN")
+    if not url or not tok:
+        return None, "Geen rapportlink: zet `id-token: write` bij `permissions` in de workflow."
+    b64 = lambda b: base64.urlsafe_b64encode(b).decode().rstrip("=")  # noqa: E731
+    try:
+        req = urllib.request.Request(url + ("&" if "?" in url else "?") + "audience=checkmijn.ai",
+                                     headers={"Authorization": f"Bearer {tok}"})
+        with urllib.request.urlopen(req, timeout=20) as r:
+            oidc = json.loads(r.read())["value"]
+        sleutel = AESGCM.generate_key(bit_length=256)
+        iv = os.urandom(12)
+        inhoud = gzip.compress((OUT / "rapport.html").read_bytes(), mtime=0)
+        data = AESGCM(sleutel).encrypt(iv, inhoud, None)
+        body = json.dumps({"versie": 1, "alg": "A256GCM", "iv": b64(iv), "data": b64(data)}).encode()
+        req = urllib.request.Request(m["api"].rstrip("/") + "/api/v1/rapport", data=body, method="POST",
+                                     headers={"Authorization": f"Bearer {oidc}", "Content-Type": "application/json"})
+        with urllib.request.urlopen(req, timeout=60) as r:
+            d = json.loads(r.read())
+    except urllib.error.HTTPError as e:
+        try:
+            reden = json.loads(e.read()).get("fout", "")
+        except Exception:  # noqa: BLE001
+            reden = ""
+        return None, f"Geen rapportlink: de API weigerde ({e.code}) {reden}".strip()
+    except Exception as e:  # noqa: BLE001
+        return None, f"Geen rapportlink: {e.__class__.__name__} ({e})."
+    site = m.get("instructie", "https://checkmijn.ai/scan.md").rsplit("/", 1)[0]
+    link = f"{site}/rapport/{d['id']}#k={b64(sleutel)}"
+    (OUT / "rapport-link.txt").write_text(link + "\n")
+    return link, f"Rapportlink gemaakt, geldig tot {d.get('verloopt', '?')}."
+
+
 def run_url() -> str:
     s, repo, rid = (os.environ.get(k) for k in ("GITHUB_SERVER_URL", "GITHUB_REPOSITORY", "GITHUB_RUN_ID"))
     return f"{s}/{repo}/actions/runs/{rid}" if s and repo and rid else ""
 
 
-def rapport_markdown(rap: dict, m: dict, letter: str, historie: list | None = None) -> str:
+def rapport_markdown(rap: dict, m: dict, letter: str, historie: list | None = None, link: str | None = None) -> str:
     """Het rapport als Markdown, zodat een AI-bouwtool zonder terminal (Lovable, Bolt, v0) het kan lezen en herstellen."""
     s = rap["samenvatting"]
     sc = s.get("score") or {}
@@ -104,8 +150,12 @@ def rapport_markdown(rap: dict, m: dict, letter: str, historie: list | None = No
         f"gescand {s['gescand']} van {s['totaal']} checks",
         "",
     ]
+    if link:
+        r += [f"**Het volledige rapport, opgemaakt:** {link}", "",
+              "*Deze link is persoonlijk: wie hem heeft, kan het rapport lezen. Het rapport is versleuteld bewaard; de "
+              "sleutel zit alleen in de link (na #), checkmijn.ai kan het niet lezen.*", ""]
     if run_url():
-        r += [f"**Uitslag en volledig rapport (HTML) in GitHub:** {run_url()} (onder *Artifacts*: checkmijn-rapport)", ""]
+        r += [f"**De run in GitHub:** {run_url()} (onder *Artifacts*: checkmijn-rapport)", ""]
     if historie:
         r += ["## Verloop van de scans (nieuwste eerst)", "", "| Datum | Commit | Score | Kritiek | Hoog | Middel | Laag |",
               "| --- | --- | --- | --- | --- | --- | --- |"]
@@ -144,7 +194,7 @@ def rapport_markdown(rap: dict, m: dict, letter: str, historie: list | None = No
     return "\n".join(r)
 
 
-def rapport_in_repo(rap: dict, m: dict, letter: str) -> str:
+def rapport_in_repo(rap: dict, m: dict, letter: str, link: str | None = None) -> str:
     """Zet .checkmijn/RAPPORT.md en rapport.json in de repository en commit ze met [skip ci] (geen nieuwe run)."""
     doel = PAD / RAPPORT_MAP
     doel.mkdir(exist_ok=True)
@@ -161,7 +211,7 @@ def rapport_in_repo(rap: dict, m: dict, letter: str) -> str:
         historie.append(nieuw)
     historie = historie[-50:]
     hist_pad.write_text(json.dumps(historie, indent=1), encoding="utf-8")
-    md = rapport_markdown(rap, m, letter, historie)
+    md = rapport_markdown(rap, m, letter, historie, link)
     (doel / "RAPPORT.md").write_text(md, encoding="utf-8")
     (doel / "rapport.json").write_text(json.dumps(rap, ensure_ascii=False, indent=1), encoding="utf-8")
 
@@ -233,8 +283,19 @@ def main() -> int:
         if c["status"] in ("Bevinding", "Niet gescand"):
             zw = c["bevindingen"][0]["ernst"] if c["bevindingen"] else ""
             regels.append(f"| {c['id']} | {c['scan'][:90]} | {c['status']} | {len(c['bevindingen'])} {zw} |")
-    regels += ["", "Het volledige rapport (met bestand en regel per bevinding) staat bij de artefacten van deze run. "
-               "Het blijft in GitHub en gaat niet naar checkmijn.ai.", ""]
+    link = None
+    if RAPPORT_LINK:
+        link, melding = maak_rapport_link(m)
+        log(melding)
+        if link and PRIVE:
+            regels += [f"**Het volledige rapport, opgemaakt:** {link}", "",
+                       "*Persoonlijke link: het rapport is versleuteld bewaard, de sleutel zit alleen in de link.*", ""]
+        elif link:
+            regels += ["De link naar het opgemaakte rapport staat in `rapport-link.txt` bij de artefacten van deze run "
+                       "(niet hier, want deze repository is openbaar).", ""]
+        else:
+            regels += [melding, ""]
+    regels += ["", "Het volledige rapport (met bestand en regel per bevinding) staat ook bij de artefacten van deze run.", ""]
 
     if nonce:
         r = subprocess.run([sys.executable, str(pyz), "inleveren", str(OUT / "bewijs.json"), m["api"]],
@@ -250,7 +311,7 @@ def main() -> int:
                   "of garantie dat software veilig is.*")
 
     if rapport_in_repo_aan():
-        regels += ["", rapport_in_repo(rap, m, letter)]
+        regels += ["", rapport_in_repo(rap, m, letter, link)]
     elif RAPPORT_IN_REPO == "auto" and not PRIVE:
         regels += ["", "Het rapport is niet in de repository gezet, omdat de repository openbaar is: dan zou iedereen de "
                    "bevindingen kunnen lezen."]
