@@ -70,6 +70,8 @@ RAPPORT_MAP = ".checkmijn"
 
 def rapport_in_repo_aan() -> bool:
     """'auto' zet het rapport alleen terug in een privé-repository: in een openbare zou iedereen de lekken lezen."""
+    if os.environ.get("GITHUB_EVENT_NAME", "").startswith("pull_request"):
+        return False  # bij een pull request niets terugzetten; dat gebeurt na het samenvoegen
     return RAPPORT_IN_REPO == "true" or (RAPPORT_IN_REPO == "auto" and PRIVE)
 
 
@@ -220,7 +222,7 @@ def main() -> int:
 
     if rapport_in_repo_aan():
         regels += ["", rapport_in_repo(rap, m, letter)]
-    elif RAPPORT_IN_REPO == "auto":
+    elif RAPPORT_IN_REPO == "auto" and not PRIVE:
         regels += ["", "Het rapport is niet in de repository gezet, omdat de repository openbaar is: dan zou iedereen de "
                    "bevindingen kunnen lezen."]
     schrijf_samenvatting("\n".join(regels))
