@@ -45,15 +45,24 @@ def schrijf_samenvatting(tekst: str):
     log(tekst)
 
 
-def controleer_handtekening(m: dict) -> str:
-    sleutel = HIER / "public-key.pem"
+def controleer_handtekening(m: dict, sleutel: Path | None = None) -> str:
+    """Controleert de Ed25519-handtekening van het manifest. Faalt dicht: zonder geldige sleutel of handtekening
+    stopt de scan, want dan weten we niet of de scanner echt van checkmijn.ai komt."""
+    sleutel = sleutel or HIER / "public-key.pem"
     h = m.get("handtekening")
     if not sleutel.exists() or "BEGIN PUBLIC KEY" not in sleutel.read_text():
-        return "niet gecontroleerd (nog geen publieke sleutel in de action)"
-    if not h:
+        sys.exit("checkmijn.ai: geen publieke sleutel gevonden in de action (action/public-key.pem). "
+                 "Zonder sleutel kan de herkomst van de scanner niet gecontroleerd worden. Gestopt.")
+    if not h or not isinstance(h, dict) or not h.get("waarde"):
         sys.exit("checkmijn.ai: het manifest is niet ondertekend. Gestopt.")
     from cryptography.hazmat.primitives import serialization
-    pub = serialization.load_pem_public_key(sleutel.read_bytes())
+    from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+    try:
+        pub = serialization.load_pem_public_key(sleutel.read_bytes())
+    except Exception:
+        sys.exit("checkmijn.ai: de publieke sleutel in de action is niet leesbaar. Gestopt.")
+    if not isinstance(pub, Ed25519PublicKey):
+        sys.exit("checkmijn.ai: de publieke sleutel in de action is geen Ed25519-sleutel. Gestopt.")
     data = json.dumps({k: v for k, v in m.items() if k != "handtekening"}, sort_keys=True, ensure_ascii=False,
                       separators=(",", ":")).encode()
     try:
