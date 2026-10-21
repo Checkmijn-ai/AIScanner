@@ -15,7 +15,7 @@
 {% block inhoud %}
 {% call m.kop("Nieuws", "AI en security, elke dag", "Het belangrijkste nieuws over AI-security, cyberincidenten en AI, uit Nederlandse, Vlaamse en Engelstalige bronnen. Drie keer per dag bijgewerkt. Hetzelfde nieuws uit meerdere bronnen zie je maar één keer.") %}
 {{ m.nieuwsbrief_form("kop", NB_ACTIEF) }}
-<p class="zacht klein nieuwsstand">{% if bijgewerkt %}<span class="stip" aria-hidden="true"></span>Bijgewerkt {{ bijgewerkt }} · elke dag rond 07:10, 13:10 en 18:10{% else %}Het eerste nieuws wordt opgehaald.{% endif %} · <a href="/nieuws.xml">RSS-feed</a></p>
+<p class="zacht klein nieuwsstand">{% if bijgewerkt %}<span class="stip" aria-hidden="true"></span>Bijgewerkt {{ bijgewerkt }} · beveiligingsnieuws elk uur, de rest rond 07:10, 13:10 en 18:10{% else %}Het eerste nieuws wordt opgehaald.{% endif %} · <a href="/nieuws.xml">RSS-feed</a></p>
 {% endcall %}
 
 <section class="wrap sectie nieuws" data-ai="{{ 'ok' if ai_status.ok else 'uit' }}" data-ai-fout="{{ ai_status.fout }}">

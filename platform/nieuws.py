@@ -47,13 +47,13 @@ VOORRANG = {"ai-security": 0, "cyber": 1, "ai": 2}
 #   tech         algemene techbron: alleen berichten over AI of beveiliging
 BRONNEN = [
     # Cybersecurity
-    {"naam": "Security.nl", "url": "https://www.security.nl/rss/headlines.xml", "taal": "nl", "soort": "cyber"},
-    {"naam": "NCSC", "url": "https://feeds.ncsc.nl/nieuws.rss", "taal": "nl", "soort": "cyber"},
-    {"naam": "BleepingComputer", "url": "https://www.bleepingcomputer.com/feed/", "taal": "en", "soort": "cyber"},
-    {"naam": "The Hacker News", "url": "https://feeds.feedburner.com/TheHackersNews", "taal": "en", "soort": "cyber"},
+    {"naam": "Security.nl", "url": "https://www.security.nl/rss/headlines.xml", "taal": "nl", "soort": "cyber", "snel": True},
+    {"naam": "NCSC", "url": "https://feeds.ncsc.nl/nieuws.rss", "taal": "nl", "soort": "cyber", "snel": True},
+    {"naam": "BleepingComputer", "url": "https://www.bleepingcomputer.com/feed/", "taal": "en", "soort": "cyber", "snel": True},
+    {"naam": "The Hacker News", "url": "https://feeds.feedburner.com/TheHackersNews", "taal": "en", "soort": "cyber", "snel": True},
     {"naam": "Krebs on Security", "url": "https://krebsonsecurity.com/feed/", "taal": "en", "soort": "cyber"},
-    {"naam": "The Record", "url": "https://therecord.media/feed", "taal": "en", "soort": "cyber"},
-    {"naam": "Dark Reading", "url": "https://www.darkreading.com/rss.xml", "taal": "en", "soort": "cyber"},
+    {"naam": "The Record", "url": "https://therecord.media/feed", "taal": "en", "soort": "cyber", "snel": True},
+    {"naam": "Dark Reading", "url": "https://www.darkreading.com/rss.xml", "taal": "en", "soort": "cyber", "snel": True},
     # Algemene tech (alleen AI of beveiliging)
     {"naam": "Tweakers", "url": "https://tweakers.net/feeds/nieuws.xml", "taal": "nl", "soort": "tech"},
     {"naam": "NOS Tech", "url": "https://feeds.nos.nl/nosnieuwstech", "taal": "nl", "soort": "tech"},
@@ -68,7 +68,7 @@ BRONNEN = [
     {"naam": "Google DeepMind", "url": "https://deepmind.google/blog/rss.xml", "taal": "en", "soort": "ai"},
     {"naam": "Hugging Face", "url": "https://huggingface.co/blog/feed.xml", "taal": "en", "soort": "ai"},
     # AI-security
-    {"naam": "SecurityWeek AI", "url": "https://www.securityweek.com/category/artificial-intelligence/feed/", "taal": "en", "soort": "ai-security"},
+    {"naam": "SecurityWeek AI", "url": "https://www.securityweek.com/category/artificial-intelligence/feed/", "taal": "en", "soort": "ai-security", "snel": True},
     {"naam": "Embrace The Red", "url": "https://embracethered.com/blog/index.xml", "taal": "en", "soort": "ai-security"},
     {"naam": "Simon Willison", "url": "https://simonwillison.net/atom/everything/", "taal": "en", "soort": "ai-security", "filter": "sec"},
 ]
@@ -487,7 +487,8 @@ def voeg_toe(d: dict, bron: dict, ruw: list[dict], nu: datetime) -> int:
     return nieuw
 
 
-def ophalen(pad: Path = PAD, bronnen: list[dict] = BRONNEN, haler=haal, met_ai: bool = True) -> dict:
+def ophalen(pad: Path = PAD, bronnen: list[dict] = BRONNEN, haler=haal, met_ai: bool = True, alleen_snel: bool = False) -> dict:
+    """Haalt alle bronnen op, of met alleen_snel=True alleen de beveiligingsbronnen (elk uur)."""
     nu = datetime.now(timezone.utc)
     d = laad(pad)
     d.setdefault("bronnen", {})
@@ -508,10 +509,11 @@ def ophalen(pad: Path = PAD, bronnen: list[dict] = BRONNEN, haler=haal, met_ai: 
         it["dichtbij"] = it.get("dichtbij") or dichtbij(it["titel"], it.get("samenvatting", ""))
         bewaard.append(it)
     d["items"] = bewaard
+    nu_halen = [b for b in bronnen if b.get("snel")] if alleen_snel else bronnen
     with ThreadPoolExecutor(max_workers=8) as pool:
-        resultaten = list(pool.map(lambda b: haler(b, d["bronnen"]), bronnen))
+        resultaten = list(pool.map(lambda b: haler(b, d["bronnen"]), nu_halen))
     # Vaste volgorde (de lijst hierboven), zodat dezelfde feeds altijd hetzelfde resultaat geven.
-    for bron, (ruw, st) in zip(bronnen, resultaten):
+    for bron, (ruw, st) in zip(nu_halen, resultaten):
         st["nieuw"] = voeg_toe(d, bron, ruw, nu) if ruw else 0
         d["bronnen"][bron["naam"]] = st
     namen_nu = {b["naam"] for b in bronnen}
@@ -534,8 +536,20 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--toon", action="store_true", help="niets ophalen, alleen tonen wat er is")
     ap.add_argument("--pad", type=Path, default=PAD)
+    ap.add_argument("--snel", action="store_true", help="alleen de beveiligingsbronnen (de ronde van elk uur)")
     a = ap.parse_args(argv)
-    d = laad(a.pad) if a.toon else ophalen(a.pad)
+    if a.toon:
+        d = laad(a.pad)
+    else:
+        import fcntl
+        a.pad.parent.mkdir(parents=True, exist_ok=True)
+        with open(a.pad.with_suffix(".lock"), "w") as slot:
+            try:
+                fcntl.flock(slot, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError:
+                print("Er loopt al een ophaalronde; deze slaat over.")
+                return 0
+            d = ophalen(a.pad, alleen_snel=a.snel)
     tel = {t: sum(1 for i in d["items"] if i["tab"] == t) for t in TABS}
     print(f"bijgewerkt {d.get('bijgewerkt')}: " + ", ".join(f"{TABS[t]} {n}" for t, n in tel.items()))
     for naam, st in d.get("bronnen", {}).items():

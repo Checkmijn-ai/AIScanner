@@ -94,6 +94,15 @@ d = nw.ophalen(nw.PAD, BRONNEN, nep_haal)
 assert len(d["items"]) == n
 assert d["bronnen"]["Kapot"]["ok"] is False and d["bronnen"]["Security.nl"]["ok"] is True
 
+# 6b. De ronde van elk uur haalt alleen de snelle (beveiligings)bronnen op, en verliest niets van de rest
+gehaald = []
+def tel_haal(bron, staat):
+    gehaald.append(bron["naam"])
+    return nep_haal(bron, staat)
+snel = [dict(b, snel=True) if b["naam"] == "Security.nl" else b for b in BRONNEN]
+d2 = nw.ophalen(nw.PAD, snel, tel_haal, met_ai=False, alleen_snel=True)
+assert gehaald == ["Security.nl"] and len(d2["items"]) == n and "BleepingComputer" in d2["bronnen"], gehaald
+
 # 7. Geen entiteiten (billion laughs)
 try:
     nw.lees_feed(b'<?xml version="1.0"?><!DOCTYPE x [<!ENTITY a "aaaa">]><rss><channel></channel></rss>')
