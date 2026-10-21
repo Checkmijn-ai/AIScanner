@@ -1,0 +1,95 @@
+{% extends "site/basis.html" %}
+{% import "site/macros.html" as m %}
+{% block inhoud %}
+{{ m.kop("Wat je krijgt", "Precies weten wat je koopt", "De scanner is gratis en open source. Je betaalt voor het uitvoeren: een partner die scant en uitlegt, een keurder die meekijkt, een pentester die aanvalt. Per niveau zie je hier wat je krijgt en wat het ongeveer kost.") }}
+<section class="wrap sectie">
+  <h2 class="mt0">Scannen</h2>
+  <div class="pakketten twee">
+    <article class="kaart pakket">
+      <p class="oog">Niveau 1 · zelf</p>
+      <h2 class="mt0">Basisscan</h2>
+      <p class="prijs">Gratis</p>
+      <ul>
+        <li>De 45 checks van niveau 1, automatisch</li>
+        <li>Opgemaakt rapport met grafieken, versleuteld via je persoonlijke link</li>
+        <li>Herstelhint bij elke bevinding</li>
+        <li>Verloop van je scores bij elke wijziging</li>
+        <li>Scorepagina en badge (30 dagen actueel)</li>
+        <li>Hoogste letter: B</li>
+      </ul>
+      <a class="knop licht" href="/hoe-het-werkt">Zelf scannen</a>
+    </article>
+    <article class="kaart pakket">
+      <p class="oog">Niveau 1 · met partner</p>
+      <h2 class="mt0">Basisscan-abonnement</h2>
+      <p class="prijs">€750 <span>per app per jaar</span></p>
+      <ul>
+        <li>Alles van de gratis basisscan</li>
+        <li>Een regiopartner zet de scan voor je op en draait hem</li>
+        <li>Een uitleggesprek over de uitslag, in gewone taal</li>
+        <li>Scorepagina die het hele jaar actueel blijft</li>
+        <li>Optioneel: <b>herstelpakket "Van G naar B"</b>, vanaf €1.500</li>
+      </ul>
+      <a class="knop licht" href="/contact">Vraag een partner</a>
+    </article>
+  </div>
+  <h2>Keuren</h2>
+  <div class="pakketten drie">
+    <article class="kaart pakket uitgelicht">
+      <p class="oog">Niveau 2 · pilot</p>
+      <h2 class="mt0">Gekeurd</h2>
+      <p class="prijs">vanaf €5.700 <span>per app, 12 maanden geldig</span></p>
+      <ul>
+        <li>106 verplichte checks, plus optionele</li>
+        <li>Een erkende keurder: ±16 tot 29 uur werk</li>
+        <li>Testen of de app echt werkt: de kritieke functies, foute invoer, rechten</li>
+        <li>14 gerichte aanvalstests en een scan van de draaiende app</li>
+        <li>Rapport voor het management en voor je IT, met bewijs per check</li>
+        <li>Beslissing door een tweede persoon (vier ogen)</li>
+        <li>Scorepagina "Gekeurd", een A is mogelijk</li>
+        <li>Automatische scan bij elke release</li>
+      </ul>
+      <a class="knop" href="/contact">Word pilotklant</a>
+    </article>
+    <article class="kaart pakket">
+      <p class="oog">Niveau 3 · pilot</p>
+      <h2 class="mt0">Gekeurd Plus</h2>
+      <p class="prijs">vanaf €24.000 <span>per app, 12 maanden geldig</span></p>
+      <ul>
+        <li>Alles van niveau 2, met 258 verplichte checks</li>
+        <li>Handmatige pentest, vanaf 4 dagen, plus hertest</li>
+        <li>Steekproef in de code en een interview met het team</li>
+        <li>Dreigingsmodel en architectuur nagekeken</li>
+        <li>Voor aanbestedingen, NIS2-klanten en veel persoonsgegevens</li>
+      </ul>
+      <a class="knop licht" href="/contact">Plan een gesprek</a>
+    </article>
+    <article class="kaart pakket">
+      <p class="oog">Niveau 4 · vanaf juli 2028</p>
+      <h2 class="mt0">Kritiek</h2>
+      <p class="prijs">vanaf €45.000 <span>per app, 12 maanden geldig</span></p>
+      <ul>
+        <li>Alles van niveau 3, met 280 verplichte checks</li>
+        <li>Volledige review van de kritieke code</li>
+        <li>Pentest op aanvalsscenario's, vanaf 8 dagen, na elke grote release</li>
+        <li>Twee senior keurders, halfjaarlijkse steekproef</li>
+        <li>Versie-abonnement verplicht</li>
+        <li>Voor zorg, overheid, financiële sector (DORA) en hoog-risico-AI</li>
+      </ul>
+      <a class="knop licht" href="/contact">Neem contact op</a>
+    </article>
+  </div>
+
+  <h2>Extra</h2>
+  <div class="scroll"><table class="tabel">
+    <tbody>
+      <tr><th scope="row">Versie-abonnement</th><td>€350 per app per maand</td><td class="zacht">Automatische check bij elke release, een kwartaalrapport en bewaking van nieuwe lekken.</td></tr>
+      <tr><th scope="row">Herstelpakket "Van G naar B"</th><td>vanaf €1.500</td><td class="zacht">Een partner herstelt de bevindingen tot je op een B staat, tegen een vaste prijs.</td></tr>
+      <tr><th scope="row">Workshop "Veilig bouwen met AI"</th><td>€500 tot €1.500</td><td class="zacht">Voor teams en bureaus die met AI bouwen.</td></tr>
+      <tr><th scope="row">Pentest</th><td>op offerte</td><td class="zacht">De omvang hangt af van het aantal rollen, koppelingen en endpoints. We leggen de berekening vooraf vast.</td></tr>
+    </tbody>
+  </table></div>
+  <p class="zacht klein mt2">Alle prijzen zijn indicatief en exclusief btw. Ze gelden tijdens de pilots, en hangen af van de omvang van je app. Je krijgt altijd eerst een offerte met de vaste prijs. Wat elke check inhoudt, staat bij <a href="/wat-we-controleren">alle checks</a>.</p>
+  {{ m.let_op(DISCLAIMER) }}
+</section>
+{% endblock %}

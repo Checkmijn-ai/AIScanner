@@ -1,23 +1,24 @@
 # Licentie
 
-Copyright © 2026 checkmijn.ai. Alle rechten voorbehouden.
+Copyright © 2026 CheckMijn.AI
 
-De broncode staat openbaar **ter inzage**, zodat iedereen kan nagaan wat de scanner meet en hoe de score berekend wordt.
+**De scanner, de GitHub Action, de API en de website** zijn open source onder de **European Union Public Licence
+v. 1.2 (EUPL-1.2)**. De volledige, officiële tekst staat in [`LICENSE`](LICENSE) en in alle talen van de EU op
+https://interoperable-europe.ec.europa.eu/collection/eupl/eupl-text-eupl-12.
 
-**Het framework is vrij:** de beschrijvingen van de checks in `aiscan/data/checks.yaml` (nummer, omschrijving, normen
-en hint) vallen onder **CC BY 4.0**. Je mag ze gebruiken, ook als checklist in je eigen werk, met bronvermelding
-"checkmijn.ai".
+In gewone taal (de licentietekst zelf is bindend):
+- Je mag de software gebruiken, lezen, aanpassen en verspreiden, ook commercieel.
+- Verspreid je een aangepaste versie, of bied je ze aan als dienst via een netwerk, dan deel je de broncode van die
+  aanpassingen onder dezelfde licentie (of een verenigbare licentie die de EUPL noemt).
+- De software wordt geleverd zoals ze is, zonder garantie.
 
-Toegestaan, zonder vergoeding:
-- de scanner gebruiken om je eigen software of software in opdracht te scannen, ook via de GitHub Action;
-- de code lezen, nagaan en fouten melden.
+**De norm (de lijst van checks)** in `norm/checks.yaml` en `aiscan/data/checks.yaml` (nummer, omschrijving, normen,
+niveaus en hint) valt onder **CC BY 4.0**. Gebruik ze vrij, ook als checklist in je eigen werk, met bronvermelding
+"CheckMijn.AI".
 
-Niet toegestaan zonder schriftelijke toestemming:
-- de scanner of de berekening van de score aanbieden als eigen dienst of product;
-- de naam checkmijn.ai, het logo of de badge gebruiken voor een scan die niet met deze scanner is gedaan;
-- scores of badges namaken of wijzigen.
+**De naam en het logo CheckMijn.AI, de badge en (later) het keurmerk** vallen niet onder deze licenties. Je mag ze
+niet gebruiken voor een scan, keuring of dienst die niet door CheckMijn.AI of een erkende partner is uitgevoerd, en
+scores of badges niet namaken of wijzigen.
 
-Onderdelen van derden houden hun eigen licentie (zie NOTICE.md): de regels voor geheimen komen uit gitleaks (MIT), de
-lekkenindex uit de GitHub Advisory Database (CC-BY 4.0).
-
-De software wordt geleverd zoals ze is, zonder garantie.
+Onderdelen van derden houden hun eigen licentie (zie [`NOTICE.md`](NOTICE.md)): de regels voor geheimen komen uit
+gitleaks (MIT), de lekkenindex uit de GitHub Advisory Database (CC BY 4.0).

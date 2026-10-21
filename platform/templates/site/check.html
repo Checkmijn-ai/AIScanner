@@ -1,0 +1,46 @@
+{% extends "site/basis.html" %}
+{% import "site/macros.html" as m %}
+{% block inhoud %}
+<div class="paginakop"><div class="wrap">
+  <p class="oog"><a href="/wat-we-controleren#domein-{{ c.id[0] }}">{{ c.domein }}</a></p>
+  <h1 class="check-titel"><span class="id-groot">{{ c.id }}</span> {{ c.wat }}</h1>
+  {% if c.status == 'voorstel' %}<p><span class="label">Nieuw, voorstel voor de volgende versie van de norm</span></p>{% endif %}
+</div></div>
+<section class="wrap sectie">
+  <div class="rooster-2">
+    <div>
+      <h2 class="mt0">Waarom</h2>
+      <p class="zacht">{{ waarom }}</p>
+      <h2>Hoe we het controleren</h2>
+      <p class="zacht">Methode: {{ c.hoe }}</p>
+      <ul class="zacht">
+        {% if 'scan' in c.hoe %}<li><b>Scan:</b> volledig automatisch, met vaste regels. Dezelfde code geeft altijd dezelfde uitkomst.</li>{% endif %}
+        {% if 'analist' in c.hoe or 'keurder' in c.hoe %}<li><b>Keurder:</b> een erkende keurder bekijkt het bewijs of de plekken die de scan aanwijst, en legt het oordeel vast.</li>{% endif %}
+        {% if 'document' in c.hoe %}<li><b>Document:</b> we kijken na of het document bestaat en klopt met de code.</li>{% endif %}
+        {% if 'verklaring' in c.hoe %}<li><b>Verklaring:</b> de bouwer verklaart wat niet te meten is; de keurder doet een steekproef.</li>{% endif %}
+        {% if 'aanvalstest' in c.hoe %}<li><b>Aanvalstest:</b> een geautomatiseerde aanval op de draaiende app in een testomgeving.</li>{% endif %}
+        {% if 'pentest' in c.hoe %}<li><b>Pentest:</b> een pentester valt de app handmatig aan.</li>{% endif %}
+        {% if 'test' in c.hoe and 'aanvalstest' not in c.hoe and 'pentest' not in c.hoe %}<li><b>Test:</b> de keurder test het zelf, of kijkt de automatische tests en hun resultaten na.</li>{% endif %}
+      </ul>
+      {% if c.in_scanner and bron %}
+      <p>Deze check zit in de open-source scanner. <a href="{{ BRONCODE }}/blob/main/{{ bron[0] }}#L{{ bron[1] }}">Bekijk de code van deze check</a> ({{ bron[0] }}).</p>
+      {% endif %}
+      {% if c.herstel %}<h2>Zo los je een bevinding op</h2><p>{{ c.herstel }}</p>{% endif %}
+    </div>
+    <div>
+      <div class="kaart vlak">
+        <h3>Op welk niveau</h3>
+        <table class="tabel"><tbody>
+          {% for l in levels %}{% set s = c.niveaus['n' ~ l.n] %}
+          <tr><th scope="row">Niveau {{ l.n }} · {{ l.naam }}</th><td>{{ label[s] }} {{ s }}</td></tr>
+          {% endfor %}
+        </tbody></table>
+        <h3 class="mt2">Norm of wet</h3>
+        <p>{{ c.normen }}</p>
+        {% if c.ernst %}<h3>Standaardernst</h3><p><span class="ernst e-{{ c.ernst }}">{{ c.ernst }}</span> <span class="zacht klein">Een keurder mag hiervan afwijken, met een motivatie in het rapport.</span></p>{% endif %}
+      </div>
+    </div>
+  </div>
+  <p class="mt2"><a href="/wat-we-controleren">← Alle checks</a></p>
+</section>
+{% endblock %}

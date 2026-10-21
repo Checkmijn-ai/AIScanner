@@ -7,6 +7,7 @@ RUN pip install --no-cache-dir "flask>=3" "gunicorn>=22" "jinja2>=3.1" "pyyaml>=
 COPY aiscan ./aiscan
 COPY platform ./platform
 COPY voorbeelden ./voorbeelden
+COPY norm ./norm
 RUN mkdir -p /data && chown checkmijn /data
 USER checkmijn
 ENV AISCAN_DB=/data/checkmijn.db \

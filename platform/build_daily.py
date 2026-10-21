@@ -21,6 +21,7 @@ import datetime as dt
 import hashlib
 import importlib.util
 import json
+import os
 import shutil
 import subprocess
 import sys
@@ -59,6 +60,13 @@ else:
 
 def log(*a):
     print(dt.datetime.now().strftime("%H:%M:%S"), *a, flush=True)
+
+
+def _git_commit() -> str:
+    try:
+        return subprocess.run(["git", "-C", str(ROOT), "rev-parse", "HEAD"], capture_output=True, text=True).stdout.strip()
+    except Exception:  # noqa: BLE001
+        return ""
 
 
 def update_ghsa(ghsa: Path):
@@ -190,6 +198,8 @@ def main(argv=None):
         "catalogus": {"actief": pub_cat["aantal_actief"], "sha256": pub_cat["sha256"]}, "regelset": regelset,
         "api": a.api.rstrip("/"), "instructie": a.instructie or f"{site}/scan.md",
         "gebouwd": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
+        "bron": {"repository": "https://github.com/" + os.environ.get("GITHUB_REPOSITORY", "Checkmijn-ai/AIScanner"),
+                 "commit": os.environ.get("GITHUB_SHA") or _git_commit(), "licentie": "EUPL-1.2"},
     }
     onderteken(manifest, Path(a.sleutel) if a.sleutel else None)
 

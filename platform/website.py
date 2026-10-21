@@ -33,8 +33,10 @@ BRON: dict = {}  # api.py zet hier "tekst": functie die een bestand van de dagve
 DISCLAIMER = ("De scanscore is een uitslag van de scan op een bepaald moment. Ze is geen keurmerk, certificaat of "
               "garantie dat software veilig is.")
 
-NAV = [("hoe_het_werkt", "Hoe het werkt"), ("niveaus", "Niveaus"), ("controles", "Wat we controleren"),
-       ("score", "De score"), ("bureaus", "Voor bureaus"), ("opdrachtgevers", "Voor opdrachtgevers")]
+NAV = [("hoe_het_werkt", "Hoe het werkt"), ("controles", "Alle checks"), ("niveaus", "Niveaus"),
+       ("prijzen", "Wat je krijgt"), ("open_source", "Open source"), ("bureaus", "Voor bureaus")]
+BRONCODE = "https://github.com/Checkmijn-ai/AIScanner"
+HOSTING = "Hetzner, Helsinki (Finland, EU)"
 
 GRADES = [
     ("A", "Geen kritieke of hoge bevindingen, hoogstens 2 middelzware. Alleen vanaf niveau 2."),
@@ -103,6 +105,53 @@ def checks() -> list[dict]:
 
 
 @lru_cache(maxsize=1)
+def norm() -> dict:
+    """De volledige catalogus: alle checks van niveau 1 tot 4, plus de modules (norm/checks.yaml)."""
+    return yaml.safe_load((ROOT / "norm" / "checks.yaml").read_text(encoding="utf-8"))
+
+
+@lru_cache(maxsize=1)
+def bron_per_check() -> dict:
+    """Welk bestand van de scanner een check uitvoert: {"E-05": ("aiscan/checks/secrets.py", 37), ...}."""
+    import re
+    uit = {}
+    for f in sorted((ROOT / "aiscan" / "checks").glob("*.py")):
+        for nr, regel in enumerate(f.read_text(encoding="utf-8").splitlines(), 1):
+            for cid in re.findall(r'@check\("([A-Z]-\d+)"', regel):
+                uit.setdefault(cid, (f"aiscan/checks/{f.name}", nr))
+    return uit
+
+
+WAAROM = {
+    "A": "Wie niet weet wat er in zijn software zit en welke AI erin gebruikt wordt, kan geen risico's inschatten of melden. De CRA en de AI Act vragen die inventaris.",
+    "B": "Software die met AI gebouwd wordt, heeft eigen risico's: verzonnen pakketten, geheimen in agentbestanden, code die niemand nagelezen heeft.",
+    "C": "Onleesbare of slordige code verbergt fouten en maakt herstel duur. Ook achtergebleven bestanden lekken soms gegevens.",
+    "D": "Zonder automatische tests en beveiligingsscans in de pipeline glipt elke fout ongemerkt naar productie.",
+    "E": "De klassieke lekken: inloggen, rechten, injectie, geheimen en versleuteling. Hier gaat het in de praktijk het vaakst mis.",
+    "F": "Het grootste deel van moderne software bestaat uit pakketten van anderen. Eén lek daarin is een lek in jouw app.",
+    "G": "De CRA verplicht fabrikanten om kwetsbaarheden te melden en updates te leveren. Daarvoor moet het proces er zijn.",
+    "H": "Een AI-functie kan misleid worden (prompt injection), gegevens lekken of onverwacht duur worden.",
+    "I": "Persoonsgegevens vragen bescherming volgens de AVG: scheiding tussen klanten, bewaartermijnen, toestemming.",
+    "J": "Zonder documentatie kan niemand anders de software beheren, controleren of veilig overnemen.",
+    "K": "Wat je niet ziet, kun je niet herstellen: logging, monitoring en een plan voor als het misgaat.",
+    "L": "Software moet bruikbaar zijn voor iedereen. Voor overheden en vanaf 2025 voor veel webwinkels is toegankelijkheid verplicht.",
+    "O": "De website is vaak de eerste indruk en de eerste ingang voor aanvallers: TLS, cookies, e-mailbeveiliging en de wettelijke gegevens.",
+    "P": "Koppelingen met andere systemen zijn de deuren van je app. Elke deur heeft een slot en een logboek nodig.",
+    "Q": "Wie mag wat veranderen, en wie keurt het goed? Zonder afspraken hangt beveiliging af van toeval.",
+    "R": "Versiebeheer en vaste releases maken zichtbaar wat er in productie staat en wie wat veranderde.",
+    "S": "Mobiele apps bewaren gegevens op het toestel en praten met servers via het internet: dat vraagt eigen controles.",
+    "T": "Klassieke kwaliteitszorg: testen, foutenbeheer en acceptatie, ook als de code door AI geschreven is.",
+    "U": "Alles wat in de browser staat, kan iedereen lezen. Geheimen, tokens en scripts van derden horen daar niet zomaar.",
+    "W": "De databank en de opslag bevatten wat het meest waard is: gegevens van klanten. Die verdienen minimale rechten en versleuteling.",
+    "X": "Hosting en cloud: wie beheert wat, waar staan de gegevens, en zijn de beheeraccounts goed beveiligd?",
+    "Y": "Verouderde of onversleutelde protocollen zijn een open deur, ook als de app zelf goed gebouwd is.",
+    "Z": "Software moet ook over vijf jaar nog te beheren, over te dragen en betaalbaar te houden zijn.",
+}
+
+NIVEAU_LABEL = {"verplicht": "●", "als van toepassing": "◐", "optioneel": "○", "niet": "–"}
+
+
+@lru_cache(maxsize=1)
 def workflow() -> str:
     return (ROOT / "voorbeelden" / "checkmijn.yml").read_text(encoding="utf-8")
 
@@ -110,7 +159,7 @@ def workflow() -> str:
 @site.app_context_processor
 def _algemeen():
     return {"NAV": NAV, "DISCLAIMER": DISCLAIMER, "CONTACT": CONTACT, "SITE_URL": SITE_URL, "TEST": TEST,
-            "pad": request.path}
+            "pad": request.path, "BRONCODE": BRONCODE, "HOSTING": HOSTING}
 
 
 def pagina(sjabloon: str, titel: str, beschrijving: str, **kw):
@@ -139,11 +188,39 @@ def niveaus():
 
 @site.get("/wat-we-controleren")
 def controles():
-    cs = checks()
+    n = norm()
+    cs = n["checks"]
     domeinen = sorted({c["domein"] for c in cs})
-    return pagina("controles.html", "Wat we controleren",
-                  "Alle 45 checks van niveau 1, gekoppeld aan CRA, AVG, AI Act, NIS2, OWASP en ISO.", checks=cs,
-                  domeinen=domeinen)
+    tel = {k: sum(1 for c in cs if c["niveaus"][k] == "verplicht") for k in ("n1", "n2", "n3", "n4")}
+    return pagina("controles.html", "Alle checks", f"Alle {len(cs)} checks van CheckMijn.AI, van niveau 1 tot 4: wat we "
+                  "controleren, hoe, en volgens welke norm of wet.", checks=cs, domeinen=domeinen, tel=tel,
+                  modules=n.get("modules", []), waarom=WAAROM, label=NIVEAU_LABEL, bron=bron_per_check())
+
+
+@site.get("/check/<cid>")
+def check_detail(cid):
+    cs = {c["id"]: c for c in norm()["checks"]}
+    c = cs.get(cid.upper())
+    if not c:
+        abort(404)
+    if cid != c["id"]:
+        from flask import redirect
+        return redirect(url_for("site.check_detail", cid=c["id"]), 301)
+    return pagina("check.html", f"{c['id']} · {c['wat'][:60]}", c["wat"], c=c, waarom=WAAROM.get(c["id"][0], ""),
+                  bron=bron_per_check().get(c["id"]), label=NIVEAU_LABEL, levels=LEVELS)
+
+
+@site.get("/open-source")
+def open_source():
+    return pagina("open-source.html", "Open source en transparant", "De scanner is open source (EUPL-1.2): lees "
+                  "precies wat hij doet, controleer elke dagversie zelf, en zie wat er wel en niet naar buiten gaat.",
+                  bron=bron_per_check(), n_checks=len(norm()["checks"]))
+
+
+@site.get("/wat-je-krijgt")
+def prijzen():
+    return pagina("prijzen.html", "Wat je krijgt", "Per niveau precies wat je krijgt en wat het ongeveer kost.",
+                  levels=LEVELS)
 
 
 @site.get("/score-uitleg")
@@ -222,6 +299,11 @@ def rapport(rid):
     return pagina("rapport.html", "Scanrapport", "Versleuteld scanrapport.", rid=rid)
 
 
+@site.get("/norm/checks.yaml")
+def norm_bestand():
+    return send_from_directory(ROOT / "norm", "checks.yaml", mimetype="text/plain; charset=utf-8")
+
+
 @site.get("/.well-known/security.txt")
 def security_txt():
     tekst = ("Contact: mailto:security@checkmijn.ai\nExpires: 2027-10-20T00:00:00.000Z\nPreferred-Languages: nl, en\n"
@@ -239,10 +321,11 @@ def robots():
 
 @site.get("/sitemap.xml")
 def sitemap():
-    paden = ["/", "/hoe-het-werkt", "/niveaus", "/wat-we-controleren", "/score-uitleg", "/waarom", "/bureaus",
+    paden = ["/", "/hoe-het-werkt", "/niveaus", "/wat-we-controleren", "/wat-je-krijgt", "/open-source", "/score-uitleg", "/waarom", "/bureaus",
              "/opdrachtgevers", "/vertrouwen", "/framework", "/vragen", "/contact", "/scan"]
     xml = ('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-           + "".join(f"  <url><loc>{SITE_URL}{p}</loc></url>\n" for p in paden) + "</urlset>\n")
+           + "".join(f"  <url><loc>{SITE_URL}{p}</loc></url>\n" for p in paden)
+           + "".join(f"  <url><loc>{SITE_URL}/check/{c['id']}</loc></url>\n" for c in norm()["checks"]) + "</urlset>\n")
     return Response(xml, mimetype="application/xml")
 
 

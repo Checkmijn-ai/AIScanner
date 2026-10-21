@@ -1,0 +1,3747 @@
+versie: 0.2 (concept)
+stand: '2026-10-21'
+licentie: CC BY 4.0
+checks:
+- id: A-01
+  domein: A. Product, scope en inventaris
+  wat: Product, versielijn, scope en wat buiten scope valt zijn beschreven; de gekeurde versie is herkenbaar (versienummer in build en app)
+  hoe: document + keurder
+  normen: ISO/IEC 17067; CRA bijlage II
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: A-02
+  domein: A. Product, scope en inventaris
+  wat: 'Architectuuroverzicht: componenten, datastromen, externe koppelingen, hosting en regio'
+  hoe: document + keurder
+  normen: ISO/IEC 27034; CRA bijlage VII
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: A-03
+  domein: A. Product, scope en inventaris
+  wat: SBOM in machineleesbaar formaat (SPDX of CycloneDX), automatisch bij de build gemaakt, minstens alle directe afhankelijkheden
+  hoe: scan
+  normen: CRA bijlage I deel II (1); ISO/IEC 5962
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Middel
+  herstel: Laat de pipeline bij elke build een SBOM maken, bv. met syft of @cyclonedx/cyclonedx-npm, en bewaar die bij de release.
+  module: sbom
+  in_scanner: true
+  status: actief
+- id: A-04
+  domein: A. Product, scope en inventaris
+  wat: 'AI-inventaris: welke AI-tools bij het bouwen gebruikt zijn (assistenten, agents, MCP-servers) en welke AI-modellen het product zelf gebruikt (aanbieder, versie, regio)'
+  hoe: scan + verklaring
+  normen: ISO/IEC 42001 bijlage A; AI Act art. 50
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: A-05
+  domein: A. Product, scope en inventaris
+  wat: Het gescande artefact (build of container) komt overeen met de aangeleverde broncode (hashvergelijking of reproduceerbare build), en de app toont in productie een build-ID die overeenkomt met de
+    gescande build
+  hoe: scan + analist
+  normen: SLSA
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: A-06
+  domein: A. Product, scope en inventaris
+  wat: 'Ondersteuningsperiode vastgelegd en publiek: tot wanneer komen er security-updates'
+  hoe: document
+  normen: CRA art. 13(8), bijlage II
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: A-07
+  domein: A. Product, scope en inventaris
+  wat: Benoemd aanspreekpunt voor de beveiliging van het product
+  hoe: document
+  normen: ISO/IEC 27001; CRA bijlage II
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: A-08
+  domein: A. Product, scope en inventaris
+  wat: 'Wettenscan: vastgesteld welke Europese wetten gelden (persoonsgegevens, AI, EU-markt, financiële klanten, consumenten, gebruikersinhoud, betalingen, overheid, clouddienst, verbonden product). Ook
+    vastgelegd: in welke EU-landen de app wordt aangeboden of gebruikt. Daaruit volgen de verplichte modules en landenprofielen'
+  hoe: document + keurder
+  normen: Tabblad Wetgeving
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: A-09
+  domein: A. Product, scope en inventaris
+  wat: 'AI-vermelding: vastgesteld of het product AI gebruikt (scan met vaste regels en verklaring van de bouwer); het rapport toont "AI: ja" of "AI: nee", met het hoogste autonomieniveau'
+  hoe: scan + verklaring
+  normen: AI Act art. 50; ISO/IEC 42001
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Laag
+  herstel: Vermeld in de documentatie of het product AI gebruikt en welk autonomieniveau (AI-1 tot AI-4).
+  module: ai
+  in_scanner: true
+  status: actief
+- id: B-01
+  domein: B. Bouwen met AI
+  wat: 'Beleid voor AI bij het ontwikkelen: welke tools mogen, voor welke code, welke gegevens nooit naar een tool gaan (klantdata, geheimen)'
+  hoe: document
+  normen: ISO/IEC 42001 bijlage A; NIST SP 800-218A
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: B-02
+  domein: B. Bouwen met AI
+  wat: 'Herkomst: AI-geschreven of AI-gewijzigde code is herkenbaar (commit-vermelding, label op de wijziging of toollogs), zodat de analist gericht steekproeven kan nemen'
+  hoe: scan + verklaring
+  normen: NIST SP 800-218A; ISO/IEC 5338
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: B-03
+  domein: B. Bouwen met AI
+  wat: 'Menselijke review: elke wijziging op de hoofdbranch is goedgekeurd door een mens die ze niet zelf of via de eigen agent schreef; branchbeveiliging staat aan'
+  hoe: scan + analist
+  normen: ISO/IEC 20246; ISO/IEC 27002 8.25, 8.32
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: B-04
+  domein: B. Bouwen met AI
+  wat: Codeeragents met schrijfrechten werken met minimale rechten, zonder toegang tot productiegeheimen en zonder automatisch samenvoegen zonder mens
+  hoe: keurder + verklaring
+  normen: OWASP Agentic ASI02, ASI03
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: B-05
+  domein: B. Bouwen met AI
+  wat: Agentconfiguratie in de repo (instructiebestanden, regels, MCP-configuratie, prompt- en agentlogs) bevat geen geheimen, geen klantgegevens en geen onveilige instructies zoals "sla tests over"
+  hoe: scan + analist
+  normen: OWASP Agentic ASI01, ASI04
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Hoog
+  herstel: Haal geheimen uit agentbestanden (gebruik omgevingsvariabelen), schrap instructies die tests, controles of bevestigingen overslaan, en pin MCP-servers op een vaste versie.
+  module: agent
+  in_scanner: true
+  status: actief
+- id: B-06
+  domein: B. Bouwen met AI
+  wat: 'Geen verzonnen of verdachte pakketten: elke afhankelijkheid bestaat in het officiële register, is niet pas geregistreerd en lijkt niet op een bekende naam'
+  hoe: scan
+  normen: OWASP A03:2025
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Kritiek
+  herstel: Verwijder kwaadaardige of verdachte pakketten, controleer de schrijfwijze tegen het officiële register en installeer opnieuw met een lockfile.
+  module: packages
+  in_scanner: true
+  status: actief
+- id: B-07
+  domein: B. Bouwen met AI
+  wat: 'Typische AI-patronen opgespoord: gedupliceerde blokken, dode code, aanroepen van functies of API''s die niet bestaan, inconsistente foutafhandeling, onnodige complexiteit. statische analyse met
+    vaste regels markeert, analist bevestigt'
+  hoe: scan + analist
+  normen: ISO/IEC 5055; ISO/IEC 25010
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: B-08
+  domein: B. Bouwen met AI
+  wat: 'Licentiebesmetting: AI-uitvoer die letterlijk overeenkomt met bestaande open-sourcecode wordt opgespoord en de licentie is verenigbaar'
+  hoe: scan
+  normen: ISO/IEC 5230
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: B-09
+  domein: B. Bouwen met AI
+  wat: AI-codeertools zijn zakelijke versies met afspraken over bewaartermijn en geen training op de code
+  hoe: verklaring + document
+  normen: ISO/IEC 42001 bijlage A; ISO/IEC 27036
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: B-10
+  domein: B. Bouwen met AI
+  wat: 'Eigenaarschap: minstens één persoon kan de architectuur en de kritieke code uitleggen zonder AI (kort interview met de keurder)'
+  hoe: keurder
+  normen: AI Act art. 4 (AI-geletterdheid); ISO/IEC 42001 bijlage A
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: B-11
+  domein: B. Bouwen met AI
+  wat: 'Geen schijnfunctionaliteit: knoppen, instellingen, validaties en beveiligingscontroles doen wat ze beloven; geen stubs of vaste antwoorden ("return true", lege handlers, nepdata) in productiecode'
+  hoe: scan + analist
+  normen: ISO/IEC 25010:2023 (functionele juistheid); OWASP ASVS 5.0
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: C-01
+  domein: C. Codekwaliteit en onderhoudbaarheid
+  wat: Statische analyse zonder kritieke of hoge bevindingen op de vier kenmerken van ISO/IEC 5055
+  hoe: scan
+  normen: ISO/IEC 5055
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Hoog
+  herstel: Vermijd eval en new Function; gebruik veilige parsers (yaml.safe_load, JSON), valideer bestandspaden tegen een vaste map en zet externe entiteiten in XML-parsers uit.
+  module: code
+  in_scanner: true
+  status: actief
+- id: C-02
+  domein: C. Codekwaliteit en onderhoudbaarheid
+  wat: 'Complexiteit: het aandeel functies boven de drempel (cyclomatische of cognitieve complexiteit) blijft onder de norm'
+  hoe: scan
+  normen: ISO/IEC 25010; ISO/IEC 25023
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: C-03
+  domein: C. Codekwaliteit en onderhoudbaarheid
+  wat: 'Duplicatie onder de drempel (voorstel: minder dan 5% gedupliceerde regels)'
+  hoe: scan
+  normen: ISO/IEC 25023
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: C-04
+  domein: C. Codekwaliteit en onderhoudbaarheid
+  wat: 'Geen dode code: ongebruikte functies, klassen en bestanden, uitgecommentarieerde blokken, en geen open TODO''s in beveiligingskritieke delen'
+  hoe: scan
+  normen: ISO/IEC 5055
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: C-05
+  domein: C. Codekwaliteit en onderhoudbaarheid
+  wat: 'Duidelijke structuur: modules met afhankelijkheden in één richting; codeerstandaard vastgelegd en afgedwongen met een linter in de pipeline'
+  hoe: scan + analist
+  normen: ISO/IEC 25010 (modulariteit); ISO/IEC 27002 8.28
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: C-06
+  domein: C. Codekwaliteit en onderhoudbaarheid
+  wat: 'Foutafhandeling: fouten worden niet ingeslikt, gebruikers zien geen stacktraces, gedrag bij uitzonderingen is bepaald'
+  hoe: scan + analist
+  normen: OWASP A10:2025
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Middel
+  herstel: Log fouten in plaats van ze in te slikken, toon gebruikers een algemene foutmelding zonder stacktrace en zet debugmodus uit in productie.
+  module: code
+  in_scanner: true
+  status: actief
+- id: C-07
+  domein: C. Codekwaliteit en onderhoudbaarheid
+  wat: Het project bouwt uit een schone checkout met één gedocumenteerde opdracht; versies zijn vastgezet in een lockfile
+  hoe: scan
+  normen: ISO/IEC 25010 (flexibiliteit); SLSA
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Middel
+  herstel: Commit een lockfile en documenteer in de README hoe je het project bouwt (npm ci, pip install -r ...).
+  module: build
+  in_scanner: true
+  status: actief
+- id: C-08
+  domein: C. Codekwaliteit en onderhoudbaarheid
+  wat: 'Leesbaarheid: de keurder leest 3–5 kritieke modules (inloggen, rechten, betalingen, data-export) op begrijpelijkheid en naamgeving'
+  hoe: keurder
+  normen: ISO/IEC 20246
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: C-09
+  domein: C. Codekwaliteit en onderhoudbaarheid
+  wat: Bekende technische schuld staat op een lijst met prioriteit
+  hoe: document
+  normen: ISO/IEC 25010
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: C-10
+  domein: C. Codekwaliteit en onderhoudbaarheid
+  wat: 'Naamgeving: variabelen, functies en klassen volgen een vaste conventie en zeggen wat ze doen; geen nietszeggende namen (tmp, data2, x) buiten korte lussen'
+  hoe: scan + analist
+  normen: ISO/IEC 25010 (analyseerbaarheid)
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: C-11
+  domein: C. Codekwaliteit en onderhoudbaarheid
+  wat: 'Commentaar: publieke functies en API''s gedocumenteerd, commentaar legt het waarom uit, geen verouderd of misleidend commentaar (de analist vergelijkt in een steekproef commentaar met code)'
+  hoe: scan + analist
+  normen: ISO/IEC 25010 (analyseerbaarheid)
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: C-12
+  domein: C. Codekwaliteit en onderhoudbaarheid
+  wat: 'Omvang onder de drempels: lengte van methodes, klassen en bestanden, aantal parameters, nestingsdiepte'
+  hoe: scan
+  normen: ISO/IEC 25023; ISO/IEC 5055
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: C-13
+  domein: C. Codekwaliteit en onderhoudbaarheid
+  wat: 'Geen blokkerende of kritieke code smells: ongebruikte variabelen en imports, magische getallen, lege catch-blokken, hardgecodeerde URL''s of configuratie, verouderde (deprecated) API''s. Lagere
+    ernst staat in het rapport'
+  hoe: scan
+  normen: ISO/IEC 5055
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Laag
+  herstel: Vervang verouderde API's, haal hardgecodeerde adressen naar configuratie en los TODO's in beveiligingscode op.
+  module: code
+  in_scanner: true
+  status: actief
+- id: C-14
+  domein: C. Codekwaliteit en onderhoudbaarheid
+  wat: Opmaak consistent en automatisch afgedwongen met een formatter in de pipeline
+  hoe: scan
+  normen: ISO/IEC 25010 (onderhoudbaarheid)
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: C-15
+  domein: C. Codekwaliteit en onderhoudbaarheid
+  wat: 'Kwaliteitsdrempel (quality gate) op nieuwe code: geen nieuwe kritieke issues en voldoende testdekking op elke wijziging, anders geen merge'
+  hoe: scan
+  normen: ISO/IEC 27002 8.25
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: C-16
+  domein: C. Codekwaliteit en onderhoudbaarheid
+  wat: 'Technische-schuldratio onder de drempel (voorstel: onderhoudbaarheidsscore A of B, te kalibreren)'
+  hoe: scan
+  normen: ISO/IEC 25023
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: C-17
+  domein: C. Codekwaliteit en onderhoudbaarheid
+  wat: 'Gevoelige plekken die de analyse markeert (security hotspots: cryptografie, reguliere expressies, deserialisatie, bestandspaden) zijn door een mens beoordeeld'
+  hoe: scan + analist
+  normen: ISO/IEC 5055; OWASP ASVS 5.0
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: C-18
+  domein: C. Codekwaliteit en onderhoudbaarheid
+  wat: Geen uitgeschakelde of overgeslagen tests zonder vermelde reden (AI-agents schakelen falende tests soms uit)
+  hoe: scan
+  normen: ISO/IEC/IEEE 29119
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: C-19
+  domein: C. Codekwaliteit en onderhoudbaarheid
+  wat: 'Geen ongebruikte afhankelijkheden: elk pakket in het manifest wordt echt gebruikt (ongebruikte pakketten zijn onnodig aanvalsoppervlak)'
+  hoe: scan
+  normen: ISO/IEC 5055; CRA bijlage I (2)(j)
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Laag
+  herstel: Verwijder pakketten die niet gebruikt worden uit package.json of requirements.txt.
+  module: packages
+  in_scanner: true
+  status: actief
+- id: C-20
+  domein: C. Codekwaliteit en onderhoudbaarheid
+  wat: 'Geen achtergebleven rommel in repository en artefact: back-upbestanden (.bak, .old, .orig), database-dumps, testdata met echte gegevens, voorbeeld- en democode, tijdelijke bestanden van AI-agents,
+    gecommitte buildoutput'
+  hoe: scan
+  normen: ISO/IEC 27002 8.4; OWASP WSTG-CONF-04
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Hoog
+  herstel: Verwijder .env, dumps, sleutelbestanden, back-ups, agentgeschiedenis en buildoutput uit de repository en zet ze in .gitignore; trek gelekte geheimen in.
+  module: hygiene
+  in_scanner: true
+  status: actief
+- id: C-21
+  domein: C. Codekwaliteit en onderhoudbaarheid
+  wat: 'Opruimbeleid: feature flags, tijdelijke codepaden en oude branches hebben een eigenaar en einddatum; wat afgelopen is, wordt verwijderd'
+  hoe: scan + keurder
+  normen: ISO/IEC 25010:2023 (onderhoudbaarheid)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: optioneel
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: D-01
+  domein: D. Hoe de bouwer test
+  wat: 'Teststrategie beschreven: welke niveaus (unit, integratie, end-to-end), wat niet getest wordt en waarom'
+  hoe: document
+  normen: ISO/IEC/IEEE 29119-2, 29119-3
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: D-02
+  domein: D. Hoe de bouwer test
+  wat: Tests draaien automatisch bij elke wijziging en een falende test blokkeert de release
+  hoe: scan
+  normen: ISO/IEC 27002 8.29
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Middel
+  herstel: Laat de pipeline tests draaien bij elke push en pull request, zonder continue-on-error of || true.
+  module: ci
+  in_scanner: true
+  status: actief
+- id: D-03
+  domein: D. Hoe de bouwer test
+  wat: 'Codedekking gemeten, met een minimum voor kritieke modules (voorstel: 70% van de regels in inloggen, rechten en betalingen)'
+  hoe: scan
+  normen: ISO/IEC/IEEE 29119-4
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: D-04
+  domein: D. Hoe de bouwer test
+  wat: 'Mutatietest op kritieke modules: tests vangen opzettelijk ingevoerde fouten (voorstel: mutatiescore minstens 60%); ontmaskert ook tests die alleen de eigen code bevestigen, zoals tests die in dezelfde
+    AI-sessie als de code zijn geschreven'
+  hoe: scan
+  normen: ISO/IEC/IEEE 29119-4
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: D-05
+  domein: D. Hoe de bouwer test
+  wat: 'Negatieve beveiligingstests: inloggen, rechten en invoervalidatie (bv. gebruiker A kan de gegevens van gebruiker B niet zien)'
+  hoe: scan + analist
+  normen: OWASP ASVS 5.0; ISO/IEC 27002 8.29
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: D-06
+  domein: D. Hoe de bouwer test
+  wat: Statische beveiligingsanalyse en afhankelijkheidsscan in de pipeline, met een drempel die de release blokkeert
+  hoe: scan
+  normen: NIST SP 800-218; ISO/IEC 27002 8.25
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Middel
+  herstel: Voeg een statische beveiligingsanalyse (bv. CodeQL of Opengrep) en een scan van afhankelijkheden (bv. npm audit --audit-level=high of osv-scanner) toe aan de pipeline, met een drempel die faalt.
+  module: ci
+  in_scanner: true
+  status: actief
+- id: D-07
+  domein: D. Hoe de bouwer test
+  wat: Geautomatiseerde scan van de draaiende applicatie in een testomgeving (DAST)
+  hoe: scan
+  normen: ISO/IEC 27002 8.29
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: D-08
+  domein: D. Hoe de bouwer test
+  wat: Geen echte persoonsgegevens in test- en ontwikkelomgevingen, tenzij gepseudonimiseerd
+  hoe: verklaring + keurder
+  normen: ISO/IEC 27002 8.33; AVG art. 25
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: D-09
+  domein: D. Hoe de bouwer test
+  wat: Testresultaten per release bewaard
+  hoe: document
+  normen: ISO/IEC 25051; ISO/IEC/IEEE 29119-3
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: D-10
+  domein: D. Hoe de bouwer test
+  wat: 'Handmatige pentest in de laatste 12 maanden door een onafhankelijke, gekwalificeerde tester (bv. CREST of OSCP): web, API''s, inloggen, rechten en bedrijfslogica; mobiele apps apart'
+  hoe: pentest
+  normen: CRA bijlage I deel II (3); OWASP WSTG, MASTG
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: D-11
+  domein: D. Hoe de bouwer test
+  wat: Prestatie- en belastingtest voor kritieke functies
+  hoe: document
+  normen: ISO/IEC 25010 (prestatie-efficiëntie)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: optioneel
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: D-12
+  domein: D. Hoe de bouwer test
+  wat: 'Extern aanvalsoppervlak gescand: alle domeinen, subdomeinen, open poorten en publiek bereikbare diensten van de app in kaart gebracht en getest op bekende zwakheden (externe kwetsbaarheidsscan;
+    geen pentest)'
+  hoe: scan
+  normen: CRA I (2)(j); ISO/IEC 27002 8.8
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Hoog
+  herstel: Sluit poorten die niet publiek moeten zijn met een firewall of security group; databanken en beheer alleen via VPN of privénetwerk.
+  module: live
+  in_scanner: true
+  status: actief
+- id: D-13
+  domein: D. Hoe de bouwer test
+  wat: Hertest na de pentest bevestigt dat kritieke en hoge bevindingen echt opgelost zijn
+  hoe: pentest
+  normen: CRA I deel II (3)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: D-14
+  domein: D. Hoe de bouwer test
+  wat: 'Kernfuncties werken: de kritieke functies doen wat de beschrijving van het product belooft, van begin tot eind'
+  hoe: keurder (test) + document
+  normen: ISO/IEC 25010 (functionele geschiktheid)
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Hoog
+  in_scanner: false
+  status: voorstel
+- id: D-15
+  domein: D. Hoe de bouwer test
+  wat: 'Validaties werken op de server: foute, ontbrekende, te lange en kwaadwillige invoer wordt door de server geweigerd, niet alleen in het scherm'
+  hoe: keurder (test) + aanvalstest
+  normen: OWASP ASVS V5; ISO/IEC 27002 8.26
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Hoog
+  in_scanner: false
+  status: voorstel
+- id: D-16
+  domein: D. Hoe de bouwer test
+  wat: 'De kritieke functies hebben automatische tests die bij elke wijziging draaien: minstens één positieve en één negatieve test per functie'
+  hoe: scan + test
+  normen: NIST SP 800-218 PW.8; ISO/IEC 27002 8.29
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Middel
+  in_scanner: false
+  status: voorstel
+- id: E-01
+  domein: E. Applicatiebeveiliging
+  wat: 'Inloggen: geen standaardwachtwoorden; MFA verplicht voor beheerders en beschikbaar voor gebruikers'
+  hoe: scan + analist
+  normen: OWASP ASVS 5.0; A07:2025; CRA I (2)(d)
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: E-02
+  domein: E. Applicatiebeveiliging
+  wat: 'Rechten worden per object op de server gecontroleerd: niemand bereikt andermans gegevens via een ander ID'
+  hoe: scan + analist + aanvalstest
+  normen: A01:2025; OWASP ASVS 5.0
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: E-03
+  domein: E. Applicatiebeveiliging
+  wat: 'Sessies: veilige cookies, time-outs, afmelden maakt de sessie ongeldig'
+  hoe: scan
+  normen: OWASP ASVS 5.0
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Hoog
+  herstel: Zet cookies op Secure, HttpOnly en SameSite, gebruik een sterk sessiegeheim uit de omgeving, geef JWT's een vervaldatum en controleer ze met verify.
+  module: code
+  in_scanner: true
+  status: actief
+- id: E-04
+  domein: E. Applicatiebeveiliging
+  wat: 'Geen injectie: geparametriseerde queries, output-encoding, geen SQL-, OS-, template- of XSS-lekken'
+  hoe: scan + analist
+  normen: A05:2025
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Kritiek
+  herstel: Gebruik geparametriseerde queries (placeholders), geen shell met invoer (execFile met een lijst argumenten), en laat templates automatisch escapen.
+  module: code
+  in_scanner: true
+  status: actief
+- id: E-05
+  domein: E. Applicatiebeveiliging
+  wat: Geen geheimen in code, configuratie of git-geschiedenis; geheimen staan in een kluis of de omgeving
+  hoe: scan
+  normen: ISO/IEC 27002 8.24; CRA I (2)(e)
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Kritiek
+  herstel: Trek het geheim in bij de aanbieder, haal het uit de code en de git-geschiedenis, en lees geheimen voortaan uit omgevingsvariabelen of een kluis.
+  module: secrets
+  in_scanner: true
+  status: actief
+- id: E-06
+  domein: E. Applicatiebeveiliging
+  wat: 'Versleuteling: TLS 1.2 of hoger voor al het verkeer, gevoelige gegevens versleuteld opgeslagen, geen verouderde of zelfgemaakte algoritmen'
+  hoe: scan
+  normen: A04:2025; CRA I (2)(e)
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Hoog
+  herstel: Hash wachtwoorden met bcrypt, scrypt of Argon2; gebruik crypto.randomBytes of secrets voor tokens; zet certificaatcontrole nooit uit; gebruik https://.
+  module: code
+  in_scanner: true
+  status: actief
+- id: E-07
+  domein: E. Applicatiebeveiliging
+  wat: 'Veilig standaard: debug uit, beheerschermen afgeschermd, terugzetten naar een veilige toestand mogelijk'
+  hoe: scan + analist
+  normen: A02:2025; CRA I (2)(b)
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: E-08
+  domein: E. Applicatiebeveiliging
+  wat: 'Beveiligingsheaders en configuratie: CSP, HSTS, restrictieve CORS'
+  hoe: scan
+  normen: A02:2025
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Middel
+  herstel: Stel HSTS, Content-Security-Policy, X-Content-Type-Options, Referrer-Policy en frame-ancestors in (bv. met helmet) en beperk CORS tot vaste herkomsten.
+  module: live
+  in_scanner: true
+  status: actief
+- id: E-09
+  domein: E. Applicatiebeveiliging
+  wat: 'Bescherming tegen misbruik: limieten op inlogpogingen en zware functies; uploads gecontroleerd'
+  hoe: scan + aanvalstest
+  normen: CRA I (2)(h)
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: E-10
+  domein: E. Applicatiebeveiliging
+  wat: 'Klein aanvalsoppervlak: geen overbodige poorten, endpoints of functies; geen endpoints buiten de API-specificatie'
+  hoe: scan + analist
+  normen: CRA I (2)(j)
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: E-11
+  domein: E. Applicatiebeveiliging
+  wat: 'Integriteit: artefacten en updates ondertekend; geen onveilige deserialisatie'
+  hoe: scan
+  normen: A08:2025; CRA I (2)(f)
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: E-12
+  domein: E. Applicatiebeveiliging
+  wat: Dreigingsmodel van het product, bijgewerkt bij grote wijzigingen
+  hoe: document + keurder
+  normen: A06:2025; IEC 62443-4-1; ISO/IEC 27034
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: E-13
+  domein: E. Applicatiebeveiliging
+  wat: Beveiligingsgebeurtenissen gelogd (inloggen, rechtenwijzigingen, fouten), zonder gevoelige gegevens in de logs, met alarm bij afwijkingen
+  hoe: scan + analist
+  normen: A09:2025; CRA I (2)(l)
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: E-14
+  domein: E. Applicatiebeveiliging
+  wat: 'Sleutelbeheer: sleutels voor ondertekening, versleuteling en TLS in een sleutelkluis, KMS of HSM, met een vaste levenscyclus (aanmaken, roteren, intrekken, vernietigen); toegang beperkt en gelogd'
+  hoe: keurder + document
+  normen: ISO/IEC 27002 8.24; CRA I (2)(e), (f)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: E-15
+  domein: E. Applicatiebeveiliging
+  wat: 'Netwerk: databanken, caches en beheerinterfaces niet publiek bereikbaar; beheer alleen via VPN, bastion of zero-trusttoegang; omgevingen gescheiden'
+  hoe: scan + analist
+  normen: ISO/IEC 27002 8.20, 8.22; CRA I (2)(j)
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: E-16
+  domein: E. Applicatiebeveiliging
+  wat: 'Inloggen via een externe identiteitsdienst (SAML, OpenID Connect): handtekeningen, doelgroep en vervaldatum van tokens gecontroleerd, terugkeeradressen vastgelegd, geen open redirects'
+  hoe: scan + aanvalstest
+  normen: OWASP ASVS 5.0; A07:2025
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: F-01
+  domein: F. Afhankelijkheden en supply chain
+  wat: Geen afhankelijkheden met bekende uitbuitbare kwetsbaarheden (bv. CISA KEV, EU-kwetsbaarhedendatabank) en geen kritieke CVE zonder mitigatie
+  hoe: scan
+  normen: CRA I deel I (2)(a)
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Kritiek
+  herstel: Werk de getroffen pakketten bij naar de vermelde versie en maak de lockfile opnieuw.
+  module: vulns
+  in_scanner: true
+  status: actief
+- id: F-02
+  domein: F. Afhankelijkheden en supply chain
+  wat: Geen frameworks of runtimes die niet meer ondersteund worden; geen onbeheerde pakketten in kritieke functies
+  hoe: scan
+  normen: A03:2025
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Hoog
+  herstel: Stap over naar een ondersteunde versie van de runtime of het framework en vervang niet meer onderhouden pakketten.
+  module: eol
+  in_scanner: true
+  status: actief
+- id: F-03
+  domein: F. Afhankelijkheden en supply chain
+  wat: Versies vastgezet met een lockfile en integriteitscontrole (hashes)
+  hoe: scan
+  normen: SLSA
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Middel
+  herstel: Commit een lockfile met hashes (package-lock.json, poetry.lock of pip-compile --generate-hashes).
+  module: build
+  in_scanner: true
+  status: actief
+- id: F-04
+  domein: F. Afhankelijkheden en supply chain
+  wat: Pakketten alleen uit officiële of vertrouwde registers; nieuwe pakketten gecontroleerd voor ze erin komen
+  hoe: scan + document
+  normen: A03:2025
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: F-05
+  domein: F. Afhankelijkheden en supply chain
+  wat: Alle licenties gekend en verenigbaar met het gebruik; geen onbedoelde copyleft
+  hoe: scan
+  normen: ISO/IEC 5230
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Middel
+  herstel: Vervang pakketten met een licentie die niet past bij je gebruik, of vraag juridisch advies.
+  module: licenses
+  in_scanner: true
+  status: actief
+- id: F-06
+  domein: F. Afhankelijkheden en supply chain
+  wat: 'Beveiligde pipeline: beperkte geheimen in de build, externe acties vastgepind op hash, herkomst van de build vastgelegd'
+  hoe: scan + analist
+  normen: SLSA Build L2; OpenSSF Scorecard
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: F-07
+  domein: F. Afhankelijkheden en supply chain
+  wat: 'Containerimages: minimale basisimage, geen kritieke CVE''s, draait niet als root'
+  hoe: scan
+  normen: A02:2025
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: F-08
+  domein: F. Afhankelijkheden en supply chain
+  wat: Externe diensten en AI-aanbieders gekend, met verwerkersovereenkomst waar persoonsgegevens meegaan
+  hoe: document
+  normen: ISO/IEC 27036; NIS2 art. 21(2)(d); AVG art. 28
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: F-09
+  domein: F. Afhankelijkheden en supply chain
+  wat: Gezondheidsscore (bv. OpenSSF Scorecard) voor kritieke open-sourceafhankelijkheden
+  hoe: scan
+  normen: OpenSSF Scorecard; ISO/IEC 18974
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: optioneel
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: F-10
+  domein: F. Afhankelijkheden en supply chain
+  wat: Versieachterstand gemeten per component; in kritieke functies geen component meer dan twee major versies achter (voorstel)
+  hoe: scan
+  normen: A03:2025; ISO/IEC 25010 (onderhoudbaarheid)
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: F-11
+  domein: F. Afhankelijkheden en supply chain
+  wat: 'Patchsnelheid: beschikbare security-patches voor kritieke lekken binnen 14 dagen toegepast, voor hoge binnen 30 dagen (voorstel; gemeten over het laatste jaar)'
+  hoe: scan + analist
+  normen: CRA I deel II (2); ISO/IEC 30111
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: F-12
+  domein: F. Afhankelijkheden en supply chain
+  wat: 'Ook de infrastructuur: besturingssysteem, runtime (bv. Java, .NET, Node.js, PHP, Python), webserver, database en CMS op een ondersteunde versie met actuele patches'
+  hoe: scan + analist
+  normen: ISO/IEC 27002 8.8; CRA I (2)(a)
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: F-13
+  domein: F. Afhankelijkheden en supply chain
+  wat: Indirecte (transitieve) afhankelijkheden worden mee gescand; bij niveau 2 staan ze ook in de SBOM
+  hoe: scan
+  normen: CRA I deel II (1)
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Hoog
+  herstel: Commit een lockfile zodat ook indirecte afhankelijkheden vastliggen en gescand kunnen worden.
+  module: vulns
+  in_scanner: true
+  status: actief
+- id: F-14
+  domein: F. Afhankelijkheden en supply chain
+  wat: Scripts en bibliotheken die de browser van externe servers laadt, hebben een integriteitscontrole (SRI) of worden zelf gehost
+  hoe: scan
+  normen: A08:2025
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: G-01
+  domein: G. Kwetsbaarheden en updates (CRA)
+  wat: Publiek beleid voor gecoördineerde melding van kwetsbaarheden, met meldadres (bv. security.txt)
+  hoe: scan + document
+  normen: CRA I deel II (5), (6); ISO/IEC 29147
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: G-02
+  domein: G. Kwetsbaarheden en updates (CRA)
+  wat: 'Intern proces voor kwetsbaarheden: triage, ernst bepalen, hersteltermijn per ernst'
+  hoe: document
+  normen: ISO/IEC 30111; CRA I deel II (2)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: G-03
+  domein: G. Kwetsbaarheden en updates (CRA)
+  wat: Hersteltermijnen worden in de praktijk gehaald (steekproef uit de tickets van het laatste jaar)
+  hoe: keurder
+  normen: ISO/IEC 30111
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: G-04
+  domein: G. Kwetsbaarheden en updates (CRA)
+  wat: Security-updates gratis en waar mogelijk los van functionele updates, met advies aan gebruikers
+  hoe: document + verklaring
+  normen: CRA I deel II (2), (8)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: G-05
+  domein: G. Kwetsbaarheden en updates (CRA)
+  wat: Updates veilig verspreid (ondertekend, vertrouwd kanaal); bij geïnstalleerde software staan automatische updates standaard aan
+  hoe: scan + analist
+  normen: CRA I deel I (2)(c); deel II (7)
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: G-06
+  domein: G. Kwetsbaarheden en updates (CRA)
+  wat: Opgeloste kwetsbaarheden publiek vermeld in releasenotes of advisories
+  hoe: document
+  normen: CRA I deel II (4)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: G-07
+  domein: G. Kwetsbaarheden en updates (CRA)
+  wat: Meldproces klaar om actief uitgebuite kwetsbaarheden en ernstige incidenten binnen 24 uur te melden
+  hoe: document
+  normen: CRA art. 14
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: G-08
+  domein: G. Kwetsbaarheden en updates (CRA)
+  wat: Doorlopende bewaking van nieuwe kwetsbaarheden in afhankelijkheden via de SBOM
+  hoe: scan
+  normen: CRA I deel II (1), (3)
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Middel
+  herstel: Zet Dependabot of Renovate aan, of plan een wekelijkse scan van afhankelijkheden in de pipeline.
+  module: ci
+  in_scanner: true
+  status: actief
+- id: H-01
+  domein: H. AI in het product
+  wat: Prompt injection getest, direct en indirect (via documenten, webpagina's, toolresultaten)
+  hoe: scan + aanvalstest
+  normen: LLM01; OWASP AISVS; ETSI EN 304 223
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: H-02
+  domein: H. AI in het product
+  wat: 'Uitvoer van het model wordt behandeld als onbetrouwbare invoer: niet rechtstreeks uitgevoerd, gevalideerd en geëncodeerd'
+  hoe: scan + analist
+  normen: LLM05
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Hoog
+  herstel: 'Behandel uitvoer van een AI-model als onbetrouwbare invoer: nooit in eval, shell of SQL; valideer tegen een schema en escape bij weergave.'
+  module: code
+  in_scanner: true
+  status: actief
+- id: H-03
+  domein: H. AI in het product
+  wat: Model en agent hebben minimale rechten op tools; onomkeerbare acties vragen bevestiging door een mens
+  hoe: keurder
+  normen: LLM06; ASI02, ASI03
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: H-04
+  domein: H. AI in het product
+  wat: 'Geen lekken: geen geheimen in de systeemprompt, gegevens van klanten gescheiden in zoek- en vectoropslag'
+  hoe: scan + aanvalstest
+  normen: LLM02, LLM07, LLM08
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: H-05
+  domein: H. AI in het product
+  wat: Gebruikers weten dat ze met AI praten; door AI gemaakte inhoud is gemarkeerd waar dat moet
+  hoe: keurder
+  normen: AI Act art. 50
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: H-06
+  domein: H. AI in het product
+  wat: Modelaanbieder en -versie vastgelegd; een ander model is een ingrijpende wijziging en vraagt herkeuring
+  hoe: document
+  normen: 'Schema: toezicht en wijzigingen'
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: H-07
+  domein: H. AI in het product
+  wat: Kwaliteit gemeten met een testset van verwachte antwoorden; regressietest bij elke modelwissel
+  hoe: document + keurder
+  normen: ISO/IEC 25059; ISO/IEC TR 29119-11
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: H-08
+  domein: H. AI in het product
+  wat: Limieten op verbruik (tokens, aanvragen) tegen misbruik en onverwachte kosten
+  hoe: scan
+  normen: LLM10
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Middel
+  herstel: Geef elke AI-aanroep een limiet op tokens (max_tokens) en zet rate limiting per gebruiker.
+  module: code
+  in_scanner: true
+  status: actief
+- id: H-09
+  domein: H. AI in het product
+  wat: Autonomieniveau per AI-functie vastgesteld (AI-1 helpt, AI-2 mens bevestigt, AI-3 mens houdt toezicht, AI-4 beslist zelfstandig) en passend bij de gevolgen voor mensen; een mens kan altijd ingrijpen
+  hoe: keurder + document
+  normen: AI Act art. 14; ISO/IEC 42001; ISO/IEC 22989
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: H-10
+  domein: H. AI in het product
+  wat: De bouwer heeft vastgesteld dat het product geen verboden AI-praktijk bevat en of het onder hoog risico valt (AI Act); zo ja, vervangt het keurmerk de wettelijke conformiteitsbeoordeling niet
+  hoe: document
+  normen: AI Act art. 5, 6, bijlage III
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: H-11
+  domein: H. AI in het product
+  wat: 'Bij eigen training of finetuning: herkomst van de data, rechten en persoonsgegevens gedocumenteerd'
+  hoe: document
+  normen: ISO/IEC 42001 bijlage A; AI Act art. 10
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: H-12
+  domein: H. AI in het product
+  wat: 'Agents: bescherming tegen vergiftigd geheugen en context, veilige communicatie tussen agents, een noodstop'
+  hoe: keurder + pentest
+  normen: ASI06, ASI07, ASI10
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: H-13
+  domein: H. AI in het product
+  wat: 'AI-kaart, publiek: per AI-functie wat ze doet, welke beslissingen of adviezen ze geeft, welke gegevens ze gebruikt, aanbieder en model, bekende beperkingen en foutsoorten'
+  hoe: document
+  normen: AI Act art. 13, 50; ISO/IEC 42001; ISO/IEC 22989
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: H-14
+  domein: H. AI in het product
+  wat: 'AI-beslissingen gelogd: per beslissing tijdstip, functie, model en versie, verwijzing naar de invoer, uitvoer, uitgevoerde acties en wie bevestigde; beschermd tegen wijziging, minstens zes maanden
+    bewaard, zonder onnodige persoonsgegevens'
+  hoe: scan + analist
+  normen: AI Act art. 12, 19, 26(6); ISO/IEC 42001
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: H-15
+  domein: H. AI in het product
+  wat: 'Vieroogenprincipe: beslissingen met rechtsgevolg of grote financiële gevolgen worden door een mens bevestigd voor ze uitgevoerd worden; ook de bevestiging wordt gelogd'
+  hoe: keurder
+  normen: AI Act art. 14; AVG art. 22
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: H-16
+  domein: H. AI in het product
+  wat: 'Uitleg en herbeoordeling: wie door een AI-beslissing geraakt wordt, kan uitleg vragen en een herbeoordeling door een mens krijgen'
+  hoe: keurder + document
+  normen: AVG art. 22(3); AI Act art. 86
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: als van toepassing
+    n4: als van toepassing
+  in_scanner: false
+  status: actief
+- id: H-17
+  domein: H. AI in het product
+  wat: 'AI in productie bewaakt: foutpercentage, klachten, afwijkingen in de invoer en hoe vaak mensen de AI overrulen (te vaak of nooit is een signaal)'
+  hoe: scan + document
+  normen: AI Act art. 72; ISO/IEC 42001
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: H-18
+  domein: H. AI in het product
+  wat: Getest op oneerlijke uitkomsten (bias) bij beslissingen over personen, met vastgelegde testset en uitslag
+  hoe: document + keurder
+  normen: AI Act art. 10, 15; ISO/IEC TR 24027
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: als van toepassing
+    n4: als van toepassing
+  in_scanner: false
+  status: actief
+- id: H-19
+  domein: H. AI in het product
+  wat: 'AI uitschakelbaar: elke AI-functie kan apart uitgezet worden en de app blijft dan bruikbaar of valt veilig terug'
+  hoe: keurder
+  normen: AI Act art. 14(4)(e); ISO/IEC 25010:2023
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: H-20
+  domein: H. AI in het product
+  wat: 'Herkomst van modellen (AI-BOM): modellen en datasets in een machineleesbare lijst met herkomst, licentie en hash of handtekening; modelbestanden in een veilig formaat, geen uitvoerbare formaten
+    uit onbekende bron'
+  hoe: scan + document
+  normen: OWASP LLM03; CycloneDX ML-BOM; ISO/IEC 42001
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: H-21
+  domein: H. AI in het product
+  wat: 'Tools en MCP-servers van de app: inventaris, herkomst, vastgepinde versie, minimale rechten; toolbeschrijvingen gecontroleerd op verborgen instructies'
+  hoe: scan + analist
+  normen: OWASP LLM03; OWASP Agentic ASI04
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: H-22
+  domein: H. AI in het product
+  wat: 'Veilige uitvoer: vaste testset voor schadelijke inhoud en gevaarlijk advies (zelfbeschadiging, medisch, financieel, illegaal), met drempel'
+  hoe: scan + document
+  normen: OWASP LLM09; AI Act art. 15; ISO/IEC 42001
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: H-23
+  domein: H. AI in het product
+  wat: 'Geen training op klantgegevens zonder toestemming: afspraken met de AI-aanbieder over training, bewaartermijn en regio, in lijn met de AI-kaart'
+  hoe: document
+  normen: AVG art. 5, 28; AI Act art. 10
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: H-24
+  domein: H. AI in het product
+  wat: Door AI gemaakte beelden, geluid, video en tekst machineleesbaar gemarkeerd (bv. C2PA of watermerk) waar de AI Act dat vraagt
+  hoe: scan + analist
+  normen: AI Act art. 50(2); C2PA
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: H-25
+  domein: H. AI in het product
+  wat: 'Ernstige AI-incidenten: procedure om ze te melden aan de toezichthouder en de klant, gekoppeld aan de incidentanalyse'
+  hoe: document
+  normen: AI Act art. 73
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: als van toepassing
+    n4: als van toepassing
+  in_scanner: false
+  status: actief
+- id: I-01
+  domein: I. Data en privacy
+  wat: 'Overzicht van de gegevens: welke persoonsgegevens, waar opgeslagen, hoe lang en waarvoor'
+  hoe: document
+  normen: AVG art. 30; CRA I (2)(g)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: I-02
+  domein: I. Data en privacy
+  wat: Niet meer gegevens dan nodig; privacyvriendelijke standaardinstellingen
+  hoe: keurder
+  normen: AVG art. 25; CRA I (2)(g)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: I-03
+  domein: I. Data en privacy
+  wat: Gegevens van verschillende klanten zijn gescheiden, en dat is getest
+  hoe: scan + aanvalstest
+  normen: ISO/IEC 27002 8.3
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: I-04
+  domein: I. Data en privacy
+  wat: Gebruikers kunnen hun gegevens exporteren en definitief laten verwijderen
+  hoe: keurder
+  normen: CRA I (2)(m); AVG art. 17, 20
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: I-05
+  domein: I. Data en privacy
+  wat: Hostingregio en doorgifte buiten de EER gekend en gedocumenteerd
+  hoe: document
+  normen: AVG hoofdstuk V
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: I-06
+  domein: I. Data en privacy
+  wat: Back-ups versleuteld; herstel getest
+  hoe: document
+  normen: ISO/IEC 27002 8.13
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: I-07
+  domein: I. Data en privacy
+  wat: Gegevensbeschermingseffectbeoordeling (DPIA) waar de verwerking een hoog risico geeft
+  hoe: document
+  normen: AVG art. 35
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: I-08
+  domein: I. Data en privacy
+  wat: Persoonsgegevens gaan alleen naar AI-aanbieders met een verwerkersovereenkomst en zonder training op die gegevens
+  hoe: document
+  normen: AVG art. 28; ISO/IEC 42001 bijlage A
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: I-09
+  domein: I. Data en privacy
+  wat: 'Cookies en trackers: zonder toestemming alleen strikt noodzakelijke; toestemming vooraf, weigeren even makkelijk als aanvaarden, intrekken altijd mogelijk'
+  hoe: scan + analist
+  normen: ePrivacyrichtlijn art. 5(3); AVG art. 7
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: I-10
+  domein: I. Data en privacy
+  wat: 'Clouddienst (SaaS): klanten kunnen overstappen. Export van al hun gegevens in een gangbaar formaat, overstapregeling in het contract, geen overstapkosten vanaf 12 januari 2027'
+  hoe: document + keurder
+  normen: Data Act hoofdstuk VI, art. 29
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: als van toepassing
+    n4: als van toepassing
+  in_scanner: false
+  status: actief
+- id: I-11
+  domein: I. Data en privacy
+  wat: 'App bij een verbonden product: gebruikers krijgen standaard toegang tot de gegevens van product en dienst (producten op de markt vanaf 12 september 2026)'
+  hoe: keurder + document
+  normen: Data Act art. 3
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: als van toepassing
+    n4: als van toepassing
+  in_scanner: false
+  status: actief
+- id: I-12
+  domein: I. Data en privacy
+  wat: 'Bewaartermijnen worden automatisch afgedwongen: gegevens worden na de termijn verwijderd of geanonimiseerd, ook in back-ups en logs'
+  hoe: scan + analist
+  normen: AVG art. 5(1)(e)
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: I-13
+  domein: I. Data en privacy
+  wat: 'Minderjarigen: als de app op kinderen gericht is of door kinderen gebruikt wordt, een leeftijdscontrole passend bij het risico, de strengste privacy- en veiligheidsinstellingen als standaard en
+    geen profilering voor reclame'
+  hoe: keurder + document
+  normen: DSA art. 28; AVG art. 8; AI Act art. 9(9)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: als van toepassing
+    n4: als van toepassing
+  in_scanner: false
+  status: actief
+- id: J-01
+  domein: J. Documentatie
+  wat: 'Gebruikersinformatie: doel, beoogd gebruik, veilige installatie en configuratie, einddatum van de ondersteuning, contact'
+  hoe: document
+  normen: CRA bijlage II; ISO/IEC/IEEE 26514
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: J-02
+  domein: J. Documentatie
+  wat: 'Beheerdocumentatie: installatie, configuratie, back-up en herstel, updateprocedure'
+  hoe: document
+  normen: ISO/IEC 25051
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: J-03
+  domein: J. Documentatie
+  wat: 'Technische documentatie: architectuur, vastgelegde ontwerpkeuzes, datamodel, API-specificatie (bv. OpenAPI)'
+  hoe: document + keurder
+  normen: CRA bijlage VII; ISO/IEC/IEEE 42010
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: J-04
+  domein: J. Documentatie
+  wat: 'Ontwikkelaarsdocumentatie: een README met bouwen, testen en uitrollen; een nieuwe ontwikkelaar kan binnen een dag bouwen'
+  hoe: keurder
+  normen: ISO/IEC 25010 (onderhoudbaarheid)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: J-05
+  domein: J. Documentatie
+  wat: 'Documentatie klopt met de code (steekproef: gedocumenteerde API tegenover de echte endpoints)'
+  hoe: scan + analist
+  normen: ISO/IEC 25051
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: J-06
+  domein: J. Documentatie
+  wat: Wijzigingslog per release, met de security-fixes apart vermeld
+  hoe: document
+  normen: CRA I deel II (4)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: J-07
+  domein: J. Documentatie
+  wat: 'Beveiligingsinformatie voor klanten: hoe het product veilig te gebruiken en wat de klant zelf moet doen'
+  hoe: document
+  normen: CRA bijlage II
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: J-08
+  domein: J. Documentatie
+  wat: 'Informatie over AI-functies voor klanten: welke functies, welke aanbieder, wat er met hun gegevens gebeurt (alleen bij module H)'
+  hoe: document
+  normen: AI Act art. 50; ISO/IEC 42001 bijlage A
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: als van toepassing
+    n4: als van toepassing
+  in_scanner: false
+  status: actief
+- id: K-01
+  domein: K. Werking, monitoring en logging
+  wat: Ontwikkeling, test en productie gescheiden; ontwikkelaars en agents hebben standaard geen toegang tot productie
+  hoe: keurder
+  normen: ISO/IEC 27002 8.31
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: K-02
+  domein: K. Werking, monitoring en logging
+  wat: Uitrol geautomatiseerd en herhaalbaar; terugrollen mogelijk
+  hoe: document + keurder
+  normen: ISO/IEC 27002 8.32
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: K-03
+  domein: K. Werking, monitoring en logging
+  wat: Bewaking van beschikbaarheid en fouten, met alarmering
+  hoe: document
+  normen: ISO/IEC 25010 (betrouwbaarheid)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: K-04
+  domein: K. Werking, monitoring en logging
+  wat: RTO en RPO per dienst afgeleid uit de gevolgen van uitval voor de klant; herstel na uitval getest in de laatste 12 maanden
+  hoe: document + keurder
+  normen: ISO/IEC 27002 8.13; ISO/IEC 27031; NIS2 art. 21(2)(c)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: K-05
+  domein: K. Werking, monitoring en logging
+  wat: 'Incidentrespons: plan, contactpersoon, minstens één oefening per jaar'
+  hoe: document
+  normen: ISO/IEC 27002 5.24; NIS2 art. 21(2)(b)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: K-06
+  domein: K. Werking, monitoring en logging
+  wat: Infrastructuur als code gescand op foute cloudconfiguratie (open opslag, te ruime rechten)
+  hoe: scan
+  normen: A02:2025
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: K-07
+  domein: K. Werking, monitoring en logging
+  wat: 'Toegang tot code en infrastructuur: MFA voor alle ontwikkelaars, rechten periodiek nagekeken, vertrekkers meteen verwijderd'
+  hoe: verklaring + keurder
+  normen: ISO/IEC 27002 5.15–5.18; NIS2 art. 21(2)(i), (j)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: K-08
+  domein: K. Werking, monitoring en logging
+  wat: 'Overdraagbaarheid voor maatwerk: escrow of afspraak over broncode als de bouwer stopt'
+  hoe: document
+  normen: ISO/IEC 27036
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: optioneel
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: K-09
+  domein: K. Werking, monitoring en logging
+  wat: 'Logbeleid: wat wordt gelogd (toegang, beheeracties, fouten, wijzigingen aan gegevens), hoe lang bewaard, wie erbij kan; logs beschermd tegen wijziging'
+  hoe: document + keurder
+  normen: ISO/IEC 27002 8.15; CRA I (2)(l)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: K-10
+  domein: K. Werking, monitoring en logging
+  wat: Logs centraal verzameld en te doorzoeken, met gesynchroniseerde klokken
+  hoe: keurder
+  normen: ISO/IEC 27002 8.15, 8.17
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: K-11
+  domein: K. Werking, monitoring en logging
+  wat: 'Alarmen op beveiligingsgebeurtenissen worden opgevolgd: wie reageert, binnen welke tijd, en dat is aantoonbaar gebeurd'
+  hoe: document + keurder
+  normen: ISO/IEC 27002 8.16; NIS2 art. 21(2)(b)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: K-12
+  domein: K. Werking, monitoring en logging
+  wat: Prestaties en capaciteit bewaakt (responstijden, foutpercentages, opslag) met drempels
+  hoe: document
+  normen: ISO/IEC 27002 8.6; ISO/IEC 25010 (prestatie-efficiëntie)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: K-13
+  domein: K. Werking, monitoring en logging
+  wat: 'Audittrail voor gevoelige gegevens: vastgelegd wie persoonsgegevens heeft bekeken, gewijzigd of geëxporteerd'
+  hoe: scan + analist
+  normen: AVG art. 5(2), 32
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: K-14
+  domein: K. Werking, monitoring en logging
+  wat: 'Container-orkestratie (bv. Kubernetes) gehard: geen geprivilegieerde containers, netwerkbeleid tussen diensten, geheimen niet als platte tekst, getoetst aan een CIS-benchmark'
+  hoe: scan + analist
+  normen: CIS Kubernetes Benchmark; ISO/IEC 27002 8.9
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: als van toepassing
+    n4: als van toepassing
+  in_scanner: false
+  status: actief
+- id: K-15
+  domein: K. Werking, monitoring en logging
+  wat: 'DR-plan: scenario''s, rollen, beslissers, volgorde van herstel en communicatie naar klanten'
+  hoe: document
+  normen: ISO/IEC 27031; ISO 22301; ISO/IEC 27002 5.29, 5.30
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: K-16
+  domein: K. Werking, monitoring en logging
+  wat: 'Herstelproef: in een testomgeving wordt een databank of configuratie onbruikbaar gemaakt; herstel binnen de RTO, gegevens gecontroleerd op volledigheid'
+  hoe: keurder
+  normen: ISO/IEC 27031; ISO/IEC 27002 8.13
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: K-17
+  domein: K. Werking, monitoring en logging
+  wat: 'Herbouw vanaf nul: de volledige omgeving opnieuw opgebouwd uit infrastructuurcode en back-ups, in een schone account'
+  hoe: keurder + document
+  normen: ISO/IEC 27031; NIST SP 800-34
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: optioneel
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: K-18
+  domein: K. Werking, monitoring en logging
+  wat: 'Ransomwarescenario: herstel naar een schone toestand van vóór de aanval, met back-ups die een aanvaller met beheerrechten niet kan wissen (W-11)'
+  hoe: keurder + document
+  normen: ISO/IEC 27002 8.13; NIS2 art. 21(2)(c)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: K-19
+  domein: K. Werking, monitoring en logging
+  wat: 'Ook de rest is herstelbaar: sleutels, geheimen, configuratie, DNS-zones, domeinen en certificaten zitten in de back-up of het herstelplan'
+  hoe: document + keurder
+  normen: ISO/IEC 27002 8.13, 8.24
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: K-20
+  domein: K. Werking, monitoring en logging
+  wat: 'Uitval van derden: voor cloud, AI-aanbieder, betaaldienst en codeplatform een terugvaloptie of een vastgelegde aanvaarding van het risico'
+  hoe: document
+  normen: ISO/IEC 27031; DORA art. 28
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: K-21
+  domein: K. Werking, monitoring en logging
+  wat: 'Foutinjectie: de keurder laat een externe dienst uitvallen of stuurt ongeldige gegevens; de app degradeert netjes, zonder datalek of corrupte gegevens'
+  hoe: keurder + pentest
+  normen: ISO/IEC 25010:2023 (fouttolerantie); OWASP WSTG
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: optioneel
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: K-22
+  domein: K. Werking, monitoring en logging
+  wat: 'DR-test minstens jaarlijks (niveau 4: elk halfjaar), met verslag en verbeteracties'
+  hoe: document
+  normen: ISO 22301; DORA art. 11(6)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: L-01
+  domein: L. Toegankelijkheid
+  wat: 'Voldoet aan WCAG 2.1 AA (via EN 301 549): automatische scan van app en website plus handmatige steekproef van de belangrijkste schermen en taken; punten uit WCAG 2.2 apart gemeld'
+  hoe: scan + analist
+  normen: EN 301 549; WCAG 2.1/2.2
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: L-02
+  domein: L. Toegankelijkheid
+  wat: 'Toegankelijkheidsinformatie gepubliceerd: een verklaring of informatie in de voorwaarden over hoe de dienst toegankelijk is'
+  hoe: document
+  normen: Europese Toegankelijkheidsakte; Richtlijn 2016/2102
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: als van toepassing
+    n4: als van toepassing
+  in_scanner: false
+  status: actief
+- id: O-01
+  domein: O. Website, domein en juridische informatie
+  wat: 'Bedrijfsgegevens op de site: naam, geografisch adres, e-mail, ondernemingsnummer, btw-nummer, en waar van toepassing toezichthouder of beroepsorganisatie'
+  hoe: scan + analist
+  normen: E-commercerichtlijn (2000/31) art. 5
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: O-02
+  domein: O. Website, domein en juridische informatie
+  wat: Algemene voorwaarden vindbaar, en op te slaan en af te drukken vóór de klant een overeenkomst sluit
+  hoe: keurder
+  normen: E-commercerichtlijn art. 10(3)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: O-03
+  domein: O. Website, domein en juridische informatie
+  wat: Privacyverklaring vindbaar, actueel en in lijn met de werkelijke verwerking (vergeleken met wat de scan aan trackers vindt)
+  hoe: scan + analist
+  normen: AVG art. 13
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: O-04
+  domein: O. Website, domein en juridische informatie
+  wat: 'Geen cookies of trackers vóór toestemming: de scan bezoekt de site zonder te klikken en noteert wat er wordt geplaatst'
+  hoe: scan
+  normen: ePrivacyrichtlijn art. 5(3)
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Middel
+  herstel: Plaats trackingcookies en -scripts pas na toestemming via een toestemmingsbeheerder.
+  module: live
+  in_scanner: true
+  status: actief
+- id: O-05
+  domein: O. Website, domein en juridische informatie
+  wat: 'De site zelf is veilig: TLS, beveiligingsheaders, CMS en plugins op een ondersteunde versie, geen beheerpagina''s open'
+  hoe: scan
+  normen: OWASP Top 10:2025; CRA I (2)(a)
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Hoog
+  herstel: Blokkeer toegang tot .git, .env en beheerpagina's op de webserver en houd CMS en plugins bij.
+  module: live
+  in_scanner: true
+  status: actief
+- id: O-06
+  domein: O. Website, domein en juridische informatie
+  wat: 'Domein en e-mail beschermd tegen misbruik: SPF, DKIM en DMARC ingesteld, geen overneembare subdomeinen, DNSSEC waar mogelijk'
+  hoe: scan
+  normen: Basis cyberhygiëne (NIS2 art. 21(2)(g))
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Middel
+  herstel: Publiceer SPF, DKIM en een DMARC-record met p=quarantine of p=reject.
+  module: live
+  in_scanner: true
+  status: actief
+- id: O-07
+  domein: O. Website, domein en juridische informatie
+  wat: 'Wat de site belooft, klopt: claims over beveiliging, AI, certificaten en hosting stemmen overeen met de keuring; het keurmerk wordt volgens de regels gebruikt'
+  hoe: keurder
+  normen: Richtlijn oneerlijke handelspraktijken; ISO/IEC 17030
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: O-08
+  domein: O. Website, domein en juridische informatie
+  wat: 'Domeinregistratie en DNS-beheer beveiligd: MFA op het account bij registrar en DNS-aanbieder, registrar lock, CAA-records; certificaten automatisch vernieuwd en op vervaldatum bewaakt'
+  hoe: scan + verklaring
+  normen: Basis cyberhygiëne (NIS2 art. 21(2)(g)); ISO/IEC 27002 8.24
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: P-01
+  domein: P. Koppelingen met andere systemen
+  wat: 'Overzicht van alle koppelingen: richting, protocol, welke gegevens, eigenaar, authenticatie; ook oude en testkoppelingen'
+  hoe: scan + document
+  normen: ISO/IEC 27002 5.14; OWASP API9
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: P-02
+  domein: P. Koppelingen met andere systemen
+  wat: 'Authenticatie tussen systemen zonder gedeelde of vaste wachtwoorden: OAuth 2.0, mTLS of ondertekende tokens, met beperkte rechten en vervaldatum'
+  hoe: scan + analist
+  normen: OWASP API2; OWASP ASVS 5.0
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: P-03
+  domein: P. Koppelingen met andere systemen
+  wat: Sleutels en tokens voor koppelingen worden geroteerd en zijn per omgeving gescheiden
+  hoe: keurder + verklaring
+  normen: ISO/IEC 27002 8.24
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: P-04
+  domein: P. Koppelingen met andere systemen
+  wat: Eigen API's controleren rechten per object en per functie, valideren invoer, beperken verbruik en geven geen overbodige gegevens terug
+  hoe: scan + aanvalstest
+  normen: OWASP API1, API3, API4, API5
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: P-05
+  domein: P. Koppelingen met andere systemen
+  wat: Inkomende webhooks en berichten worden gecontroleerd (handtekening, herkomst); uitgaande verzoeken alleen naar toegestane bestemmingen; antwoorden van derden worden niet blind vertrouwd
+  hoe: scan + analist
+  normen: OWASP API7, API10
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Hoog
+  herstel: Controleer de handtekening van elke webhook (bv. stripe.webhooks.constructEvent) en laat uitgaande verzoeken alleen naar een vaste lijst van adressen gaan.
+  module: code
+  in_scanner: true
+  status: actief
+- id: P-06
+  domein: P. Koppelingen met andere systemen
+  wat: 'Robuust bij storingen: time-outs, herhaalpogingen, geen dubbele verwerking, bepaald gedrag als een gekoppeld systeem uitvalt, en dat is getest'
+  hoe: keurder + document
+  normen: ISO/IEC 25010 (betrouwbaarheid); A10:2025
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: P-07
+  domein: P. Koppelingen met andere systemen
+  wat: 'Versiebeheer van API''s: gedocumenteerd (bv. OpenAPI), wijzigingen aangekondigd, oude versies met een termijn uitgefaseerd'
+  hoe: document
+  normen: ISO/IEC 25010 (compatibiliteit)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: P-08
+  domein: P. Koppelingen met andere systemen
+  wat: Gegevens die via koppelingen naar derden gaan, staan in de gegevensinventaris en zijn gedekt door een verwerkersovereenkomst
+  hoe: document
+  normen: AVG art. 28, 30
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: P-09
+  domein: P. Koppelingen met andere systemen
+  wat: Open standaarden en exportformaten, zodat klanten kunnen koppelen en overstappen
+  hoe: document
+  normen: Data Act hoofdstuk VIII
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: optioneel
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: P-10
+  domein: P. Koppelingen met andere systemen
+  wat: 'API-gateway, reverse proxy of WAF juist ingesteld: TLS volgens E-06, authenticatie en limieten aan de rand én in de dienst zelf; de diensten erachter zijn niet rechtstreeks bereikbaar (geen omweg
+    langs de gateway)'
+  hoe: scan + analist + aanvalstest
+  normen: OWASP API8; A02:2025
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: P-11
+  domein: P. Koppelingen met andere systemen
+  wat: 'SOAP en XML: parser beschermd tegen XXE en entity-expansie, berichten gevalideerd tegen het schema, authenticatie via WS-Security of mTLS, XML-handtekeningen correct gecontroleerd (geen signature
+    wrapping), WSDL niet publiek in productie'
+  hoe: scan + aanvalstest
+  normen: OWASP ASVS 5.0; OWASP Cheat Sheet XXE
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: P-12
+  domein: P. Koppelingen met andere systemen
+  wat: 'GraphQL: introspectie uit in productie, limieten op diepte en complexiteit, rechten per veld. gRPC: TLS en authenticatie per aanroep'
+  hoe: scan + aanvalstest
+  normen: OWASP API4, API8; OWASP Cheat Sheet GraphQL
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: P-13
+  domein: P. Koppelingen met andere systemen
+  wat: 'Berichtenbussen en bestandsoverdracht (bv. Kafka, MQ, SFTP, EDI): authenticatie en versleuteling, rechten per wachtrij of map, geen anonieme toegang'
+  hoe: scan + analist
+  normen: ISO/IEC 27002 5.14, 8.21
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Q-01
+  domein: Q. Governance
+  wat: Rollen vastgelegd voor product, beveiliging, privacy en AI, met mandaat en vervanging
+  hoe: document
+  normen: ISO/IEC 27001 5.3; ISO/IEC 42001 5.3; NIS2 art. 20
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Q-02
+  domein: Q. Governance
+  wat: Risicobeoordeling van het product, herzien minstens jaarlijks en bij grote wijzigingen
+  hoe: document
+  normen: CRA art. 13(2); ISO/IEC 27001 6.1
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Q-03
+  domein: Q. Governance
+  wat: 'Wijzigingsbeheer: wie mag wat naar productie brengen, met goedkeuring en een regeling voor noodwijzigingen'
+  hoe: scan + document
+  normen: ISO/IEC 27002 8.32
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Q-04
+  domein: Q. Governance
+  wat: 'Releasebeleid: versienummering, releasenotes, welke versies ondersteund worden, einde van ondersteuning tijdig aangekondigd'
+  hoe: document
+  normen: CRA art. 13(8)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Q-05
+  domein: Q. Governance
+  wat: Kritieke leveranciers (cloud, AI-aanbieders) beoordeeld en jaarlijks herzien
+  hoe: document
+  normen: ISO/IEC 27036; NIS2 art. 21(2)(d)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Q-06
+  domein: Q. Governance
+  wat: Directie bekijkt minstens jaarlijks beveiliging, kwaliteit en open bevindingen van het product
+  hoe: document
+  normen: ISO/IEC 27001 9.3; NIS2 art. 20
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Q-07
+  domein: Q. Governance
+  wat: Ontwikkelaars krijgen jaarlijks opleiding in veilig programmeren en verantwoord AI-gebruik
+  hoe: document
+  normen: ISO/IEC 27002 6.3; NIS2 art. 21(2)(g); AI Act art. 4
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Q-08
+  domein: Q. Governance
+  wat: 'Niet afhankelijk van één persoon: minstens twee mensen kunnen bouwen, uitrollen en herstellen'
+  hoe: keurder
+  normen: ISO/IEC 25010 (onderhoudbaarheid)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: R-01
+  domein: R. Versiebeheer en releases
+  wat: Alle broncode, configuratie en infrastructuur-als-code staan in versiebeheer; niets in productie dat er niet in zit
+  hoe: scan + analist
+  normen: ISO/IEC 27002 8.4, 8.32
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: R-02
+  domein: R. Versiebeheer en releases
+  wat: 'Toegang tot de repository: MFA, minimale rechten, geen gedeelde accounts, vertrekkers verwijderd, periodiek nagekeken'
+  hoe: scan + verklaring
+  normen: ISO/IEC 27002 8.4, 5.18
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: R-03
+  domein: R. Versiebeheer en releases
+  wat: 'Branchstrategie vastgelegd; hoofdbranch beschermd: geen directe of geforceerde push, verplichte review (B-03) en een geslaagde pipeline'
+  hoe: scan
+  normen: ISO/IEC 27002 8.32
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Hoog
+  herstel: 'Beveilig de hoofdbranch: verplichte review via pull request, geen force-push, verplichte geslaagde pipeline.'
+  module: github
+  in_scanner: true
+  status: actief
+- id: R-04
+  domein: R. Versiebeheer en releases
+  wat: 'Herleidbaarheid: elke wijziging gekoppeld aan een ticket of reden, met zinvolle commitberichten'
+  hoe: scan
+  normen: ISO/IEC 27002 8.32; RTS 2024/1774 art. 16(7)
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: R-05
+  domein: R. Versiebeheer en releases
+  wat: Ondertekende commits of tags, of een gelijkwaardige herkomstcontrole
+  hoe: scan
+  normen: SLSA
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: R-06
+  domein: R. Versiebeheer en releases
+  wat: 'Repository opgeruimd: geen grote binaire bestanden, build-uitvoer of geheimen in de geschiedenis'
+  hoe: scan
+  normen: ISO/IEC 27002 8.4
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: R-07
+  domein: R. Versiebeheer en releases
+  wat: Elke release getagd, met versienummer (bv. semantisch), releasenotes en een reproduceerbaar artefact
+  hoe: scan + document
+  normen: CRA I deel II (4); SLSA
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: R-08
+  domein: R. Versiebeheer en releases
+  wat: 'Vast releaseproces: bouwen, testen, goedkeuren, uitrollen; vastgelegd wie goedkeurt'
+  hoe: document + keurder
+  normen: ISO/IEC 27002 8.32
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: R-09
+  domein: R. Versiebeheer en releases
+  wat: Artefacten ondertekend en bewaard in een beheerde registry; productie draait alleen goedgekeurde artefacten
+  hoe: scan + analist
+  normen: SLSA Build L2; A08:2025
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: R-10
+  domein: R. Versiebeheer en releases
+  wat: Terugrollen naar de vorige versie getest; databasemigraties omkeerbaar of met herstelplan
+  hoe: document + keurder
+  normen: ISO/IEC 27002 8.32
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: R-11
+  domein: R. Versiebeheer en releases
+  wat: Risicovolle wijzigingen gefaseerd uitgerold (feature flags, canary, blauw-groen) en na de release bewaakt
+  hoe: document
+  normen: ISO/IEC 25010 (betrouwbaarheid)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: optioneel
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: R-12
+  domein: R. Versiebeheer en releases
+  wat: Overzicht van welke versies bij klanten draaien en welke nog updates krijgen; security-fixes ook naar ondersteunde oudere versies
+  hoe: document
+  normen: CRA art. 13(8); I deel II (2)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: R-13
+  domein: R. Versiebeheer en releases
+  wat: 'Repository-instellingen: geheimenscanning en afhankelijkheidswaarschuwingen aan, geen onbedoeld publieke repositories, geen langlevende persoonlijke tokens'
+  hoe: scan
+  normen: OpenSSF Scorecard
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Middel
+  herstel: Zet geheimenscanning, push protection en waarschuwingen voor kwetsbare afhankelijkheden aan.
+  module: github
+  in_scanner: true
+  status: actief
+- id: S-01
+  domein: S. Mobiele apps (module)
+  wat: Minimale permissies; elke permissie heeft een reden die de gebruiker te zien krijgt
+  hoe: scan + analist
+  normen: OWASP MASVS-PLATFORM; AVG art. 25
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: S-02
+  domein: S. Mobiele apps (module)
+  wat: Gevoelige gegevens op het toestel versleuteld in de veilige opslag van het platform (Keychain, Keystore); niets gevoeligs in logs, back-ups of het klembord
+  hoe: scan + aanvalstest
+  normen: OWASP MASVS-STORAGE
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: S-03
+  domein: S. Mobiele apps (module)
+  wat: Netwerkverkeer alleen via TLS, certificaatcontrole nooit uitgeschakeld, pinning waar het risico het vraagt
+  hoe: scan + aanvalstest
+  normen: OWASP MASVS-NETWORK
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: S-04
+  domein: S. Mobiele apps (module)
+  wat: Geen geheimen of API-sleutels in de app zelf
+  hoe: scan
+  normen: OWASP MASVS-STORAGE, MASVS-CODE
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Kritiek
+  herstel: Haal geheimen uit de mobiele app; laat de app via je eigen server met diensten praten.
+  module: secrets
+  in_scanner: true
+  status: actief
+- id: S-05
+  domein: S. Mobiele apps (module)
+  wat: Privacylabels in de app stores kloppen met de werkelijke verwerking en de SDK's in de app
+  hoe: scan + analist
+  normen: AVG art. 13
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: S-06
+  domein: S. Mobiele apps (module)
+  wat: SDK's van derden (analyse, advertenties, crashrapporten) geïnventariseerd; tracking pas na toestemming
+  hoe: scan
+  normen: ePrivacyrichtlijn art. 5(3); OWASP MASVS-PRIVACY
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Middel
+  herstel: Vraag toestemming voor analyse- en reclame-SDK's voor ze gegevens verzamelen.
+  module: mobile
+  in_scanner: true
+  status: actief
+- id: S-07
+  domein: S. Mobiele apps (module)
+  wat: Bescherming tegen manipulatie (root- of jailbreakdetectie, obfuscatie) waar het risico het vraagt, bv. bank- en betaalapps
+  hoe: scan + aanvalstest
+  normen: OWASP MASVS-RESILIENCE
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: T-01
+  domein: T. Klassieke kwaliteitsborging
+  wat: Eisen vastgelegd, functioneel en niet-functioneel (prestaties, beschikbaarheid, beveiliging, privacy, toegankelijkheid), met acceptatiecriteria
+  hoe: document
+  normen: ISO/IEC/IEEE 29148
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: T-02
+  domein: T. Klassieke kwaliteitsborging
+  wat: Beveiligingseisen vooraf bepaald, afgeleid uit het dreigingsmodel en de geldende wetten
+  hoe: document
+  normen: ISO/IEC 27002 8.26; Grip op SSD
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: T-03
+  domein: T. Klassieke kwaliteitsborging
+  wat: Traceerbaarheid van eis naar ontwerp, code en test (traceerbaarheidsmatrix of koppeling ticket–commit–test)
+  hoe: scan + document
+  normen: ISO/IEC/IEEE 29148, 12207
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: T-04
+  domein: T. Klassieke kwaliteitsborging
+  wat: Ontwerp vastgelegd en gereviewd vóór de bouw van grote wijzigingen
+  hoe: document
+  normen: ISO/IEC 20246; IEEE 1028
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: T-05
+  domein: T. Klassieke kwaliteitsborging
+  wat: Acceptatietest door opdrachtgever of producteigenaar op een aparte acceptatieomgeving (OTAP), met vastgelegde goedkeuring
+  hoe: document
+  normen: ISO/IEC/IEEE 29119-2; ISO/IEC 27002 8.29
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: T-06
+  domein: T. Klassieke kwaliteitsborging
+  wat: 'Foutenbeheer: elke fout geregistreerd met ernst, eigenaar en status; open fouten bij een release bekend en aanvaard'
+  hoe: scan + document
+  normen: ISO/IEC/IEEE 29119-3
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: T-07
+  domein: T. Klassieke kwaliteitsborging
+  wat: Oorzaakanalyse bij ernstige fouten en incidenten, met maatregelen tegen herhaling
+  hoe: document
+  normen: ISO/IEC 27001 10.2
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: T-08
+  domein: T. Klassieke kwaliteitsborging
+  wat: 'Overdracht aan beheer: draaiboeken, operationele acceptatie, kennisoverdracht'
+  hoe: document
+  normen: ISO/IEC 20000-1
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: T-09
+  domein: T. Klassieke kwaliteitsborging
+  wat: 'Definitie van ''klaar'': wat af moet zijn voor een wijziging als klaar geldt (review, tests, documentatie, beveiliging)'
+  hoe: document
+  normen: ISO/IEC/IEEE 90003; IEEE 730
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: T-10
+  domein: T. Klassieke kwaliteitsborging
+  wat: 'De productbeschrijving klopt: beschreven functies werken zoals gedocumenteerd (steekproef)'
+  hoe: keurder
+  normen: ISO/IEC 25051
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: T-11
+  domein: T. Klassieke kwaliteitsborging
+  wat: Kwaliteitscijfers over tijd gevolgd (fouten, hersteltijd, testdekking) en gebruikt om te verbeteren
+  hoe: document
+  normen: ISO/IEC 25023; TMMi
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: optioneel
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: T-12
+  domein: T. Klassieke kwaliteitsborging
+  wat: 'Veranderproef: de keurder vraagt een kleine functionele wijziging; het team voert ze door met tests, review en uitrol, zonder iets anders te breken'
+  hoe: keurder
+  normen: ISO/IEC/IEEE 12207; ISO/IEC 25010:2023 (wijzigbaarheid)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: optioneel
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: U-01
+  domein: U. Frontend (webclient)
+  wat: Geen geheimen, API-sleutels of interne adressen in de JavaScript-bundel
+  hoe: scan
+  normen: OWASP ASVS 5.0; A02:2025
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Kritiek
+  herstel: 'Haal geheimen uit de frontend: geheime sleutels alleen op de server, nooit in VITE_/NEXT_PUBLIC_-variabelen of in de browser.'
+  module: bundle
+  in_scanner: true
+  status: actief
+- id: U-02
+  domein: U. Frontend (webclient)
+  wat: Source maps en debugmodus niet publiek in productie
+  hoe: scan
+  normen: A02:2025
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Middel
+  herstel: Zet source maps uit in de productiebuild of publiceer ze niet.
+  module: bundle
+  in_scanner: true
+  status: actief
+- id: U-03
+  domein: U. Frontend (webclient)
+  wat: Sessietokens en gevoelige gegevens niet in localStorage of sessionStorage; cookies met HttpOnly, Secure en SameSite
+  hoe: scan
+  normen: OWASP ASVS 5.0
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Hoog
+  herstel: Bewaar sessietokens in een cookie met HttpOnly, Secure en SameSite in plaats van localStorage.
+  module: code
+  in_scanner: true
+  status: actief
+- id: U-04
+  domein: U. Frontend (webclient)
+  wat: Bescherming tegen CSRF en clickjacking (frame-ancestors)
+  hoe: scan
+  normen: OWASP ASVS 5.0
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Middel
+  herstel: Voeg CSRF-bescherming toe (of SameSite=Strict cookies) en stel frame-ancestors of X-Frame-Options in.
+  module: code
+  in_scanner: true
+  status: actief
+- id: U-05
+  domein: U. Frontend (webclient)
+  wat: 'Controles in de browser zijn gemak, geen beveiliging: elke controle gebeurt ook op de server (getest door de browser te omzeilen)'
+  hoe: pentest + keurder
+  normen: A06:2025; OWASP ASVS 5.0
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: U-06
+  domein: U. Frontend (webclient)
+  wat: Scripts van derden (analyse, chat, advertenties) geïnventariseerd, met toestemming waar nodig en beperkt via CSP; op betaalpagina's goedgekeurd en bewaakt
+  hoe: scan
+  normen: ePrivacyrichtlijn art. 5(3); A08:2025; PCI DSS 4.0 req. 6.4.3
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Middel
+  herstel: Laad scripts van derden met integrity (SRI), beperk ze met een CSP en laad trackers pas na toestemming.
+  module: code
+  in_scanner: true
+  status: actief
+- id: U-07
+  domein: U. Frontend (webclient)
+  wat: Geen gevaarlijke DOM-functies met gebruikersinvoer (innerHTML, eval); berichten tussen vensters (postMessage) met controle van de herkomst
+  hoe: scan + analist
+  normen: A05:2025
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Hoog
+  herstel: Gebruik textContent in plaats van innerHTML, sanitiseer HTML met DOMPurify en controleer event.origin in postMessage-listeners.
+  module: code
+  in_scanner: true
+  status: actief
+- id: U-08
+  domein: U. Frontend (webclient)
+  wat: Prestaties en gebruikservaring gemeten (bv. Core Web Vitals); werkt in de ondersteunde browsers
+  hoe: scan
+  normen: ISO/IEC 25010 (prestatie-efficiëntie, compatibiliteit)
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: optioneel
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: W-01
+  domein: W. Backend en opslag
+  wat: Databankaccounts met minimale rechten per dienst; de app verbindt nooit als beheerder
+  hoe: scan + analist
+  normen: ISO/IEC 27002 8.2, 8.3
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: W-02
+  domein: W. Backend en opslag
+  wat: Verbindingen met databank en opslag versleuteld; gevoelige velden extra versleuteld waar het risico dat vraagt
+  hoe: scan + analist
+  normen: CRA I (2)(e)
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: W-03
+  domein: W. Backend en opslag
+  wat: Bestandsopslag (bv. S3, Blob) privé, toegang via kortlevende ondertekende links; uploads gecontroleerd en buiten de webroot bewaard
+  hoe: scan
+  normen: A01:2025; OWASP ASVS 5.0
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Hoog
+  herstel: Maak opslag privé, gebruik kortlevende ondertekende links en bewaar uploads buiten publieke mappen.
+  module: code
+  in_scanner: true
+  status: actief
+- id: W-04
+  domein: W. Backend en opslag
+  wat: Achtergrondtaken en geplande jobs met minimale rechten, bewaakt, en ze falen zichtbaar
+  hoe: keurder
+  normen: ISO/IEC 27002 8.16
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: W-05
+  domein: W. Backend en opslag
+  wat: 'Gegevensintegriteit bij gelijktijdig gebruik: transacties, geen race conditions (bv. dubbele betaling), idempotente verwerking'
+  hoe: keurder + pentest
+  normen: ISO/IEC 25010 (betrouwbaarheid); A06:2025
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: W-06
+  domein: W. Backend en opslag
+  wat: 'Limieten op middelen: time-outs, maximale grootte van verzoeken en uploads, paginering, bescherming tegen trage queries'
+  hoe: scan
+  normen: OWASP API4; CRA I (2)(h)
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Middel
+  herstel: Zet time-outs op uitgaande verzoeken en limieten op de grootte van verzoeken en uploads.
+  module: code
+  in_scanner: true
+  status: actief
+- id: W-07
+  domein: W. Backend en opslag
+  wat: Configuratie gescheiden van code, per omgeving, zonder geheimen in platte tekst
+  hoe: scan + analist
+  normen: ISO/IEC 27002 8.9
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: W-08
+  domein: W. Backend en opslag
+  wat: 'Servers en runtime gehard: overbodige diensten uit, niet als root, beveiligingsupdates automatisch (zie F-12)'
+  hoe: scan + analist
+  normen: CIS Benchmarks; ISO/IEC 27002 8.9
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: W-09
+  domein: W. Backend en opslag
+  wat: 'Databank: standaardaccounts en voorbeelddatabanken verwijderd; beheertoegang persoonlijk, met MFA en gelogd'
+  hoe: scan + analist
+  normen: CIS Benchmarks; ISO/IEC 27002 8.2
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: W-10
+  domein: W. Backend en opslag
+  wat: Databank versleuteld in rust, ook back-ups, replica's en snapshots; sleutels apart beheerd
+  hoe: scan + analist
+  normen: CRA I (2)(e); AVG art. 32
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: W-11
+  domein: W. Backend en opslag
+  wat: 'Back-ups: frequentie volgens het toegelaten gegevensverlies, minstens één onveranderbare of offline kopie tegen ransomware, herstel getest'
+  hoe: document + keurder
+  normen: ISO/IEC 27002 8.13; NIS2 art. 21(2)(c)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: W-12
+  domein: W. Backend en opslag
+  wat: Beheeracties en grote exports op de databank gelogd en bewaakt
+  hoe: scan + analist
+  normen: ISO/IEC 27002 8.15; AVG art. 32
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: W-13
+  domein: W. Backend en opslag
+  wat: Rechten per rij in de databank (Row Level Security of Security Rules) staan aan op elke tabel met gebruikersgegevens, getest met twee accounts; de sleutel met volledige rechten zit nooit in de frontend
+  hoe: scan + document + test
+  normen: OWASP API1:2023; AVG art. 32
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Kritiek
+  in_scanner: false
+  status: voorstel
+- id: X-01
+  domein: X. Hosting en infrastructuur
+  wat: 'Hostingoverzicht: welke aanbieders en diensten, welke regio''s en datacenters, wie beheert wat (gedeelde verantwoordelijkheid)'
+  hoe: scan + document
+  normen: CRA bijlage VII; AVG art. 30; DORA art. 30(2)
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: X-02
+  domein: X. Hosting en infrastructuur
+  wat: De hostingaanbieder heeft een geldig certificaat dat de gebruikte diensten dekt (bv. ISO/IEC 27001, SOC 2 Type II, BSI C5, SecNumCloud)
+  hoe: document
+  normen: ISO/IEC 27001, 27017; NIS2 art. 21(2)(d)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: X-03
+  domein: X. Hosting en infrastructuur
+  wat: Gegevens en back-ups in de EER, of doorgifte gedekt (I-05); blootstelling aan niet-Europese wetgeving (bv. de Amerikaanse CLOUD Act) staat in het rapport
+  hoe: document
+  normen: AVG hoofdstuk V
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: X-04
+  domein: X. Hosting en infrastructuur
+  wat: 'Cloudaccount beveiligd: hoofdaccount met MFA en niet in dagelijks gebruik, rechten via rollen met minimale rechten, geen langlevende toegangssleutels'
+  hoe: scan + analist
+  normen: CIS Foundations Benchmarks; ISO/IEC 27002 8.2
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: X-05
+  domein: X. Hosting en infrastructuur
+  wat: 'Logging op cloudniveau: wie wijzigt wat aan de infrastructuur, bewaard en bewaakt'
+  hoe: scan + analist
+  normen: ISO/IEC 27002 8.15
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: X-06
+  domein: X. Hosting en infrastructuur
+  wat: 'Beschikbaarheid passend bij het gebruik: meerdere zones of een uitwijklocatie, met een beschikbaarheidsdoel dat gehaald wordt'
+  hoe: document
+  normen: ISO/IEC 27002 8.14; ISO/IEC 25010
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: X-07
+  domein: X. Hosting en infrastructuur
+  wat: 'Exitplan: gegevens en infrastructuur kunnen naar een andere aanbieder (infrastructuur als code, exportformaten)'
+  hoe: document
+  normen: Data Act hoofdstuk VI; DORA art. 28
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: X-08
+  domein: X. Hosting en infrastructuur
+  wat: Budgetalarmen en limieten, zodat een aanval of fout geen onbeperkte kosten of uitval veroorzaakt
+  hoe: scan + analist
+  normen: CRA I (2)(h)
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: X-09
+  domein: X. Hosting en infrastructuur
+  wat: 'Eigen servers of colocatie: fysieke beveiliging, stroom, koeling en toegang tot het datacenter aangetoond (certificaat of bezoek)'
+  hoe: document + keurder
+  normen: ISO/IEC 27002 7.1–7.8
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: als van toepassing
+    n4: als van toepassing
+  in_scanner: false
+  status: actief
+- id: Y-01
+  domein: Y. Communicatieprotocollen
+  wat: 'TLS juist ingesteld: alleen TLS 1.2 en 1.3, sterke cipher suites met forward secrecy, geldige certificaten met volledige keten, HSTS'
+  hoe: scan
+  normen: NIST SP 800-52 Rev. 2; BSI TR-02102-2
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Hoog
+  herstel: Sta alleen TLS 1.2 en 1.3 met sterke ciphers toe, zet HSTS aan en vernieuw certificaten automatisch.
+  module: live
+  in_scanner: true
+  status: actief
+- id: Y-02
+  domein: Y. Communicatieprotocollen
+  wat: 'Geen onversleutelde protocollen voor gegevens of beheer: geen HTTP behalve doorverwijzing, geen FTP, Telnet, LDAP of MQTT zonder TLS, geen SNMP v1/v2'
+  hoe: scan
+  normen: CRA I (2)(e); ISO/IEC 27002 8.21
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Hoog
+  herstel: Stuur HTTP door naar HTTPS en sluit FTP, Telnet en andere onversleutelde diensten.
+  module: live
+  in_scanner: true
+  status: actief
+- id: Y-03
+  domein: Y. Communicatieprotocollen
+  wat: Verkeer tussen interne diensten ook versleuteld (bv. mTLS) of aantoonbaar afgeschermd
+  hoe: scan + analist
+  normen: NIST SP 800-207; ISO/IEC 27002 8.20
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Y-04
+  domein: Y. Communicatieprotocollen
+  wat: 'Verouderde protocolversies uit: SSH alleen versie 2 met sterke algoritmen en sleutels, SMBv1 uit, RDP niet publiek bereikbaar'
+  hoe: scan
+  normen: CIS Benchmarks
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Hoog
+  herstel: Sluit RDP en SMB voor het internet; SSH alleen versie 2 met sleutels.
+  module: live
+  in_scanner: true
+  status: actief
+- id: Y-05
+  domein: Y. Communicatieprotocollen
+  wat: Uitgaande e-mail van de app versleuteld afgeleverd (MTA-STS, TLS-rapportage)
+  hoe: scan
+  normen: RFC 8461
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: optioneel
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Y-06
+  domein: Y. Communicatieprotocollen
+  wat: 'WebSockets en andere realtimeverbindingen: alleen versleuteld (wss), authenticatie bij het opzetten, rechten per bericht, controle van de herkomst'
+  hoe: scan + aanvalstest
+  normen: OWASP Cheat Sheet WebSocket
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Y-07
+  domein: Y. Communicatieprotocollen
+  wat: Algoritmen en sleutellengtes volgens actuele aanbevelingen; inventaris van de gebruikte cryptografie als voorbereiding op post-quantumcryptografie
+  hoe: scan + document
+  normen: BSI TR-02102; EU-routekaart post-quantumcryptografie
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: optioneel
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Y-08
+  domein: Y. Communicatieprotocollen
+  wat: 'Certificaatbeheer: inventaris van alle certificaten, automatische vernieuwing, geen zelfondertekende certificaten op verbindingen met derden, privésleutels nooit gedeeld'
+  hoe: scan + analist
+  normen: ISO/IEC 27002 8.24
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Y-09
+  domein: Y. Communicatieprotocollen
+  wat: 'Klaar voor post-kwantumcryptografie: inventaris van de cryptografie (Y-07) en een plan om algoritmen te vervangen, met voorrang voor gegevens die lang vertrouwelijk moeten blijven'
+  hoe: document + keurder
+  normen: EU-routekaart post-kwantumcryptografie (2025); BSI TR-02102; NIST FIPS 203–205
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: optioneel
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Z-01
+  domein: Z. Beheer, overdracht, kosten, energie en gebruik
+  wat: 'Beheerdossier voor de beheerpartij: draaiboeken voor de meest voorkomende storingen, bekende fouten met een omweg, escalatiepad en contacten'
+  hoe: document + keurder
+  normen: ISO/IEC 20000-1; ITIL 4 (servicetransitie)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Z-02
+  domein: Z. Beheer, overdracht, kosten, energie en gebruik
+  wat: 'Diagnose zonder ontwikkelaar: health- en readiness-controles, gedocumenteerde foutcodes, een correlatie-ID die een melding door alle logs volgt'
+  hoe: scan + analist
+  normen: ISO/IEC 25010:2023 (analyseerbaarheid)
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Z-03
+  domein: Z. Beheer, overdracht, kosten, energie en gebruik
+  wat: 'Dagelijks beheer zonder codewijziging: configuratie, gebruikers en rechten, certificaten vernieuwen, herstarten en schalen, gedocumenteerd'
+  hoe: keurder + document
+  normen: ISO/IEC 20000-1; ISO/IEC 25010:2023
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Z-04
+  domein: Z. Beheer, overdracht, kosten, energie en gebruik
+  wat: 'Supportafspraken: reactie- en oplostijden per prioriteit, onderhoudsvensters, ondersteunde versies en kanalen'
+  hoe: document
+  normen: ISO/IEC 20000-1; CRA art. 13
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Z-05
+  domein: Z. Beheer, overdracht, kosten, energie en gebruik
+  wat: Operationele acceptatietest door de beheerpartij, aantoonbaar geslaagd vóór ingebruikname
+  hoe: document + keurder
+  normen: ISO/IEC 20000-1
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: optioneel
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Z-06
+  domein: Z. Beheer, overdracht, kosten, energie en gebruik
+  wat: 'Overdrachtstest: een ontwikkelaar die het project niet kent bouwt, test en rolt uit naar een testomgeving met alleen de documentatie (niveau 3 binnen een dag, niveau 4 binnen vier uur)'
+  hoe: keurder
+  normen: ISO/IEC 25010:2023 (onderhoudbaarheid, overdraagbaarheid)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Z-07
+  domein: Z. Beheer, overdracht, kosten, energie en gebruik
+  wat: 'Eigendom en toegang bij de opdrachtgever: repository, cloudaccounts, domeinen, certificaten, appwinkelaccounts en sleutels op naam van de opdrachtgever of aantoonbaar overdraagbaar'
+  hoe: document + verklaring
+  normen: ISO/IEC 27002 5.9
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Z-08
+  domein: Z. Beheer, overdracht, kosten, energie en gebruik
+  wat: 'Intellectueel eigendom en licenties geregeld: overdracht of gebruiksrecht vastgelegd; geen licenties op naam van de bouwer die niet mee kunnen'
+  hoe: document + verklaring
+  normen: ISO/IEC 5230
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Z-09
+  domein: Z. Beheer, overdracht, kosten, energie en gebruik
+  wat: Geen gesloten eigen frameworks, bibliotheken of codegeneratoren van de bouwer zonder broncode of overdraagbare licentie
+  hoe: scan + analist
+  normen: ISO/IEC 25010:2023 (overdraagbaarheid)
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Z-10
+  domein: Z. Beheer, overdracht, kosten, energie en gebruik
+  wat: Ontwerpkeuzes (architectuurbeslissingen) en bedrijfsregels vastgelegd buiten de code, en actueel
+  hoe: document + keurder
+  normen: ISO/IEC/IEEE 42010
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Z-11
+  domein: Z. Beheer, overdracht, kosten, energie en gebruik
+  wat: 'AI-werkwijze overdraagbaar: instructiebestanden, agentconfiguratie en vaste opdrachten die de bouw sturen staan in de repository en zijn beschreven (zie B-05)'
+  hoe: scan + document
+  normen: ISO/IEC 42001
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: als van toepassing
+    n4: als van toepassing
+  in_scanner: false
+  status: actief
+- id: Z-12
+  domein: Z. Beheer, overdracht, kosten, energie en gebruik
+  wat: 'Exitplan bij einde van het contract: termijnen, kennisoverdracht en ondersteuning tijdens de overgang'
+  hoe: document
+  normen: ISO/IEC 27036; DORA art. 28(8)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: optioneel
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Z-13
+  domein: Z. Beheer, overdracht, kosten, energie en gebruik
+  wat: 'Overzicht van de beheerkosten: alle terugkerende kosten per maand (hosting, licenties, externe diensten, AI-gebruik, beheeruren)'
+  hoe: document
+  normen: ISO/IEC 20000-1
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Z-14
+  domein: Z. Beheer, overdracht, kosten, energie en gebruik
+  wat: Kosten per functionele eenheid bekend, met een prognose bij twee- en tienvoudige groei
+  hoe: document + keurder
+  normen: FinOps Framework
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: optioneel
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Z-15
+  domein: Z. Beheer, overdracht, kosten, energie en gebruik
+  wat: 'Beheercomplexiteit gemeten en in het rapport: aantal uitrolbare onderdelen, talen en frameworks, directe afhankelijkheden, externe diensten, omgevingen en handmatige beheerstappen'
+  hoe: scan + analist
+  normen: ISO/IEC 25010:2023; ISO/IEC 5055
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Z-16
+  domein: Z. Beheer, overdracht, kosten, energie en gebruik
+  wat: 'Operationele cijfers bijgehouden: wijzigingsfaalpercentage, hersteltijd, uitrolfrequentie, doorlooptijd en incidenten per maand'
+  hoe: document + scan
+  normen: DevOps Research and Assessment
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: optioneel
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Z-17
+  domein: Z. Beheer, overdracht, kosten, energie en gebruik
+  wat: Energieverbruik gemeten per functionele eenheid volgens ISO/IEC 21031, apart voor server, toestel en AI-aanroepen, met vastgelegde meetmethode
+  hoe: document + keurder
+  normen: ISO/IEC 21031:2024; Blauer Engel DE-UZ 215
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Z-18
+  domein: Z. Beheer, overdracht, kosten, energie en gebruik
+  wat: 'AI-verbruik apart: tokens en geschatte energie per aanroep bekend; geen onnodige aanroepen (caching, kleiner model waar het kan)'
+  hoe: scan + document
+  normen: ISO/IEC 21031:2024
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: als van toepassing
+    n4: als van toepassing
+  in_scanner: false
+  status: actief
+- id: Z-19
+  domein: Z. Beheer, overdracht, kosten, energie en gebruik
+  wat: 'Zuinig in rust: geen onnodige achtergrondprocessen, polling of wekprocessen; op mobiel het batterijverbruik gemeten'
+  hoe: scan + analist
+  normen: Blauer Engel DE-UZ 215
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: optioneel
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Z-20
+  domein: Z. Beheer, overdracht, kosten, energie en gebruik
+  wat: 'Werkt op oudere toestellen en browsers: minimumvereisten gepubliceerd; updates maken bestaande hardware niet onbruikbaar'
+  hoe: document + keurder
+  normen: Blauer Engel DE-UZ 215
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Z-21
+  domein: Z. Beheer, overdracht, kosten, energie en gebruik
+  wat: 'Omvang beheerst: paginagewicht, bundel- en appgrootte en dataverkeer per sessie gemeten, met een drempel'
+  hoe: scan
+  normen: Blauer Engel DE-UZ 215; W3C Web Sustainability Guidelines
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: optioneel
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Z-22
+  domein: Z. Beheer, overdracht, kosten, energie en gebruik
+  wat: Energiebron en efficiëntie (PUE) van het datacenter bekend en in het rapport
+  hoe: document
+  normen: Gedelegeerde Verordening (EU) 2024/1364 (datacenters)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: optioneel
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Z-23
+  domein: Z. Beheer, overdracht, kosten, energie en gebruik
+  wat: 'Einde levensduur: uitfaseerplan met tijdige aankondiging, teruggave van de gegevens en aantoonbaar veilig wissen'
+  hoe: document
+  normen: CRA art. 13; AVG art. 17
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Z-24
+  domein: Z. Beheer, overdracht, kosten, energie en gebruik
+  wat: 'Gebruikslogica getoetst: de keurder beoordeelt de kerntaken op de interactieprincipes van ISO 9241-110'
+  hoe: keurder
+  normen: ISO 9241-110:2020; ISO/IEC 25010:2023 (interactievermogen)
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Z-25
+  domein: Z. Beheer, overdracht, kosten, energie en gebruik
+  wat: 'Geen misleidende ontwerpen: opzeggen even makkelijk als afsluiten, weigeren even makkelijk als toestemmen, geen verborgen of voorgeselecteerde keuzes'
+  hoe: scan + analist
+  normen: DSA art. 25; Richtlijn 2005/29/EG; AVG art. 7
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Z-26
+  domein: Z. Beheer, overdracht, kosten, energie en gebruik
+  wat: Gebruikstest met echte gebruikers op de kerntaken, gerapporteerd volgens ISO/IEC 25066
+  hoe: document
+  normen: ISO 9241-11:2018; ISO/IEC 25066:2016
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: optioneel
+    n4: verplicht
+  in_scanner: false
+  status: actief
+- id: Z-27
+  domein: Z. Beheer, overdracht, kosten, energie en gebruik
+  wat: 'Fouten helpen herstellen: begrijpelijke foutmeldingen met een oplossing; acties met grote gevolgen vragen bevestiging en zijn waar mogelijk ongedaan te maken'
+  hoe: keurder
+  normen: ISO 9241-110:2020
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
+modules:
+- naam: DORA — klant is een financiële instelling
+  checks:
+  - id: M-D01
+    wat: Broncodereview met statische én dynamische tests, inclusief securitytests van alles wat aan internet hangt; gevonden zwakheden krijgen een actieplan dat aantoonbaar wordt opgevolgd (D-06 en D-07
+      worden verplicht)
+  - id: M-D02
+    wat: Softwarepakketten van derden uiterlijk bij de integratie op beveiliging getest
+  - id: M-D03
+    wat: Niet-productieomgevingen bevatten alleen geanonimiseerde, gepseudonimiseerde of gerandomiseerde gegevens; uitzonderingen zijn tijdelijk, goedgekeurd en gemeld
+  - id: M-D04
+    wat: 'Integriteit van de broncode beschermd: toegang beperkt, wijzigingen herleidbaar, ondertekende commits of gelijkwaardig'
+  - id: M-D05
+    wat: 'Standaardcontract bevat alle bepalingen van art. 30(2): diensten, locaties van dienst en gegevens, gegevensbescherming, teruggave van gegevens, service levels, incidentbijstand, medewerking met
+      toezichthouders, opzegging, deelname aan opleidingen'
+  - id: M-D06
+    wat: 'Bij kritieke of belangrijke functies ook art. 30(3): meetbare service levels, geteste continuïteitsplannen, deelname aan dreigingsgestuurde pentests (TLPT), audit- en toegangsrechten, exitstrategie
+      met overgangsperiode'
+  - id: M-D07
+    wat: Leverancier levert de gegevens voor het informatieregister van de klant, waaronder de keten van onderaannemers
+  - id: M-D08
+    wat: 'Incidentbijstand: de leverancier meldt incidenten snel genoeg zodat de klant zijn eigen DORA-meldtermijnen haalt'
+- naam: Betalingen
+  checks:
+  - id: M-B01
+    wat: Betalingen lopen via een vergunde betaaldienstaanbieder; sterke klantauthenticatie wordt niet omzeild
+  - id: M-B02
+    wat: De app slaat zelf geen volledige kaartgegevens op
+- naam: Consumenten — online verkoop aan particulieren
+  checks:
+  - id: M-C01
+    wat: 'Herroepingsknop: "overeenkomst hier herroepen" zichtbaar tijdens de hele termijn, bevestiging in twee stappen, ontvangstbevestiging op een duurzame drager'
+  - id: M-C02
+    wat: Prijzen en verplichte informatie zichtbaar vóór de bestelling; de bestelknop zegt "bestelling met betalingsverplichting"
+  - id: M-C03
+    wat: Geen vooraf aangevinkte vakjes voor extra betalingen en geen misleidende interfaceontwerpen
+  - id: M-C04
+    wat: Toont de app beoordelingen, dan staat erbij of en hoe gecontroleerd wordt dat ze van echte kopers komen
+- naam: Platformen — de app bewaart of toont inhoud van gebruikers
+  checks:
+  - id: M-P01
+    wat: Meldsysteem voor illegale inhoud; motivering aan de gebruiker bij verwijdering of blokkering
+  - id: M-P02
+    wat: Contactpunten voor autoriteiten en gebruikers; gebruiksvoorwaarden beschrijven de moderatie
+  - id: M-P03
+    wat: 'Online platformen: geen misleidende ontwerpen, uitleg over aanbevelingen, bescherming van minderjarigen (micro- en kleine ondernemingen deels vrijgesteld)'
+  - id: M-P04
+    wat: 'Online marktplaatsen: verkopers geïdentificeerd'
+- naam: Digitale identiteit
+  checks:
+  - id: M-E01
+    wat: 'Sectoren die wettelijk sterke authenticatie vragen: plan om de Europese digitale-identiteitswallet te aanvaarden binnen de wettelijke termijn (datum na te kijken)'
+- naam: Overheid — de klant is een overheidsinstantie
+  checks:
+  - id: M-O01
+    wat: Toegankelijkheid verplicht (L-01), met toegankelijkheidsverklaring
+  - id: M-O02
+    wat: Open standaarden en gedocumenteerde koppelingen; ondersteuning bij de interoperabiliteitsbeoordeling van de klant
+- naam: N. Uw organisatie (klantmodule)
+  checks:
+  - id: N-01
+    wat: De app staat in het verwerkingsregister
+  - id: N-02
+    wat: Verwerkersovereenkomst met de leverancier getekend; subverwerkers gekend
+  - id: N-03
+    wat: Rechtsgrond bepaald; de privacyverklaring vermeldt de verwerking
+  - id: N-04
+    wat: DPIA gedaan, of onderbouwd waarom die niet nodig is
+  - id: N-05
+    wat: Verzoeken om inzage of verwijdering kunnen voor deze app binnen een maand afgehandeld worden
+  - id: N-06
+    wat: De datalekprocedure dekt deze app (melden binnen 72 uur)
+  - id: N-07
+    wat: Wie de AI-functies gebruikt, is voldoende AI-geletterd
+  - id: N-08
+    wat: 'Bij hoog-risicogebruik: gebruik volgens de instructies, menselijk toezicht door bevoegde mensen, logs minstens 6 maanden bewaard, werknemers geïnformeerd'
+  - id: N-09
+    wat: De leverancier is opgenomen in de leveranciersbeoordeling; volgens het nationale kader (bv. CyberFundamentals in België)
+  - id: N-10
+    wat: De incidentmeldprocedure dekt deze app (vroege waarschuwing binnen 24 uur)
+  - id: N-11
+    wat: Contract met de art. 30-bepalingen getekend, leverancier in het informatieregister, exitplan bij een kritieke functie
+  - id: N-12
+    wat: 'Toegang bij de klant: MFA aan, minimale rechten, vertrekkers verwijderd'
+  - id: N-13
+    wat: De veilige configuratie uit de handleiding (J-07) is toegepast
+  - id: N-14
+    wat: Security-updates worden binnen een afgesproken termijn geïnstalleerd

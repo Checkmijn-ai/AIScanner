@@ -3,7 +3,7 @@
 Onafhankelijke controle van software die met AI gebouwd is. Een meetlat, geen mening: vaste regels, geen AI in de meting,
 elke check gekoppeld aan de norm of wet waar hij uit komt (CRA, AVG, AI Act, NIS2, OWASP, ISO/IEC 27002).
 
-**De broncode staat open ter inzage, zodat iedereen kan nagaan wat er gemeten wordt.** Zie [LICENSE.md](LICENSE.md).
+**Open source onder de EUPL-1.2.** Iedereen kan nagaan wat er gemeten wordt, en de scanner zelf draaien. Zie [LICENSE.md](LICENSE.md). De lijst van checks (de norm) staat in [`norm/checks.yaml`](norm/checks.yaml), onder CC BY 4.0.
 
 ## Gebruiken
 

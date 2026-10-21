@@ -1,25 +1,50 @@
 {% extends "site/basis.html" %}
 {% import "site/macros.html" as m %}
 {% block inhoud %}
-{% call m.kop("Catalogus", "Wat we controleren", "De " ~ checks|length ~ " checks van niveau 1, elk gekoppeld aan de wetten en normen waar ze uit komen. Dit is de lijst die de scanner van vandaag gebruikt.") %}
-<div class="knoppenrij"><a class="knop licht klein" href="/checks.json">checks.json</a><a class="knop licht klein" href="/framework">Als checklist</a></div>
+{% call m.kop("Alle checks", "Wat we controleren", "Alle " ~ checks|length ~ " checks van CheckMijn.AI, uitgeschreven: wat we controleren, hoe, op welk niveau, en uit welke norm of wet het komt. De lijst is open (CC BY 4.0) en dezelfde voor iedereen.") %}
+<div class="niveautellers">
+  {% for k, naam in [("n1", "Niveau 1 · Basisscan"), ("n2", "Niveau 2 · Gekeurd"), ("n3", "Niveau 3 · Gekeurd Plus"), ("n4", "Niveau 4 · Kritiek")] %}
+  <div><b>{{ tel[k] }}</b><span class="zacht klein">verplicht op {{ naam }}</span></div>
+  {% endfor %}
+</div>
+<div class="knoppenrij"><a class="knop licht klein" href="/norm/checks.yaml">Alle checks als bestand (YAML)</a><a class="knop licht klein" href="/framework">Als checklist</a><a class="knop licht klein" href="/open-source">Hoe de scanner werkt</a></div>
 {% endcall %}
 <section class="wrap sectie">
-  <div class="filter" role="search">
-    <label for="zoek">Zoeken<input id="zoek" type="search" placeholder="Bv. geheimen, cookie, lockfile"></label>
+  <div class="filter filter-4" role="search">
+    <label for="zoek">Zoeken<input id="zoek" type="search" placeholder="Bv. geheimen, cookie, pentest, E-05"></label>
     <label for="domein">Onderwerp<select id="domein"><option value="">Alle</option>{% for d in domeinen %}<option>{{ d }}</option>{% endfor %}</select></label>
-    <label for="ernst-filter">Standaardernst<select id="ernst-filter"><option value="">Alle</option><option>Kritiek</option><option>Hoog</option><option>Middel</option><option>Laag</option></select></label>
+    <label for="niveau-filter">Niveau<select id="niveau-filter"><option value="">Alle niveaus</option><option value="n1">Verplicht op niveau 1</option><option value="n2">Verplicht op niveau 2</option><option value="n3">Verplicht op niveau 3</option><option value="n4">Verplicht op niveau 4</option></select></label>
+    <label for="scanner-filter">Hoe<select id="scanner-filter"><option value="">Alles</option><option value="ja">Automatisch in de scanner</option><option value="nee">Door een keurder of pentester</option></select></label>
   </div>
   <p class="zacht klein" id="teller" aria-live="polite">{{ checks|length }} checks</p>
-  <ul class="checks">
-  {% for c in checks %}
-    <li data-domein="{{ c.domein }}" data-ernst="{{ c.ernst }}">
-      <span class="id">{{ c.id }}</span>
-      <div><p class="mt0">{{ c.scan }}</p><span class="normen">{{ c.normen }}</span></div>
-      <div class="rechts"><span class="ernst e-{{ c.ernst }}">{{ c.ernst }}</span><br>{{ c.domein.split('. ', 1)[1] if '. ' in c.domein else c.domein }}</div>
-    </li>
+  <p class="zacht klein">Legenda: ● verplicht · ◐ verplicht als het van toepassing is · ○ optioneel · – niet gevraagd</p>
+
+  {% for d in domeinen %}
+  <div class="domein" data-domein="{{ d }}">
+    <h2 id="domein-{{ d[0] }}">{{ d }}</h2>
+    <p class="zacht domein-waarom">{{ waarom.get(d[0], '') }}</p>
+    <div class="scroll"><table class="tabel checktabel">
+      <thead><tr><th scope="col">ID</th><th scope="col">Wat we controleren</th><th scope="col" class="nv" title="Niveau 1">N1</th><th scope="col" class="nv" title="Niveau 2">N2</th><th scope="col" class="nv" title="Niveau 3">N3</th><th scope="col" class="nv" title="Niveau 4">N4</th><th scope="col">Hoe</th></tr></thead>
+      <tbody>
+      {% for c in checks if c.domein == d %}
+        <tr class="check-rij" data-domein="{{ d }}" data-n1="{{ c.niveaus.n1 }}" data-n2="{{ c.niveaus.n2 }}" data-n3="{{ c.niveaus.n3 }}" data-n4="{{ c.niveaus.n4 }}" data-scanner="{{ 'ja' if c.in_scanner else 'nee' }}">
+          <td><a class="id" href="/check/{{ c.id }}">{{ c.id }}</a></td>
+          <td>{{ c.wat }}{% if c.status == 'voorstel' %} <span class="label">nieuw, voorstel</span>{% endif %}<br><span class="normen">{{ c.normen }}</span></td>
+          {% for k in ["n1", "n2", "n3", "n4"] %}<td class="nv">{{ label[c.niveaus[k]] }}</td>{% endfor %}
+          <td class="zacht klein">{{ c.hoe }}{% if c.in_scanner %}<br><span class="label">in de scanner</span>{% endif %}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table></div>
+  </div>
   {% endfor %}
-  </ul>
-  <p class="zacht klein mt2">Niveau 2, 3 en 4 voegen meer checks toe: samen 288. <a href="/niveaus">Bekijk de niveaus</a>.</p>
+
+  <h2>Modules bovenop elk niveau</h2>
+  <p class="zacht">Deze checks komen erbij zodra een wet van toepassing is, op elk niveau. Bijvoorbeeld DORA als je klant een bank of verzekeraar is.</p>
+  {% for mod in modules %}
+  <h3>{{ mod.naam }}</h3>
+  <div class="scroll"><table class="tabel"><tbody>{% for c in mod.checks %}<tr><td class="id">{{ c.id }}</td><td>{{ c.wat }}</td></tr>{% endfor %}</tbody></table></div>
+  {% endfor %}
+  <p class="zacht klein mt2">De checks van niveau 3 en 4 en de modules zijn een concept (norm 0.2). Ze worden definitief na de pilots.</p>
 </section>
 {% endblock %}

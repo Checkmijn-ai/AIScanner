@@ -178,3 +178,34 @@ a.kaart { text-decoration: none; color: inherit; display: block; }
 a.kaart:hover { border-color: var(--turq-d); }
 .meer { color: var(--turq-d); font-weight: 600; }
 .nummer + h3 { margin-top: 8px; }
+
+/* alle checks */
+.niveautellers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 24px; }
+.niveautellers b { display: block; font: 700 1.8rem/1.1 var(--kop); }
+@media (max-width: 720px) { .niveautellers { grid-template-columns: repeat(2, 1fr); } }
+.filter.filter-4 { grid-template-columns: 2fr 1fr 1fr 1fr; }
+@media (max-width: 900px) { .filter.filter-4 { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .filter.filter-4 { grid-template-columns: 1fr; } }
+.checktabel td, .checktabel th { padding: 10px 12px; }
+.checktabel .nv { text-align: center; width: 44px; font-size: 1.05rem; color: var(--turq-d); }
+.checktabel a.id { font: 700 .9rem var(--mono); color: var(--turq-d); white-space: nowrap; }
+.checktabel .normen, td .normen { font-size: .8rem; color: var(--zacht); }
+.tabel td.id { font: 700 .9rem var(--mono); color: var(--turq-d); white-space: nowrap; }
+.domein-waarom { max-width: 52em; }
+.id-groot { font-family: var(--mono); color: var(--turq-d); margin-right: .3em; }
+.paginakop .oog a { color: inherit; text-decoration: none; }
+
+/* wat je krijgt */
+.pakketten { display: grid; gap: 20px; }
+.pakketten.twee { grid-template-columns: repeat(2, 1fr); }
+.pakketten.drie { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 900px) { .pakketten.drie { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 640px) { .pakketten.twee, .pakketten.drie { grid-template-columns: 1fr; } }
+h1.check-titel { font-size: clamp(1.5rem, 3.2vw, 2.3rem); max-width: 34em; }
+.pakket { display: flex; flex-direction: column; gap: 4px; }
+.pakket ul { padding-left: 18px; margin: 8px 0 20px; color: var(--zacht); font-size: .95rem; flex: 1; }
+.pakket li { margin: 6px 0; }
+.pakket .knop { align-self: flex-start; }
+.prijs { font: 700 1.6rem/1.2 var(--kop); color: var(--navy); margin: 0 0 4px; }
+.prijs span { display: block; font: 400 .85rem var(--sans); color: var(--zacht); }
+.pakket.uitgelicht { border: 2px solid var(--turq-d); }
