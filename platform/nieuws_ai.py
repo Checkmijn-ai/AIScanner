@@ -129,6 +129,9 @@ def post_van_de_dag(d: dict, nu: datetime, aanroep=None) -> bool:
     site = os.environ.get("AISCAN_SITE_ORIGIN", "https://checkmijn.ai").rstrip("/")
     dag = nu.astimezone(NL_TZ).date().isoformat()
     posts = d.setdefault("posts", [])
+    # Een post uit het sjabloon van vandaag mag opnieuw, zodra de AI beschikbaar is.
+    if sleutel() or aanroep:
+        posts[:] = [p for p in posts if not (p["dag"] == dag and p.get("door") == "sjabloon")]
     if any(p["dag"] == dag for p in posts):
         return False
     i = kies(d, nu, {p["item"] for p in posts})
