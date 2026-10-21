@@ -43,23 +43,11 @@
   </section>
   {% endfor %}
 
-  <div class="rooster-2 mt2 nieuwsuitleg">
-    <div class="kaart">
-      <h2 class="mt0">Hoe we het nieuws kiezen</h2>
-      <ul class="zacht">
-        <li>Een programma haalt elke dag om ongeveer 07:10 en 17:10 de feeds van de bronnen hiernaast op. Er is geen redactie: de indeling gebeurt op trefwoorden.</li>
-        <li>Elk bericht staat in één tabblad. Gaat een bericht over AI én beveiliging, dan staat het bij AI-security.</li>
-        <li>Brengen meerdere bronnen hetzelfde nieuws, ook in een andere taal, dan tonen we het één keer, met "Ook bij".</li>
-        <li>"Raakt aan" verwijst naar de check die over hetzelfde risico gaat, zodat je ziet wat het betekent voor je eigen app.</li>
-        <li>Bij Engelse berichten staat een korte Nederlandse samenvatting, gemaakt met AI (Claude) op basis van alleen de titel en de inleiding. Die is gemarkeerd als "AI-samenvatting".</li>
-        <li>"NL/BE" betekent dat het bericht over Nederland of België gaat.</li>
-        <li>We tonen alleen de titel en een korte inleiding. Het volledige bericht staat bij de bron. Berichten blijven drie weken staan.</li>
-      </ul>
-    </div>
+  <div class="mt2 nieuwsuitleg">
     <div class="kaart">
       <h2 class="mt0">Bronnen</h2>
       <ul class="bronlijst">{% for b in bronnen %}<li><span class="stip{{ '' if b.ok else ' uit' }}" title="{{ 'Werkt' if b.ok else 'Nu niet bereikbaar' }}" data-fout="{{ b.fout }}" aria-hidden="true"></span><a href="https://{{ b.site }}" rel="noopener">{{ b.naam }}</a> <span class="taal">{{ b.taal|upper }}</span></li>{% endfor %}</ul>
-      <p class="zacht klein">Een bron missen? Mail <a href="mailto:{{ CONTACT }}">{{ CONTACT }}</a>.</p>
+      <p class="zacht klein">Elk bericht staat in één tabblad; hetzelfde nieuws uit meerdere bronnen tonen we één keer. Samenvattingen van Engelse berichten zijn gemaakt met AI. Een bron missen? Mail <a href="mailto:{{ CONTACT }}">{{ CONTACT }}</a>.</p>
     </div>
   </div>
   {{ m.cta() }}
