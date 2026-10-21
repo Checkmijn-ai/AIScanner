@@ -5,18 +5,24 @@
   <div>
     <p class="oog">Onafhankelijke controle van software die met AI gebouwd is</p>
     <h1>Check je AI-software voor je ze lanceert, koopt of oplevert.</h1>
-    <p class="lead">Een meetlat, geen mening: vaste regels, Europese normen en een score van A tot G. Je code verlaat je bedrijf nooit.</p>
+    <p class="lead">Een meetlat, geen mening: vaste regels, Europese normen en een score van A tot G. Je code verlaat je bedrijf nooit, en de scanner is open source.</p>
     {{ m.cta() }}
+    <p class="klein-onder">Gratis voor niveau 1 · <a href="/voorbeeldrapport">Bekijk een voorbeeldrapport</a></p>
   </div>
-  <div class="kaart vlak">
-    <p class="oog">Voorbeeldbadge</p>
-    {{ m.badge("B", 1, "Zelfcontrole") }}
-    <p class="zacht klein mt1">Elke badge linkt naar een scorepagina met de datum, de versie van de scanner en de geteste checks.</p>
-    <a class="klein" href="/score-uitleg">Wat betekent de letter?</a>
+  <div>
+    <div class="label-vb" role="img" aria-label="Voorbeeld van een scanscore: B, niveau 1, zelfcontrole">
+      <div class="kopje"><b>CheckMijn.AI</b><span>Scanscore · voorbeeld</span></div>
+      <div class="balken">
+        {% for L, g in [("A","0 kritiek, 0 hoog, ≤ 2 middel"),("B","0 kritiek, 0 hoog"),("C","≤ 2 hoog"),("D","≤ 5 hoog"),("E","≤ 1 kritiek"),("F","≤ 3 kritiek"),("G","4+ kritiek")] %}
+        <div class="balk{% if L == 'B' %} actief{% endif %}"><span class="staaf l-{{ L }} w-{{ L }}">{{ L }}</span><span class="grens">{{ g }}</span>{% if L == 'B' %}<span class="pijl">B</span>{% endif %}</div>
+        {% endfor %}
+      </div>
+      <div class="voet"><span>Niveau 1 · zelfcontrole</span><span>45 checks · 21-10-2026</span></div>
+    </div>
   </div>
 </div></section>
 
-<section class="vlak"><div class="wrap sectie cijfers">
+<section class="cijferband"><div class="wrap sectie cijfers">
   <div><b>292</b><span class="zacht">checks, <a href="/wat-we-controleren">allemaal uitgeschreven</a></span></div>
   <div><b>Dagelijks</b><span class="zacht">een nieuwe, ondertekende scanner</span></div>
   <div><b>6</b><span class="zacht">wetten en normen: CRA, AVG, AI Act, NIS2, OWASP en ISO</span></div>
@@ -41,6 +47,17 @@
     <div class="kaart"><span class="nummer">02</span><h3>Kopen of overnemen</h3><p class="zacht">Weet wat je koopt.</p></div>
     <div class="kaart"><span class="nummer">03</span><h3>Opleveren</h3><p class="zacht">Lever bewijs mee aan je klant.</p></div>
   </div>
+</section>
+
+<section class="wrap sectie">
+  <h2 class="mt0">Meer dan een tool, goedkoper dan een pentest</h2>
+  <p class="lead">Kopers vergelijken een automatische tool met een pentest. CheckMijn.AI zit ertussen, met een score die je kunt tonen.</p>
+  <div class="vergelijk mt2">
+    <div><h3>Automatische tool</h3><p class="prijsje">±€0–1.000 per maand</p><ul><li>Vindt lekken in pakketten en code</li><li>Geen oordeel, geen score voor je klant</li><li>Je weet niet wat niet gecontroleerd is</li></ul></div>
+    <div class="wij"><h3>CheckMijn.AI</h3><p class="prijsje">gratis tot vanaf €5.700</p><ul><li>292 publieke checks, gekoppeld aan CRA, AVG, AI Act, NIS2</li><li>Score A–G die je klant begrijpt, met niveau en datum</li><li>Vanaf niveau 2 een erkende keurder en aanvalstests</li><li>Open source: iedereen kan nakijken hoe gemeten wordt</li></ul></div>
+    <div><h3>Pentest</h3><p class="prijsje">±€3.500–14.000+</p><ul><li>Diepe, handmatige aanval op één moment</li><li>Geen vaste meetlat: elke pentest is anders</li><li>Zit bij ons in niveau 3 en 4</li></ul></div>
+  </div>
+  <p class="zacht klein mt1">Marktprijzen: indicatief, oktober 2026. <a href="/wat-je-krijgt">Bekijk wat je bij ons per niveau krijgt</a>.</p>
 </section>
 
 <section class="wrap sectie">

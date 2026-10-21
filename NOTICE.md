@@ -46,3 +46,8 @@ Het scannerbestand bevat deze pure-Python-bibliotheken, ongewijzigd, zodat er bi
 | urllib3, charset-normalizer | MIT |
 | idna | BSD-3-Clause |
 | certifi | MPL-2.0 (ongewijzigd meegeleverd) |
+
+## Poppins (lettertype van de website)
+
+Poppins, © Indian Type Foundry, onder de SIL Open Font License 1.1 (https://openfontlicense.org). Gebruikt als
+webfont in `platform/static/fonts/` (een deelverzameling van de tekens, als WOFF).

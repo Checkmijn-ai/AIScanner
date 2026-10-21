@@ -16,7 +16,7 @@ import api  # noqa: E402
 c = api.app.test_client()
 paginas = ["/", "/hoe-het-werkt", "/niveaus", "/wat-we-controleren", "/score-uitleg", "/waarom", "/bureaus",
            "/opdrachtgevers", "/vertrouwen", "/framework", "/vragen", "/contact", "/scan", "/rapport/x",
-           "/wat-je-krijgt", "/open-source", "/check/E-05", "/check/W-13"]
+           "/wat-je-krijgt", "/open-source", "/check/E-05", "/check/W-13", "/voorbeeldrapport"]
 links = set()
 for p in paginas:
     r = c.get(p)
@@ -25,7 +25,7 @@ for p in paginas:
     csp = r.headers["Content-Security-Policy"]
     assert "script-src 'self'" in csp and "unsafe-inline" not in csp.split("script-src")[1].split(";")[0], (p, csp)
     assert "<script>" not in html and " onclick=" not in html, p
-    if p != "/rapport/x":
+    if p not in ("/rapport/x", "/voorbeeldrapport"):
         assert 'style="' not in html, f"inline stijl op {p}"
         assert "style-src 'self';" in csp, p
     links |= set(re.findall(r'href="(/[^"#?]*)', html))
