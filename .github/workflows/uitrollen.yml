@@ -22,7 +22,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: uitrollen-${{ github.event.inputs.tak || github.ref_name }}
+  group: uitrollen   # live en test na elkaar: ze delen dezelfde server en hetzelfde geheimenbestand
   cancel-in-progress: false
 jobs:
   uitrollen:
@@ -93,7 +93,7 @@ jobs:
             done
             true
           } | ssh -i ~/.ssh/uitrol -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=20 "root@$HOST" \
-              'install -d -m 700 /etc/checkmijn && umask 077 && cat > /etc/checkmijn/geheimen.env.nieuw && mv /etc/checkmijn/geheimen.env.nieuw /etc/checkmijn/geheimen.env'
+              'install -d -m 700 /etc/checkmijn && umask 077 && t=$(mktemp /etc/checkmijn/geheimen.XXXXXX) && cat > "$t" && chmod 600 "$t" && mv -f "$t" /etc/checkmijn/geheimen.env'
           echo "::notice::Geheimen op de server: $(for n in ANTHROPIC_API_KEY BREVO_API_KEY BREVO_LIJST BREVO_DOI_TEMPLATE NIEUWSBRIEF_AFZENDER; do [ -n "${!n}" ] && printf '%s ' "$n"; done)(leeg = geen)"
       - name: Uitrollen
         if: steps.klaar.outputs.ok == 'true'
