@@ -17,7 +17,7 @@ on:
     - cron: "30 4 * * 1"
 permissions:
   contents: write   # nodig om .checkmijn/RAPPORT.md terug te zetten
-  id-token: write   # bewijst aan checkmijn.ai dat de scan echt uit deze repository komt (voor de rapportlink)
+  id-token: write   # bewijst aan checkmijn.ai dat de scan echt uit deze repository komt (rapportlink en meetellen)
 concurrency:
   group: checkmijn
   cancel-in-progress: true
@@ -34,4 +34,5 @@ jobs:
           rapport-in-repo: auto
           rapport-link: "true"   # opgemaakt rapport via een persoonlijke link, versleuteld (wij kunnen het niet lezen)
           insturen: "false"   # "true" = bewijsbestand (zonder code) inleveren voor een openbare scorepagina
+          meetellen: "true"   # alleen de letter (A–G) telt mee op checkmijn.ai/resultaten; zet op "false" om niet mee te tellen
           faal-bij: nooit

@@ -61,6 +61,29 @@ else
   if [ -d "$TEST/.git" ]; then docker compose --profile test up -d test >/dev/null 2>&1 || true; fi
 fi
 
+# Nieuws (checkmijn.ai/nieuws): twee keer per dag ophalen, om 05:10 en 15:10 UTC (07:10 en 17:10 in de zomer,
+# 06:10 en 16:10 in de winter). Live en test halen elk hun eigen nieuws op.
+command -v cron >/dev/null 2>&1 || apt-get install -yq cron
+cat > /etc/cron.d/checkmijn-nieuws <<'CRON'
+# CheckMijn.AI: nieuws ophalen voor /nieuws (geplaatst door server/uitrol.sh)
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+10 5,15 * * * root cd /opt/checkmijn/server && timeout 600 docker compose exec -T live python /app/platform/nieuws.py >> /var/log/checkmijn-nieuws.log 2>&1
+# Nieuwsbrief: elke maandag een concept in Brevo (versturen doe je zelf in Brevo)
+30 5 * * 1 root cd /opt/checkmijn/server && timeout 300 docker compose exec -T live python /app/platform/nieuwsbrief.py concept >> /var/log/checkmijn-nieuws.log 2>&1
+14 5,15 * * * root cd /opt/checkmijn/server && docker compose --profile test ps --status running test 2>/dev/null | grep -q test && timeout 600 docker compose --profile test exec -T test python /app/platform/nieuws.py >> /var/log/checkmijn-nieuws-test.log 2>&1
+CRON
+chmod 644 /etc/cron.d/checkmijn-nieuws
+cat > /etc/logrotate.d/checkmijn-nieuws <<'ROT'
+/var/log/checkmijn-nieuws*.log {
+  weekly
+  rotate 4
+  compress
+  missingok
+  notifempty
+}
+ROT
+
 docker compose exec -T caddy caddy reload --config /etc/caddy/Caddyfile >/dev/null 2>&1 || true
 docker image prune -f >/dev/null 2>&1 || true
 
@@ -70,5 +93,10 @@ for i in $(seq 1 30); do
   sleep 2
 done
 docker compose ps
+
+# Nieuws meteen bijwerken met de nieuwe code (dubbels worden overgeslagen, dus dit kan altijd).
+DIENST=live; [ "$TAK" = "test" ] && DIENST=test
+log "Nieuws ophalen ($DIENST), op de achtergrond"
+docker compose --profile test exec -d "$DIENST" python /app/platform/nieuws.py || true
 }
 main "$@" </dev/null

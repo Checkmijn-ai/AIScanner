@@ -1,0 +1,56 @@
+{% extends "site/basis.html" %}
+{% import "site/macros.html" as m %}
+{% block kop %}<link rel="alternate" type="application/rss+xml" title="CheckMijn.AI nieuws" href="/nieuws.xml">{% endblock %}
+{% macro bericht(i) -%}
+<article class="bericht" data-taal="{{ i.taal }}" data-dichtbij="{{ '1' if i.dichtbij else '0' }}">
+  <div class="meta"><span class="bron">{{ i.bron }}</span><span><span class="taal" title="{{ 'Nederlands' if i.taal == 'nl' else 'Engels' }}">{{ i.taal|upper }}</span>{% if i.dichtbij %} <span class="nlbe" title="Nieuws uit Nederland of België">NL/BE</span>{% endif %}</span><time datetime="{{ i.datum }}">{{ tijd(i.datum) }}</time></div>
+  <h3><a href="{{ i.url }}" rel="noopener"{% if not i.titel_nl %} lang="{{ i.taal }}"{% endif %}>{{ i.titel_nl or i.titel }}</a></h3>
+  {% if i.titel_nl %}<p class="origineel" lang="en">{{ i.titel }}</p>{% endif %}
+  {% if i.samenvatting_nl %}<p class="zacht">{{ i.samenvatting_nl }} <span class="ai-label" title="Titel vertaald en samenvatting gemaakt met AI, op basis van de titel en de inleiding">AI-vertaling</span></p>
+  {% elif i.samenvatting %}<p class="zacht">{{ i.samenvatting }}</p>{% endif %}
+  {% if i.ook %}<p class="ook">Ook bij: {% for o in i.ook %}<a href="{{ o.url }}" rel="noopener">{{ o.bron }}</a>{% if o.taal != i.taal %} <span class="taal">{{ o.taal|upper }}</span>{% endif %}{{ ", " if not loop.last }}{% endfor %}</p>{% endif %}
+  {% if i.checks %}<p class="raakt">Raakt aan: {% for c in i.checks %}<a class="checkchip" href="/check/{{ c }}">{{ c }} · {{ check_namen.get(c, '') }}</a>{% endfor %}</p>{% endif %}
+</article>
+{%- endmacro %}
+{% block inhoud %}
+{% call m.kop("Nieuws", "AI en security, elke dag", "Het belangrijkste nieuws over AI-security, cyberincidenten en AI, uit Nederlandse, Vlaamse en Engelstalige bronnen. Twee keer per dag bijgewerkt. Hetzelfde nieuws uit meerdere bronnen zie je maar één keer.") %}
+{{ m.nieuwsbrief_form("kop", NB_ACTIEF) }}
+<p class="zacht klein nieuwsstand">{% if bijgewerkt %}<span class="stip" aria-hidden="true"></span>Bijgewerkt {{ bijgewerkt }} · elke dag rond 07:10 en 17:10{% else %}Het eerste nieuws wordt opgehaald.{% endif %} · <a href="/nieuws.xml">RSS-feed</a></p>
+{% endcall %}
+
+<section class="wrap sectie nieuws" data-ai="{{ 'ok' if ai_status.ok else 'uit' }}" data-ai-fout="{{ ai_status.fout }}">
+  <div class="nieuwsbalk">
+    <div class="tabs" role="tablist" aria-label="Soort nieuws" hidden>
+      {% for k, t in tabs.items() %}<button type="button" role="tab" id="tab-{{ k }}" aria-controls="{{ k }}" aria-selected="{{ 'true' if loop.first else 'false' }}"{% if not loop.first %} tabindex="-1"{% endif %}>{{ t.naam }} <span class="aantal">{{ t.aantal }}</span></button>{% endfor %}
+    </div>
+    <div class="taalkeuze" role="group" aria-label="Taal en regio" hidden>
+      <button type="button" data-taal="" aria-pressed="true">Alles</button><button type="button" data-taal="nl" aria-pressed="false">NL</button><button type="button" data-taal="en" aria-pressed="false">EN</button><button type="button" data-taal="dichtbij" aria-pressed="false">Uit NL/BE</button>
+    </div>
+  </div>
+
+  {% for k, t in tabs.items() %}
+  <section class="tabpaneel" id="{{ k }}" role="tabpanel" aria-labelledby="tab-{{ k }}">
+    <h2 class="paneeltitel">{{ t.naam }}</h2>
+    {% if k == 'ai-security' %}<p class="zacht uitleg">Lekken en aanvallen via AI, prompt injection, AI-agents die zelf iets doen wat niet de bedoeling was, en beveiliging van modellen en tools.</p>
+    {% elif k == 'cyber' %}<p class="zacht uitleg">Hacks, datalekken, ransomware en kwetsbaarheden die je nu moet patchen, bij bedrijven en overheden in Nederland, België en daarbuiten.</p>
+    {% else %}<p class="zacht uitleg">Nieuwe modellen, regels zoals de AI Act, en wat bedrijven met AI doen.</p>{% endif %}
+    {% for dag, items in t.groepen %}
+      <h3 class="dagkop">{{ dag }}</h3>
+      <div class="berichten">{% for i in items %}{{ bericht(i) }}{% endfor %}</div>
+    {% else %}
+      <p class="leeg">Nog geen berichten in dit tabblad. Het nieuws wordt twee keer per dag opgehaald.</p>
+    {% endfor %}
+    <p class="leeg taalleeg" hidden>Geen berichten met deze keuze.</p>
+  </section>
+  {% endfor %}
+
+  <div class="mt2 nieuwsuitleg">
+    <div class="kaart">
+      <h2 class="mt0">Bronnen</h2>
+      <ul class="bronlijst">{% for b in bronnen %}<li><span class="stip{{ '' if b.ok else ' uit' }}" title="{{ 'Werkt' if b.ok else 'Nu niet bereikbaar' }}" data-fout="{{ b.fout }}" aria-hidden="true"></span><a href="https://{{ b.site }}" rel="noopener">{{ b.naam }}</a> <span class="taal">{{ b.taal|upper }}</span></li>{% endfor %}</ul>
+      <p class="zacht klein">Elk bericht staat in één tabblad; hetzelfde nieuws uit meerdere bronnen tonen we één keer. Samenvattingen van Engelse berichten zijn gemaakt met AI. Een bron missen? Mail <a href="mailto:{{ CONTACT }}">{{ CONTACT }}</a>.</p>
+    </div>
+  </div>
+  {{ m.cta() }}
+</section>
+{% endblock %}

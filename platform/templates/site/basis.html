@@ -25,7 +25,7 @@
   <div class="wrap">
     <a class="logo" href="/" aria-label="CheckMijn.AI, naar de homepage"><img src="{{ url_for('site.static', filename='img/checkmijn-logo-liggend.svg') }}" alt="CheckMijn.AI" width="193" height="36"></a>
     <nav class="hoofd" aria-label="Hoofdnavigatie">
-      <ul>{% for ep, naam in NAV %}<li><a href="{{ url_for('site.' ~ ep) }}"{% if pad == url_for('site.' ~ ep) %} aria-current="page"{% endif %}>{{ naam }}</a></li>{% endfor %}</ul>
+      <ul>{% for ep, naam in NAV %}<li><a href="{{ url_for('site.' ~ ep) }}"{% if pad == url_for('site.' ~ ep) %} aria-current="page"{% endif %}>{{ naam }}{% if ep == 'nieuws' and nieuws_vers %}<span class="navstip" title="Nieuws van vandaag"></span>{% endif %}</a></li>{% endfor %}</ul>
     </nav>
     <div class="knoppen">
       <a class="knop licht klein" href="/contact">Plan een gesprek</a>
@@ -50,8 +50,8 @@
       <img src="{{ url_for('site.static', filename='img/checkmijn-logo-liggend.svg') }}" alt="CheckMijn.AI" width="171" height="32">
       <p class="zacht klein mt1">Onafhankelijke controle van software die met AI gebouwd is. Uit Nederland en Vlaanderen, gehost in Helsinki (EU). Open source onder EUPL-1.2.</p>
     </div>
-    <div><h2>Dienst</h2><ul><li><a href="/hoe-het-werkt">Hoe het werkt</a></li><li><a href="/niveaus">Niveaus</a></li><li><a href="/wat-we-controleren">Wat we controleren</a></li><li><a href="/score-uitleg">De score</a></li><li><a href="/waarom">Waarom een scan</a></li></ul></div>
-    <div><h2>Voor wie</h2><ul><li><a href="/bureaus">Bureaus</a></li><li><a href="/opdrachtgevers">Opdrachtgevers en inkopers</a></li><li><a href="/wat-je-krijgt">Wat je krijgt</a></li><li><a href="/framework">Gratis framework</a></li><li><a href="/scan">Instructie voor AI-agents</a></li></ul></div>
+    <div><h2>Dienst</h2><ul><li><a href="/hoe-het-werkt">Hoe het werkt</a></li><li><a href="/niveaus">Niveaus</a></li><li><a href="/wat-we-controleren">Wat we controleren</a></li><li><a href="/score-uitleg">De score</a></li><li><a href="/resultaten">Resultaten</a></li><li><a href="/waarom">Waarom een scan</a></li></ul></div>
+    <div><h2>Voor wie</h2><ul><li><a href="/bureaus">Bureaus</a></li><li><a href="/opdrachtgevers">Opdrachtgevers en inkopers</a></li><li><a href="/wat-je-krijgt">Wat je krijgt</a></li><li><a href="/nieuws">Nieuws</a></li><li><a href="/nieuwsbrief">Nieuwsbrief</a></li><li><a href="/framework">Gratis framework</a></li><li><a href="/scan">Instructie voor AI-agents</a></li></ul></div>
     <div><h2>Organisatie</h2><ul><li><a href="/open-source">Open source</a></li><li><a href="/vertrouwen">Vertrouwen en veiligheid</a></li><li><a href="/vragen">Veelgestelde vragen</a></li><li><a href="/contact">Contact</a></li><li><a href="https://github.com/Checkmijn-ai/AIScanner">Broncode op GitHub</a></li></ul></div>
   </div>
   <div class="wrap onder">

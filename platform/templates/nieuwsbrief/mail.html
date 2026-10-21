@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CheckMijn.AI nieuwsbrief</title>
+</head>
+<body style="margin:0;padding:0;background:#f2f6f9;font-family:Arial,Helvetica,sans-serif;color:#02254f;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f2f6f9;">
+<tr><td align="center" style="padding:24px 12px;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:620px;background:#ffffff;border-radius:10px;overflow:hidden;">
+  <tr><td style="background:#02254f;padding:28px 32px;">
+    <div style="font:700 20px Arial,Helvetica,sans-serif;color:#ffffff;">CheckMijn<span style="color:#00b8b0;">.AI</span></div>
+    <div style="font:700 26px/1.25 Arial,Helvetica,sans-serif;color:#ffffff;margin-top:18px;">AI en security deze week</div>
+    <div style="font:14px Arial,Helvetica,sans-serif;color:#cfe0ee;margin-top:6px;">{{ periode }}</div>
+  </td></tr>
+  <tr><td style="padding:24px 32px 0;font:15px/1.6 Arial,Helvetica,sans-serif;color:#3d5a76;">
+    Het belangrijkste nieuws van de week, ontdubbeld en kort samengevat. Bij elk bericht staat welke check van CheckMijn.AI over hetzelfde risico gaat.
+  </td></tr>
+  {% for titel, uitleg, items in secties %}{% if items %}
+  <tr><td style="padding:28px 32px 4px;">
+    <div style="font:700 12px Arial,Helvetica,sans-serif;letter-spacing:1px;text-transform:uppercase;color:#00857e;">{{ titel }}</div>
+    <div style="font:13px Arial,Helvetica,sans-serif;color:#3d5a76;margin-top:4px;padding-bottom:10px;border-bottom:2px solid #02254f;">{{ uitleg }}</div>
+  </td></tr>
+  {% for i in items %}
+  <tr><td style="padding:14px 32px;border-bottom:1px solid #d8e2ea;">
+    <div style="font:12px Arial,Helvetica,sans-serif;color:#3d5a76;">{{ i.bron }} · {{ i.taal|upper }}{% if i.dichtbij %} · <b style="color:#00857e;">NL/BE</b>{% endif %}</div>
+    <a href="{{ i.url }}" style="display:block;font:700 16px/1.35 Arial,Helvetica,sans-serif;color:#02254f;text-decoration:none;margin-top:4px;">{{ i.titel_nl or i.titel }}</a>
+    {% set s = i.samenvatting_nl or i.samenvatting %}{% if s %}<div style="font:14px/1.55 Arial,Helvetica,sans-serif;color:#3d5a76;margin-top:6px;">{{ s }}</div>{% endif %}
+    {% if i.checks %}<div style="margin-top:8px;">{% for c in i.checks %}<a href="{{ site }}/check/{{ c }}" style="display:inline-block;font:12px Arial,Helvetica,sans-serif;background:#e6f7f6;color:#065f59;border-radius:12px;padding:3px 10px;margin:0 6px 4px 0;text-decoration:none;">{{ c }} · {{ check_namen.get(c, '') }}</a>{% endfor %}</div>{% endif %}
+  </td></tr>
+  {% endfor %}{% endif %}{% endfor %}
+  <tr><td style="padding:28px 32px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#02254f;border-radius:10px;">
+      <tr><td style="padding:22px 24px;font:15px/1.5 Arial,Helvetica,sans-serif;color:#cfe0ee;">
+        <div style="font:700 18px Arial,Helvetica,sans-serif;color:#ffffff;margin-bottom:6px;">Hoe staat jouw app ervoor?</div>
+        Check je software die met AI gebouwd is, gratis: een score van A tot G in tien minuten.<br>
+        <a href="{{ site }}/hoe-het-werkt" style="display:inline-block;margin-top:14px;background:#00b8b0;color:#02254f;font:700 14px Arial,Helvetica,sans-serif;padding:10px 18px;border-radius:6px;text-decoration:none;">Check mijn app</a>
+      </td></tr>
+    </table>
+  </td></tr>
+  <tr><td style="padding:0 32px 28px;font:12px/1.6 Arial,Helvetica,sans-serif;color:#3d5a76;">
+    Meer nieuws, twee keer per dag bijgewerkt: <a href="{{ site }}/nieuws" style="color:#00857e;">checkmijn.ai/nieuws</a>.
+    Samenvattingen van Engelse berichten zijn gemaakt met AI; het volledige bericht staat bij de bron.<br><br>
+    Je krijgt deze mail omdat je je hebt aangemeld op checkmijn.ai. <a href="{{ afmelden }}" style="color:#00857e;">Afmelden</a> kan met één klik.<br>
+    CheckMijn.AI · Nederland en Vlaanderen · <a href="mailto:hallo@checkmijn.ai" style="color:#00857e;">hallo@checkmijn.ai</a>
+  </td></tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>

@@ -23,6 +23,7 @@
       <tr><th scope="row">Geheimen, wachtwoorden, sleutels</th><td><b>Nooit</b></td><td class="zacht">Ook in het rapport zijn ze gemaskeerd.</td></tr>
       <tr><th scope="row">Bewijsbestand (<code>bewijs.json</code>)</th><td>Alleen na jouw "ja"</td><td class="zacht">Per check alleen de uitkomst en het aantal bevindingen. Geen code, geen paden, geen bestandsnamen. Nodig voor een scorepagina en badge.</td></tr>
       <tr><th scope="row">Opgemaakt rapport</th><td>Versleuteld, als je de rapportlink aanzet</td><td class="zacht">Versleuteld met AES-256-GCM vóór het vertrekt. De sleutel zit alleen in jouw link, na het #-teken, en een browser stuurt dat deel nooit naar een server. Wij kunnen het niet lezen. Zonder account wissen we het na 90 dagen.</td></tr>
+      <tr><th scope="row">De letter van je score</th><td>Alleen als <code>meetellen</code> aan staat</td><td class="zacht">Alleen bij scans via GitHub. Alleen de letter (A–G), voor de openbare <a href="/resultaten">resultaten</a>. Geen naam van de repository: per project bewaren we een onomkeerbare code. In ons voorbeeldbestand staat het aan; zet het op "false" om niet mee te tellen.</td></tr>
       <tr><th scope="row">Je IP-adres</th><td>Ja, als je iets inlevert</td><td class="zacht">Alleen om misbruik te beperken (maximaal aantal aanvragen per uur), niet bewaard in de rapporten.</td></tr>
     </tbody>
   </table></div>

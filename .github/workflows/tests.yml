@@ -20,3 +20,5 @@ jobs:
       - run: python tests/test_platform.py
       - run: python tests/test_rapport.py
       - run: python tests/test_website.py
+      - run: python tests/test_nieuws.py
+      - run: python tests/test_telling.py

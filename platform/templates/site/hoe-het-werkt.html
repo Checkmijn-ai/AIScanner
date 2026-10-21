@@ -1,9 +1,75 @@
 {% extends "site/basis.html" %}
 {% import "site/macros.html" as m %}
 {% block inhoud %}
-{% call m.kop("Hoe het werkt", "Zo werkt CheckMijn.AI", "Er wordt niets geïnstalleerd en je code verlaat je bedrijf nooit. Kies de route die bij je past: met een AI-agent die een terminal heeft, of via GitHub als je bouwt in Lovable, Bolt of v0.") %}
-<div class="knoppenrij"><a class="knop licht klein" href="#agent">Met een AI-agent</a><a class="knop licht klein" href="#bouwtools">Lovable, Bolt of v0</a><a class="knop licht klein" href="#github">In je pipeline</a><a class="knop licht klein" href="#keuring">Keuring</a></div>
-{% endcall %}
+<section class="held held-sub"><div class="wrap rooster">
+  <div>
+    <p class="oog">Hoe het werkt</p>
+    <h1>Weet in tien minuten hoe veilig je AI-software is.</h1>
+    <p class="lead">CheckMijn.AI is een gratis scanner die software controleert die met AI gebouwd is. Je krijgt een score van A tot G, zoals een energielabel, en een lijst van wat er mis is. Je AI-agent kan het daarna voor je herstellen.</p>
+    <div class="knoppenrij"><a class="knop" href="#routes">Kies hoe je wilt scannen</a><a class="knop licht" href="/voorbeeldrapport">Bekijk een voorbeeldrapport</a></div>
+    <p class="klein-onder">Gratis · niets installeren · je code verlaat je bedrijf nooit</p>
+  </div>
+  <div>
+    <div class="verloop-vb" role="img" aria-label="Voorbeeld: eerste scan G met 4 kritieke bevindingen, na herstel B">
+      <div class="verloop-stap"><span class="chip l-G">G</span><div><b>Eerste scan</b><span>4 kritiek · 3 hoog</span></div></div>
+      <div class="verloop-pijl" aria-hidden="true">Je AI-agent herstelt, na jouw "ja"</div>
+      <div class="verloop-stap"><span class="chip l-B">B</span><div><b>Opnieuw gescand</b><span>0 kritiek · 0 hoog</span></div></div>
+      <p class="verloop-voet">Voorbeeld van een eerste scan en een scan na herstel.</p>
+    </div>
+  </div>
+</div></section>
+
+<section class="wrap sectie" id="wat">
+  <p class="oog">Wat is het?</p>
+  <h2 class="mt0">Een meetlat voor software die met AI gebouwd is</h2>
+  <p class="lead">AI schrijft snel werkende code, maar laat vaak sleutels achter, gebruikt verouderde of verzonnen pakketten en vergeet de beveiliging. CheckMijn.AI meet dat, met vaste regels, zodat jij, je klant of je koper weet waar je staat.</p>
+  <div class="rooster-3 mt2">
+    <div class="kaart">{{ m.icoon('meetlat') }}<h3>Een scanner</h3><p class="zacht">Open source en gratis. Hij draait bij jou, met 45 vaste checks op niveau 1. Dezelfde code geeft altijd dezelfde uitslag.</p></div>
+    <div class="kaart">{{ m.icoon('schild') }}<h3>Een score van A tot G</h3><p class="zacht">In één oogopslag hoe je ervoor staat. Je ziet ook je vorige scores, zodat je ziet dat het beter wordt. <a href="/score-uitleg">Hoe de score werkt</a></p></div>
+    <div class="kaart">{{ m.icoon('klembord') }}<h3>Een rapport in gewone taal</h3><p class="zacht">Per bevinding wat er mis is, waarom het ertoe doet en hoe je het oplost. Geschikt voor je AI-agent én voor een directeur.</p></div>
+  </div>
+</section>
+
+<section class="vlak" id="doet"><div class="wrap sectie">
+  <p class="oog">Wat doet het?</p>
+  <h2 class="mt0">Het vindt de fouten die AI het vaakst maakt</h2>
+  <div class="rooster-3 mt2">
+    <div class="kaart">{{ m.icoon('sleutel') }}<h3>Geheimen in je code</h3><p class="zacht">API-sleutels, wachtwoorden en tokens in je code, je configuratie, de JavaScript van je site en de hele git-geschiedenis.</p></div>
+    <div class="kaart">{{ m.icoon('pakket') }}<h3>Lekke en verzonnen pakketten</h3><p class="zacht">Bibliotheken met bekende lekken (elke dag bijgewerkt), en pakketten die AI verzonnen heeft en die een aanvaller kan registreren.</p></div>
+    <div class="kaart">{{ m.icoon('code') }}<h3>Onveilige code</h3><p class="zacht">Injectie in databank of browser, zwakke versleuteling, foutmeldingen die te veel verraden, achtergebleven testcode.</p></div>
+    <div class="kaart">{{ m.icoon('robot') }}<h3>Bouwen met AI</h3><p class="zacht">Instructiebestanden en MCP-instellingen van je AI-agent: geen geheimen erin, geen onveilige opdrachten, niet te veel rechten.</p></div>
+    <div class="kaart">{{ m.icoon('wereld') }}<h3>Je live site</h3><p class="zacht">HTTPS, beveiligingsheaders, cookies, geen trackers voor toestemming, en e-mail die niet te vervalsen is.</p></div>
+    <div class="kaart">{{ m.icoon('gebouw') }}<h3>Je pipeline</h3><p class="zacht">Tests en beveiligingsscans bij elke wijziging, en een hoofdbranch die niemand zomaar kan overschrijven.</p></div>
+  </div>
+  <div class="knoppenrij mt2"><a class="knop licht" href="/wat-we-controleren">Bekijk alle checks</a></div>
+  {{ m.let_op("Niveau 1 is een automatische meting, geen pentest en geen garantie. Wil je dat iemand meekijkt en aanvalstests doet? Dat is een keuring, vanaf niveau 2.") }}
+</div></section>
+
+<section class="wrap sectie" id="werkt">
+  <p class="oog">Hoe werkt het?</p>
+  <h2 class="mt0">Meten, herstellen, opnieuw meten</h2>
+  <div class="drie-stappen mt2">
+    <div><span class="stapnr">1</span><h3>Meten</h3><p class="zacht">De scanner van vandaag draait in je eigen omgeving, zonder netwerk. Na een paar minuten heb je je score en de lijst van bevindingen. Er gaat niets naar ons.</p></div>
+    <div><span class="stapnr">2</span><h3>Herstellen</h3><p class="zacht">Je beslist zelf. Zeg je "ja", dan herstelt je AI-agent de bevindingen: eerst Kritiek, dan Hoog, dan Middel. Je kunt het ook zelf doen of laten doen.</p></div>
+    <div><span class="stapnr">3</span><h3>Opnieuw meten</h3><p class="zacht">Na herstel scan je opnieuw en zie je het verschil, bijvoorbeeld van G naar B. Via GitHub gebeurt dat vanzelf bij elke wijziging en elke maandag.</p></div>
+  </div>
+  <div class="rooster-3 mt2 beloften-klein">
+    <div>{{ m.icoon('slot') }}<p><b>Je code blijft bij jou.</b> <span class="zacht">De scanner draait op je eigen computer of in je eigen GitHub.</span></p></div>
+    <div>{{ m.icoon('oog') }}<p><b>Geen zwarte doos.</b> <span class="zacht">De scanner is open source; elke check is uitgeschreven.</span></p></div>
+    <div>{{ m.icoon('weegschaal') }}<p><b>Geen mening, een meetlat.</b> <span class="zacht">Vaste regels en Europese normen, voor iedereen hetzelfde.</span></p></div>
+  </div>
+</section>
+
+<section class="vlak" id="routes"><div class="wrap sectie">
+  <p class="oog">Aan de slag</p>
+  <h2 class="mt0">Kies hoe je wilt scannen</h2>
+  <div class="routes mt2">
+    <a class="kaart route" href="#agent"><span class="label">Gratis · 10 minuten</span><h3>Met je AI-agent</h3><p class="zacht">Je werkt met Claude Code, Cursor, Copilot of Replit. Eén zin plakken, klaar.</p><span class="meer">Zo doe je het →</span></a>
+    <a class="kaart route" href="#bouwtools"><span class="label">Gratis · 15 minuten</span><h3>Lovable, Bolt of v0</h3><p class="zacht">Je bouwt zonder terminal. De scan draait in GitHub, bij elke wijziging.</p><span class="meer">Zo doe je het →</span></a>
+    <a class="kaart route" href="#github"><span class="label">Gratis · voor ontwikkelaars</span><h3>In je pipeline</h3><p class="zacht">Eén bestand in je repository. Elke wijziging krijgt een score.</p><span class="meer">Zo doe je het →</span></a>
+    <a class="kaart route" href="#keuring"><span class="label">Vanaf €5.700 · pilot</span><h3>Laten keuren</h3><p class="zacht">Een erkende keurder kijkt mee en test aan. Nodig voor een A of voor je klant.</p><span class="meer">Meer over keuren →</span></a>
+  </div>
+</div></section>
 
 <section class="wrap sectie" id="agent">
   <div class="rooster-2">
@@ -31,9 +97,9 @@
   <h2 class="mt0">Met Lovable, Bolt of v0</h2>
   <p class="lead">Die tools hebben geen terminal. De scanner draait dan in GitHub, bij elke wijziging. Je bouwtool leest het rapport en herstelt de bevindingen, na jouw akkoord.</p>
   <div class="rooster-3 mt2">
-    <div class="kaart"><span class="nummer">1</span><h3>Koppel je project aan GitHub</h3><p class="zacht">Gebruik de GitHub-koppeling van je bouwtool en kies een <strong>privé</strong>-repository.</p></div>
-    <div class="kaart"><span class="nummer">2</span><h3>Plak dit in de chat</h3>{{ m.code("bouwtool-1", bouwtool_1, "Stap 2") }}</div>
-    <div class="kaart"><span class="nummer">3</span><h3>Na een paar minuten</h3>{{ m.code("bouwtool-2", bouwtool_2, "Stap 3") }}</div>
+    <div class="kaart"><span class="stapnr">1</span><h3>Koppel je project aan GitHub</h3><p class="zacht">Gebruik de GitHub-koppeling van je bouwtool en kies een <strong>privé</strong>-repository.</p></div>
+    <div class="kaart"><span class="stapnr">2</span><h3>Plak dit in de chat</h3>{{ m.code("bouwtool-1", bouwtool_1, "Stap 2") }}</div>
+    <div class="kaart"><span class="stapnr">3</span><h3>Na een paar minuten</h3>{{ m.code("bouwtool-2", bouwtool_2, "Stap 3") }}</div>
   </div>
   <div class="rooster-2 mt2">
     <div>
@@ -50,10 +116,11 @@
         <li>De code verlaat GitHub niet.</li>
         <li>Het opgemaakte rapport bewaren we <strong>versleuteld</strong>. De sleutel zit alleen in jouw link, dus wij kunnen het niet lezen.</li>
         <li>In een openbare repository komt het rapport niet in je project, want dan zou iedereen de lekken lezen.</li>
+        <li>Met <code>meetellen: "true"</code> telt alleen de letter van je score mee in de <a href="/resultaten">openbare resultaten</a>. Zet het op "false" als je dat niet wilt.</li>
       </ul>
     </div>
   </div>
-  <p class="zacht klein">Weigert je bouwtool het bestand te maken? Maak het dan zelf in GitHub: <em>Add file → Create new file</em>, naam <code>.github/workflows/checkmijn.yml</code>, met de inhoud hieronder.</p>
+  <p class="zacht klein">Weigert je bouwtool het bestand te maken? Maak het dan zelf in GitHub: <em>Add file → Create new file</em>, naam <code>.github/workflows/checkmijn.yml</code>, met de inhoud van route 3 hieronder.</p>
 </div></section>
 
 <section class="wrap sectie" id="github">
@@ -66,19 +133,38 @@
 <section class="vlak" id="keuring"><div class="wrap sectie">
   <p class="oog">Route 4 · pilot</p>
   <h2 class="mt0">Keuring, vanaf niveau 2</h2>
-  <p class="lead">Een erkende keurder kijkt mee, in jouw omgeving, test of de app echt werkt en voert gerichte aanvalstests uit. Pas daarna is een A mogelijk.</p>
-  <div class="knoppenrij"><a class="knop licht" href="/niveaus">Bekijk de niveaus</a><a class="knop" href="/contact">Word pilotklant</a></div>
+  <p class="lead">Een erkende keurder kijkt mee, in jouw omgeving, test of de app echt werkt en voert gerichte aanvalstests uit. Pas daarna is een A mogelijk. Handig als je klant of koper om bewijs vraagt.</p>
+  <div class="knoppenrij"><a class="knop licht" href="/niveaus">Bekijk de niveaus</a><a class="knop licht" href="/wat-je-krijgt">Wat je krijgt en wat het kost</a><a class="knop" href="/contact">Word pilotklant</a></div>
 </div></section>
 
 <section class="wrap sectie">
-  <h2 class="mt0">Elke dag een nieuwe versie</h2>
-  <p class="zacht">Elke nacht om 03:15 halen we de nieuwste lijst met bekende lekken op (GitHub Advisory Database), bouwen we een nieuwe dagversie van de scanner, berekenen we het controlegetal en ondertekenen we het manifest met Ed25519. Je vindt ze in <a href="/latest.json">latest.json</a> en <a href="/versies.json">versies.json</a>. De broncode staat open ter inzage op <a href="https://github.com/Checkmijn-ai/AIScanner">GitHub</a>.</p>
+  <h2 class="mt0">Vaak gevraagd</h2>
+  <div class="rooster-2 mt2">
+    <div><h3>Kost het iets?</h3><p class="zacht">Niveau 1 is gratis, voor altijd. Je betaalt alleen als je een keurder wilt laten meekijken (niveau 2 en hoger).</p></div>
+    <div><h3>Kan mijn code uitlekken?</h3><p class="zacht">Nee. De scanner draait bij jou, zonder netwerk. Er gaat alleen iets naar ons als jij een rapportlink aanzet, en dan versleuteld met een sleutel die alleen jij hebt.</p></div>
+    <div><h3>Mijn score is slecht. Wat nu?</h3><p class="zacht">Dat komt vaak voor bij een eerste scan, zeker bij apps die snel met AI gebouwd zijn. Laat je agent eerst de kritieke bevindingen herstellen en scan opnieuw.</p></div>
+    <div><h3>Is een B een keurmerk?</h3><p class="zacht">Nee. De scanscore is een uitslag van een meting op een moment. Wil je bewijs voor een klant, dan is een keuring vanaf niveau 2 de volgende stap.</p></div>
+  </div>
+  <p class="zacht mt2"><a href="/vragen">Meer vragen en antwoorden</a></p>
+</section>
+
+<section class="vlak"><div class="wrap sectie">
+  <p class="oog">Voor wie het precies wil weten</p>
+  <h2 class="mt0">Elke dag een nieuwe, ondertekende scanner</h2>
+  <p class="zacht">Elke nacht halen we de nieuwste lijst met bekende lekken op (GitHub Advisory Database), bouwen we een nieuwe dagversie van de scanner, berekenen we het controlegetal en ondertekenen we het manifest met Ed25519. Je vindt ze in <a href="/latest.json">latest.json</a> en <a href="/versies.json">versies.json</a>. Hoe je het zelf nakijkt, staat bij <a href="/open-source">open source</a>.</p>
   <div class="rooster-4 mt2">
-    <div class="kaart"><span class="nummer">03:15</span><p class="mt1">Lekkenlijst ophalen</p></div>
+    <div class="kaart"><span class="nummer">1</span><p class="mt1">Lekkenlijst ophalen</p></div>
     <div class="kaart"><span class="nummer">2</span><p class="mt1">Scanner bouwen</p></div>
     <div class="kaart"><span class="nummer">3</span><p class="mt1">Controlegetal en Ed25519-handtekening</p></div>
     <div class="kaart"><span class="nummer">4</span><p class="mt1">Publiceren</p></div>
   </div>
-  {{ m.cta() }}
+</div></section>
+
+<section class="wrap sectie">
+  <div class="cta mt0">
+    <h2>Check mijn app, gratis.</h2>
+    <p>Eén zin aan je AI-agent, of één bestand in je GitHub-repository. Binnen tien minuten weet je waar je staat.</p>
+    <div class="knoppenrij"><a class="knop" href="#routes">Kies je route</a><a class="knop licht" href="/contact">Plan een gesprek</a></div>
+  </div>
 </section>
 {% endblock %}
