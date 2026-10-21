@@ -168,9 +168,36 @@
         <li>Er gaat niets naar ons: de lijst van je componenten blijft in je eigen GitHub.</li>
         <li>Staat alles in orde, dan gebeurt er niets: geen mail, geen extra commit.</li>
         <li>In een openbare repository maken we geen issue (dan leest iedereen mee); daar mislukt de run, en ook dan mailt GitHub je.</li>
-        <li>De lekkenwacht ziet de pakketten in je project. Lekken in PHP zelf, je server of WordPress-plugins ziet hij niet; daarvoor komt de betaalde Lekkenwacht Plus, met een waarschuwing per mail.</li>
       </ul>
       <p class="zacht klein">Uitzetten: zet <code>waarschuwen: "nee"</code> in het workflowbestand.</p>
+    </div>
+  </div>
+
+  <h3 class="mt2">Wat de lekkenwacht ziet, en wat niet</h3>
+  <div class="rooster-2 mt1">
+    <div class="kaart">
+      <span class="label">Gratis · via GitHub</span>
+      <h4>De pakketten in je project</h4>
+      <p class="zacht">Alles wat in de lockfile van je project staat, ook de pakketten die andere pakketten meebrengen:</p>
+      <ul class="vinkjes">
+        <li><b>JavaScript en TypeScript</b> <span class="zacht">(npm, pnpm, yarn, bun): bv. React, Next.js, Express, Vite</span></li>
+        <li><b>Python</b> <span class="zacht">(pip, Pipenv, Poetry, uv): bv. Django, Flask, FastAPI</span></li>
+      </ul>
+      <p class="zacht klein">Nog niet: pakketten voor PHP (Composer), Go, Java, Ruby, Rust en .NET. Die voegen we toe.</p>
+    </div>
+    <div class="kaart">
+      <span class="label">Lekkenwacht Plus · betaald, binnenkort</span>
+      <h4>Ook alles buiten je code</h4>
+      <p class="zacht">Je geeft op wat je gebruikt; wij kijken elke dag of er een lek in zit, en mailen je als dat zo is. Bijvoorbeeld:</p>
+      <ul class="vinkjes">
+        <li><b>De taal en runtime</b> <span class="zacht">zelf: PHP, Node.js, Python, Java, .NET</span></li>
+        <li><b>Je server</b> <span class="zacht">: Linux, nginx, Apache, OpenSSL, Docker</span></li>
+        <li><b>Je databank</b> <span class="zacht">: MySQL, PostgreSQL, Redis, MongoDB</span></li>
+        <li><b>Je CMS en plugins</b> <span class="zacht">: WordPress, WooCommerce, Drupal, Joomla</span></li>
+        <li><b>Netwerk en beveiliging</b> <span class="zacht">: firewalls en VPN's, bv. Fortinet, Palo Alto, Cisco</span></li>
+        <li><b>En elk ander onderdeel</b> <span class="zacht">dat je opgeeft, ook pakketten in talen die de gratis versie nog niet kent</span></li>
+      </ul>
+      <p class="zacht klein">We bewaren alleen de naam en de versielijn (bv. "PHP 8.3"), zonder je bedrijfsnaam of serveradres; je e-mailadres staat apart bij onze mailprovider. Een gestolen lijst zegt een aanvaller dus niets.</p>
     </div>
   </div>
 
