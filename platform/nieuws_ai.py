@@ -16,7 +16,7 @@ from datetime import datetime, timedelta, timezone
 API = "https://api.anthropic.com/v1/messages"
 MODEL = os.environ.get("CHECKMIJN_AI_MODEL", "claude-haiku-5-5")
 MAX_PER_RUN = 80          # samenvattingen per keer
-PER_VERZOEK = 20          # berichten per API-aanroep
+PER_VERZOEK = 10          # berichten per API-aanroep (kleine blokken: het antwoord mag niet afgekapt worden)
 BEWAAR_POSTS = 21
 
 try:
@@ -73,7 +73,14 @@ def samenvatten(d: dict, aanroep=None, tussendoor=None) -> int:
         invoer = json.dumps([{"id": i["id"], "bron": i["bron"], "titel": i["titel"], "inleiding": i.get("samenvatting", "")}
                              for i in blok], ensure_ascii=False)
         try:
-            uit = _json_uit(vraag(SYSTEEM_SAMENVATTING, invoer, aanroep=aanroep)) or {}
+            antwoord = vraag(SYSTEEM_SAMENVATTING, invoer, max_tokens=3000, aanroep=aanroep)
+            try:
+                uit = _json_uit(antwoord)
+            except ValueError:
+                uit = None
+            if not isinstance(uit, dict) or not uit:
+                d["ai_status"] = {"ok": False, "fout": "antwoord niet te lezen: " + schoon(antwoord, 150)}
+                continue
         except Exception as e:
             fout = f"{type(e).__name__}: {str(e)[:200]}"
             if getattr(e, "response", None) is not None:
