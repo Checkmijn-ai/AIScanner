@@ -39,6 +39,13 @@ jobs:
               notice(f"Tabblad {pid} ({len(items)})", regels or ["leeg"])
           uit = re.findall(r'class="stip uit"[^>]*data-fout="([^"]*)"[^>]*></span><a[^>]*>([^<]*)', s)
           notice("Bronnen die niet werken", [f"{n}: {html.unescape(f)}" for f, n in uit] or ["geen"])
+          # Verlopen of ontbrekende Claude-sleutel: dan komen er geen Nederlandse samenvattingen meer bij.
+          en = len(re.findall(r'class="taal" title="Engels">EN</span>', s))
+          ai = s.count('class="ai-label"')
+          notice("AI-samenvattingen", [f"{ai} van {en} Engelse berichten hebben een Nederlandse samenvatting"])
+          if en >= 10 and ai == 0 and "${{ inputs.omgeving || 'live' }}" == "live":
+              print("::error::Geen enkele AI-samenvatting: is de ANTHROPIC_API_KEY verlopen of niet ingesteld?")
+              raise SystemExit(1)
           if len(uit) > 8:
               print(f"::error::{len(uit)} bronnen werken niet")
               raise SystemExit(1)
