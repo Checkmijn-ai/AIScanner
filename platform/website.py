@@ -168,7 +168,7 @@ def workflow() -> str:
 def _algemeen():
     return {"NAV": NAV, "DISCLAIMER": DISCLAIMER, "CONTACT": CONTACT, "SITE_URL": SITE_URL, "TEST": TEST,
             "pad": request.path, "BRONCODE": BRONCODE, "HOSTING": HOSTING, "dagkop": dagkop,
-            "nieuws_vers": nieuws_vandaag(), "NB_ACTIEF": _nb_actief()}
+            "nieuws_vers": nieuws_vandaag(), "NB_ACTIEF": _nb_actief(), "getal": getal, "datum_nl": datum_nl}
 
 
 def pagina(sjabloon: str, titel: str, beschrijving: str, **kw):
@@ -180,7 +180,8 @@ def home():
     return pagina("home.html", "Onafhankelijke controle van software die met AI gebouwd is",
                   "Check je AI-software voor je ze lanceert, koopt of oplevert. Een meetlat, geen mening: 45 vaste "
                   "checks, Europese normen en een score van A tot G.", nieuws_kort=laatste_nieuws(),
-                  teller=(lambda st: st if st.get("scans", 0) >= TOON_TELLER_VANAF else None)(statistiek()))
+                  teller=(lambda st: st if st.get("scans", 0) >= TOON_TELLER_VANAF else None)(statistiek()),
+                  lekken=lekkendatabank())
 
 
 @site.get("/hoe-het-werkt")
@@ -360,6 +361,28 @@ def statistiek() -> dict:
         return api.statistiek() if api else {}
     except Exception:
         return {}
+
+
+def lekkendatabank() -> dict:
+    """Aantal bekende lekken en de stand, uit het manifest van de dagversie van vandaag."""
+    try:
+        m = json.loads(BRON["tekst"]("latest.json"))
+        return {"aantal": int(m["databank"]["aantal"]), "stand": m["databank"].get("stand", "")}
+    except Exception:
+        return {}
+
+
+def getal(n) -> str:
+    return "{:,}".format(int(n)).replace(",", ".")
+
+
+def datum_nl(iso: str) -> str:
+    from datetime import date
+    try:
+        d = date.fromisoformat(str(iso)[:10])
+    except ValueError:
+        return str(iso)
+    return f"{d.day} {MAANDEN[d.month - 1]} {d.year}"
 
 
 def _breedte(n: int, maximum: int) -> int:

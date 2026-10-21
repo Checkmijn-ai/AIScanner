@@ -45,7 +45,7 @@ with zipfile.ZipFile(pyz) as z:
 sys.path[:0] = [tmp, os.path.join(tmp, "_vendor")]
 os.environ["AISCAN_PYZ"] = pyz
 os.environ["AISCAN_DAGVERSIE"] = "{dag}"
-if len(sys.argv) > 1 and sys.argv[1] in ("sessie", "inleveren"):
+if len(sys.argv) > 1 and sys.argv[1] in ("sessie", "inleveren", "meetellen"):
     from aiscan.client import main as c
     sys.exit(c(sys.argv[1:]))
 elif len(sys.argv) > 1 and sys.argv[1] == "mcp":

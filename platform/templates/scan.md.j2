@@ -85,6 +85,18 @@ Vraag daarna letterlijk:
 
 **Wacht op het antwoord.** Pas bij "ja" herstel je, eerst **Kritiek**, dan **Hoog**, daarna **Middel**. Een bevinding met `"bevestigen": true` is niet zeker: kijk eerst of ze klopt.
 
+**6b. Meetellen (één keer vragen).** Vraag na de eerste uitslag, los van het herstel:
+
+> "Mag ik alleen de letter van je score anoniem laten meetellen in de openbare statistiek op checkmijn.ai/resultaten? Er gaat geen code mee, geen bevindingen en geen naam van je project; alleen een onomkeerbare code, zodat de eerste en de laatste score te vergelijken zijn. (ja/nee)"
+
+Bij "ja", na deze scan én na elke nieuwe scan in stap 7 (met het bewijs van die scan):
+
+```
+python3 checkmijn.pyz meetellen rapport/bewijs.json {{ m.api }} PROJECTMAP
+```
+
+Bij "nee" of geen antwoord: niets doen. Meetellen is nooit een voorwaarde voor de scan.
+
 **7. Scan opnieuw** (stap 4 en 5) na het herstel. Toon de nieuwe score **naast de vorige**, bv. "G → C", met wat er hersteld is en wat nog openstaat. Herhaal tot er geen kritieke of hoge bevindingen meer zijn, of tot de gebruiker zegt te stoppen. Elke scan heeft een nieuwe sessiecode nodig.
 
 **8. Toon wat er verstuurd zou worden.** Laat de gebruiker de volledige inhoud van `rapport/bewijs.json` zien. Vraag daarna letterlijk:

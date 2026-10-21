@@ -6,7 +6,7 @@
 <section class="wrap sectie">
   {% if st and st.scans %}
   <div class="tellers">
-    <div><b>{{ "{:,}".format(st.scans).replace(",", ".") }}</b><span>scans gedaan</span></div>
+    <div><b>{{ getal(st.scans) }}</b><span>scans sinds {{ datum_nl(st.sinds) }}: {{ getal(st.scans_github) }} via GitHub, {{ getal(st.scans_zelf) }} zelfcontroles met een AI-agent</span></div>
     <div><b>{{ "{:,}".format(st.projecten).replace(",", ".") }}</b><span>projecten gemeten</span></div>
     <div><b>{% if st.herhaald %}{{ (100 * st.beter / st.herhaald)|round|int }}%{% else %}–{% endif %}</b><span>{% if st.herhaald %}scoort beter na herstel ({{ st.beter }} van {{ st.herhaald }} projecten die opnieuw gescand zijn){% else %}nog geen project twee keer gescand{% endif %}</span></div>
     <div><b>{% if st.beter %}+{{ st.gem_stappen }}{% else %}–{% endif %}</b><span>letters beter, gemiddeld, bij wie vooruitging</span></div>
@@ -52,8 +52,8 @@
     <div class="kaart">
       <h2 class="mt0">Hoe we tellen</h2>
       <ul class="zacht">
-        <li>We tellen alleen scans die via GitHub draaien. GitHub bewijst met een ondertekend token dat de scan echt uit een repository komt, dus niemand kan de cijfers opblazen.</li>
-        <li>Alleen als de eigenaar <code>meetellen: "true"</code> laat staan. In ons voorbeeldbestand staat het aan; zet het op <code>"false"</code> en je telt niet mee.</li>
+        <li><b>Scans via GitHub:</b> GitHub bewijst met een ondertekend token dat de scan echt uit een repository komt. Ze tellen mee als de eigenaar <code>meetellen: "true"</code> laat staan (zo staat het in ons voorbeeldbestand). De dagelijkse lekkenwacht telt niet mee.</li>
+        <li><b>Zelfcontroles met een AI-agent:</b> de agent vraagt eerst of je wilt meetellen. Ze tellen alleen mee met een geldig bewijsbestand van een echte dagversie en een sessiecode die maar één keer werkt. We vermelden ze apart, omdat we ze minder goed kunnen controleren.</li>
         <li>We ontvangen alleen de letter. Geen code, geen bevindingen, geen naam van de repository. Per project bewaren we een onomkeerbare code, zodat we de eerste en de laatste score kunnen vergelijken.</li>
         <li>Hoogstens {{ 10 }} scans per project per dag tellen mee. Pull requests tellen niet mee.</li>
         <li>Op niveau 1 is B de hoogste score. Een A kan pas na een keuring.</li>
@@ -63,7 +63,7 @@
       <h2 class="mt0">Tel mee</h2>
       <p class="zacht">Scan je via GitHub (ook vanuit Lovable, Bolt of v0)? Gebruik dan ons voorbeeldbestand: daarin staat meetellen al aan. Zo help je anderen zien wat de scan oplevert.</p>
       <div class="knoppenrij"><a class="knop" href="/hoe-het-werkt#bouwtools">Scan via GitHub</a><a class="knop licht" href="/open-source">Wat er naar buiten gaat</a></div>
-      <p class="zacht klein">Scan je met je AI-agent op je eigen computer? Die scans tellen (nog) niet mee: daar kunnen we niet bewijzen dat ze echt zijn.</p>
+      <p class="zacht klein">Scan je met je AI-agent? Dan vraagt die je na de eerste uitslag of je wilt meetellen.</p>
     </div>
   </div>
   {{ m.let_op(DISCLAIMER) }}

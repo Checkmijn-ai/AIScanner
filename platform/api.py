@@ -93,6 +93,12 @@ def db():
                 laatste TEXT, laatste_op TEXT, scans INTEGER DEFAULT 0, dag TEXT, dag_scans INTEGER DEFAULT 0);
             CREATE TABLE IF NOT EXISTS tel_dagen (dag TEXT PRIMARY KEY, scans INTEGER DEFAULT 0);
         """)
+        for tabel, kolom in (("sessies", "geteld INTEGER DEFAULT 0"), ("tel_projecten", "bron TEXT DEFAULT 'github'"),
+                             ("tel_dagen", "zelf INTEGER DEFAULT 0")):
+            try:
+                g.db.execute(f"ALTER TABLE {tabel} ADD COLUMN {kolom}")
+            except sqlite3.OperationalError:
+                pass  # bestaat al
     return g.db
 
 
@@ -208,56 +214,58 @@ def sessie():
                     "dagversie": m["dagversie"], "download": m["url"], "sha256": m["sha256"]})
 
 
+def controleer_bewijs(b, voor_telling: bool = False):
+    """Controleert een bewijsbestand (sessiecode, scanner, resultaten, score). Geeft (fout, dag, eigen) terug."""
+    if not isinstance(b, dict) or b.get("formaat") != "aiscan-bewijs/1":
+        return fout("Geen geldig bewijsbestand (formaat aiscan-bewijs/1 verwacht)."), None, None
+    for veld in ("nonce", "scanner", "project", "resultaten", "score"):
+        if veld not in b:
+            return fout(f"Veld '{veld}' ontbreekt."), None, None
+    row = db().execute("SELECT * FROM sessies WHERE nonce = ?", (str(b["nonce"]),)).fetchone()
+    if not row:
+        return fout("Onbekende sessiecode. Vraag een nieuwe via /api/v1/sessie."), None, None
+    if voor_telling and row["geteld"]:
+        return fout("Deze scan is al meegeteld."), None, None
+    if not voor_telling and row["gebruikt"]:
+        return fout("Deze sessiecode is al gebruikt. Elke scan heeft een nieuwe sessiecode nodig."), None, None
+    if nu() - dt.datetime.fromisoformat(row["aangemaakt"]) > NONCE_GELDIG:
+        return fout("Sessiecode verlopen (2 uur). Vraag een nieuwe en scan opnieuw."), None, None
+    versies = lees("versies.json")
+    sc = b["scanner"]
+    dag = next((d for d, v in versies.items() if v["sha256"] == sc.get("sha256")), None)
+    if not dag:
+        return fout("Onbekende scanner: het controlegetal hoort bij geen gepubliceerde dagversie. Gebruik de instructie van vandaag."), None, None
+    if (nu().date() - dt.date.fromisoformat(dag)).days > MAX_LEEFTIJD:
+        return fout(f"Dagversie {dag} is ouder dan {MAX_LEEFTIJD} dagen. Gebruik de instructie van vandaag."), None, None
+    v = versies[dag]
+    if v.get("regelset") and sc.get("regelset") != v["regelset"]:
+        return fout("De regelset in het bewijs hoort niet bij deze dagversie."), None, None
+    res = b["resultaten"]
+    if not isinstance(res, list) or sorted(r.get("id") for r in res) != sorted(v["checks"]):
+        return fout("Het bewijs bevat niet precies de checks van deze dagversie."), None, None
+    for r in res:
+        if r.get("status") not in STATUSSEN or r.get("zwaarste") not in ERNST or not isinstance(r.get("aantal"), int):
+            return fout(f"Ongeldig resultaat voor {r.get('id')}."), None, None
+        if r["status"] == "Bevinding" and (r["aantal"] < 1 or r["zwaarste"] is None):
+            return fout(f"Tegenstrijdig resultaat voor {r['id']}."), None, None
+        if r["status"] != "Bevinding" and r["zwaarste"] not in (None, "Info"):
+            return fout(f"Tegenstrijdig resultaat voor {r['id']}."), None, None
+    eigen = uit_bewijs(res, int(b.get("niveau", 1)))
+    if eigen["letter"] != b["score"].get("letter"):
+        return fout("De score in het bewijs klopt niet met de resultaten."), None, None
+    return None, dag, eigen
+
+
 @app.post("/api/v1/resultaat")
 def resultaat():
     if (request.content_length or 0) > MAX_BEWIJS:
         return fout("Een bewijs is hoogstens 256 kB.", 413)
     limiet()
     b = request.get_json(silent=True)
-    if not isinstance(b, dict) or b.get("formaat") != "aiscan-bewijs/1":
-        return fout("Geen geldig bewijsbestand (formaat aiscan-bewijs/1 verwacht).")
-    for veld in ("nonce", "scanner", "project", "resultaten", "score"):
-        if veld not in b:
-            return fout(f"Veld '{veld}' ontbreekt.")
-
-    # sessiecode
-    row = db().execute("SELECT * FROM sessies WHERE nonce = ?", (str(b["nonce"]),)).fetchone()
-    if not row:
-        return fout("Onbekende sessiecode. Vraag een nieuwe via /api/v1/sessie.")
-    if row["gebruikt"]:
-        return fout("Deze sessiecode is al gebruikt. Elke scan heeft een nieuwe sessiecode nodig.")
-    if nu() - dt.datetime.fromisoformat(row["aangemaakt"]) > NONCE_GELDIG:
-        return fout("Sessiecode verlopen (2 uur). Vraag een nieuwe en scan opnieuw.")
-
-    # scanner
-    versies = lees("versies.json")
+    f, dag, eigen = controleer_bewijs(b)
+    if f:
+        return f
     sc = b["scanner"]
-    dag = next((d for d, v in versies.items() if v["sha256"] == sc.get("sha256")), None)
-    if not dag:
-        return fout("Onbekende scanner: het controlegetal hoort bij geen gepubliceerde dagversie. Gebruik de instructie van vandaag.")
-    if (nu().date() - dt.date.fromisoformat(dag)).days > MAX_LEEFTIJD:
-        return fout(f"Dagversie {dag} is ouder dan {MAX_LEEFTIJD} dagen. Gebruik de instructie van vandaag.")
-    v = versies[dag]
-    if v.get("regelset") and sc.get("regelset") != v["regelset"]:
-        return fout("De regelset in het bewijs hoort niet bij deze dagversie.")
-
-    # resultaten
-    res = b["resultaten"]
-    if not isinstance(res, list) or sorted(r.get("id") for r in res) != sorted(v["checks"]):
-        return fout("Het bewijs bevat niet precies de checks van deze dagversie.")
-    for r in res:
-        if r.get("status") not in STATUSSEN or r.get("zwaarste") not in ERNST or not isinstance(r.get("aantal"), int):
-            return fout(f"Ongeldig resultaat voor {r.get('id')}.")
-        if r["status"] == "Bevinding" and (r["aantal"] < 1 or r["zwaarste"] is None):
-            return fout(f"Tegenstrijdig resultaat voor {r['id']}.")
-        if r["status"] != "Bevinding" and r["zwaarste"] not in (None, "Info"):
-            return fout(f"Tegenstrijdig resultaat voor {r['id']}.")
-
-    # score zelf herberekenen
-    niveau = int(b.get("niveau", 1))
-    eigen = uit_bewijs(res, niveau)
-    if eigen["letter"] != b["score"].get("letter"):
-        return fout("De score in het bewijs klopt niet met de resultaten.")
 
     sid = secrets.token_hex(5)
     soort = "Zelfcontrole"
@@ -448,27 +456,53 @@ def telling():
     letter = str((request.get_json(silent=True) or {}).get("letter", ""))
     if len(letter) != 1 or letter not in LETTERS:
         return fout("Verwacht: {letter: A–G}.")
-    project, t = project_code(str(claims["repository_id"])), nu()
+    return tel(project_code(str(claims["repository_id"])), letter, "github")
+
+
+def tel(project: str, letter: str, bron: str):
+    t = nu()
     dag = t.date().isoformat()
     r = db().execute("SELECT dag, dag_scans FROM tel_projecten WHERE project = ?", (project,)).fetchone()
     if r and r["dag"] == dag and r["dag_scans"] >= TEL_PER_DAG:
         return jsonify({"geteld": False, "melding": f"Vandaag al {TEL_PER_DAG} scans van dit project meegeteld."}), 200
     if r is None:
-        db().execute("INSERT INTO tel_projecten (project, eerste, eerste_op, laatste, laatste_op, scans, dag, dag_scans) "
-                     "VALUES (?,?,?,?,?,1,?,1)", (project, letter, t.isoformat(), letter, t.isoformat(), dag))
+        db().execute("INSERT INTO tel_projecten (project, eerste, eerste_op, laatste, laatste_op, scans, dag, dag_scans, bron) "
+                     "VALUES (?,?,?,?,?,1,?,1,?)", (project, letter, t.isoformat(), letter, t.isoformat(), dag, bron))
     else:
         db().execute("UPDATE tel_projecten SET laatste = ?, laatste_op = ?, scans = scans + 1, "
                      "dag_scans = CASE WHEN dag = ? THEN dag_scans + 1 ELSE 1 END, dag = ? WHERE project = ?",
                      (letter, t.isoformat(), dag, dag, project))
-    db().execute("INSERT INTO tel_dagen (dag, scans) VALUES (?, 1) ON CONFLICT(dag) DO UPDATE SET scans = scans + 1", (dag,))
+    kolom = "zelf" if bron == "zelf" else "scans"
+    db().execute(f"INSERT INTO tel_dagen (dag, {kolom}) VALUES (?, 1) ON CONFLICT(dag) DO UPDATE SET {kolom} = {kolom} + 1", (dag,))
     db().commit()
     return jsonify({"geteld": True, "melding": f"Meegeteld: score {letter}."}), 201
+
+
+@app.post("/api/v1/telling/zelf")
+def telling_zelf():
+    """Zelfcontrole met een AI-agent (route A): telt mee met een geldig bewijsbestand en een ongebruikte sessiecode."""
+    if (request.content_length or 0) > MAX_BEWIJS + 1024:
+        return fout("Te groot.", 413)
+    limiet()
+    d = request.get_json(silent=True) or {}
+    b, sleutel = d.get("bewijs"), str(d.get("project", ""))
+    if not (len(sleutel) == 64 and all(ch in "0123456789abcdef" for ch in sleutel)):
+        return fout("Verwacht: {bewijs, project} met project als sha256 (hex).")
+    f, dag, eigen = controleer_bewijs(b, voor_telling=True)
+    if f:
+        return f
+    letter = eigen["letter"]
+    if not letter or letter not in LETTERS:
+        return jsonify({"geteld": False, "melding": "Geen score, dus niets meegeteld."}), 200
+    db().execute("UPDATE sessies SET geteld = 1 WHERE nonce = ?", (b["nonce"],))
+    return tel(project_code("zelf:" + sleutel), letter, "zelf")
 
 
 def statistiek() -> dict:
     """Voor checkmijn.ai/resultaten en de homepage."""
     c = db()
-    scans = c.execute("SELECT COALESCE(SUM(scans), 0) FROM tel_dagen").fetchone()[0]
+    github, zelf = c.execute("SELECT COALESCE(SUM(scans), 0), COALESCE(SUM(zelf), 0) FROM tel_dagen").fetchone()
+    scans = github + zelf
     projecten = c.execute("SELECT COUNT(*) FROM tel_projecten").fetchone()[0]
     sinds = c.execute("SELECT MIN(dag) FROM tel_dagen").fetchone()[0]
     rijen = c.execute("SELECT eerste, laatste, COUNT(*) n FROM tel_projecten WHERE scans >= 2 GROUP BY eerste, laatste").fetchall()
@@ -480,7 +514,7 @@ def statistiek() -> dict:
     overgangen = sorted(((a, b, n) for (a, b), n in matrix.items() if a != b), key=lambda x: (-x[2], x[0], x[1]))
     eerste = {r["eerste"]: r["n"] for r in c.execute("SELECT eerste, COUNT(*) n FROM tel_projecten GROUP BY eerste")}
     laatste = {r["laatste"]: r["n"] for r in c.execute("SELECT laatste, COUNT(*) n FROM tel_projecten WHERE scans >= 2 GROUP BY laatste")}
-    return {"scans": scans, "projecten": projecten, "sinds": sinds, "herhaald": herhaald, "beter": beter,
+    return {"scans": scans, "scans_github": github, "scans_zelf": zelf, "projecten": projecten, "sinds": sinds, "herhaald": herhaald, "beter": beter,
             "slechter": slechter, "gelijk": herhaald - beter - slechter, "matrix": matrix, "overgangen": overgangen,
             "gem_stappen": round(stappen / beter, 1) if beter else 0, "eerste": eerste, "laatste": laatste,
             "letters": LETTERS}

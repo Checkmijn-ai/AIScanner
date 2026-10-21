@@ -45,12 +45,28 @@
 {% endif %}
 
 <section class="cijferband"><div class="wrap sectie cijfers">
-  <div><b>292</b><span class="zacht">checks, <a href="/wat-we-controleren">allemaal uitgeschreven</a></span></div>
-  {% if teller %}<div><b>{{ "{:,}".format(teller.scans).replace(",", ".") }}</b><span class="zacht">scans gedaan{% if teller.herhaald %}; {{ (100 * teller.beter / teller.herhaald)|round|int }}% van de projecten scoort <a href="/resultaten">beter na herstel</a>{% else %}, <a href="/resultaten">bekijk de resultaten</a>{% endif %}</span></div>
-  {% else %}<div><b>Dagelijks</b><span class="zacht">een nieuwe, ondertekende scanner</span></div>{% endif %}
-  <div><b>6</b><span class="zacht">wetten en normen: <a href="/cra">CRA</a>, AVG, AI Act, NIS2, OWASP en ISO</span></div>
+  {% if teller %}<div class="teller"><b>{{ getal(teller.scans) }}</b><span class="zacht">scans sinds {{ datum_nl(teller.sinds) }}{% if teller.herhaald %}; <a href="/resultaten">{{ (100 * teller.beter / teller.herhaald)|round|int }}% scoort beter na herstel</a>{% else %}; <a href="/resultaten">bekijk de resultaten</a>{% endif %}</span></div>{% endif %}
+  {% if lekken.aantal %}<div><b>{{ getal(lekken.aantal) }}</b><span class="zacht">bekende lekken: daar vergelijkt elke scan je componenten mee, vandaag bijgewerkt</span></div>{% endif %}
+  <div><b>292</b><span class="zacht">checks, <a href="/wat-we-controleren">allemaal uitgeschreven</a>, gekoppeld aan de <a href="/cra">CRA</a>, AVG, AI Act en NIS2</span></div>
+  {% if not teller %}<div><b>Elke nacht</b><span class="zacht">een nieuwe, ondertekende scanner</span></div>{% endif %}
   <div><b>Helsinki</b><span class="zacht">gehost in de EU, open source (EUPL-1.2)</span></div>
 </div></section>
+
+<section class="wrap sectie praktijk">
+  <div class="praktijk-kaart">
+    <div>
+      <p class="oog mt0">Uit de praktijk</p>
+      <h2 class="mt0">Een webwinkel gebouwd met Lovable: van C naar B in tien minuten</h2>
+      <p class="zacht">Eerste scan: 22 hoge bevindingen, vooral pakketten met bekende lekken en HTML die onveilig in de pagina kwam. Lovable las het rapport, vroeg toestemming en herstelde: 13 pakketten bijgewerkt, een HTML-filter op 9 plekken, tests in de pipeline. De tweede scan: geen kritieke bevindingen en geen zekere hoge meer; alleen nog 2 om na te kijken.</p>
+      <p class="zacht klein">Een project van onze oprichter, gescand op 21 oktober 2026 via GitHub (route 2). Echte cijfers uit het rapport.</p>
+    </div>
+    <div class="praktijk-cijfers" role="img" aria-label="Van score C met 22 hoge bevindingen naar score B, met nog 2 hoge bevindingen om na te kijken">
+      <div><span class="chip l-C">C</span><span><b>Eerste scan</b><span class="zacht">0 kritiek · 22 hoog · 19 middel</span></span></div>
+      <div class="praktijk-pijl" aria-hidden="true">10 minuten · Lovable herstelt na "ja"</div>
+      <div><span class="chip l-B">B</span><span><b>Tweede scan</b><span class="zacht">0 kritiek · 2 hoog om na te kijken · 1 middel</span></span></div>
+    </div>
+  </div>
+</section>
 
 <section class="wrap sectie">
   <h2 class="mt0">Vijf beloften</h2>

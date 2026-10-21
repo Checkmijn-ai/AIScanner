@@ -49,9 +49,23 @@ for _ in range(9):
     tel("5", "F")
 assert tel("5", "F").status_code == 201 and tel("5", "F").get_json()["geteld"] is False
 
+# zelfcontroles (AI-agent): tellen mee met een geldig bewijs, apart vermeld
+echt = api.controleer_bewijs
+api.controleer_bewijs = lambda b, voor_telling=False: (None, "2026-10-21", {"letter": b.get("letter")})
+def zelf(projectcode, letter):
+    return c.post("/api/v1/telling/zelf", json={"bewijs": {"nonce": "n", "letter": letter}, "project": projectcode})
+assert zelf("geen-hex", "C").status_code == 422
+assert zelf("a" * 64, "D").status_code == 201 and zelf("a" * 64, "B").status_code == 201
+api.controleer_bewijs = echt
+assert c.post("/api/v1/telling/zelf", json={"bewijs": {"formaat": "x"}, "project": "b" * 64}).status_code == 422
+with api.app.test_request_context():
+    s2 = api.statistiek()
+assert s2["scans_zelf"] == 2 and s2["scans"] == s2["scans_github"] + 2, s2
+assert s2["matrix"].get(("D", "B")) == 1
+
 # pagina's
 r = c.get("/resultaten").get_data(as_text=True)
 assert "Van welk label naar welk label" in r and 'class="tabel matrix"' in r and 'style="' not in r
-assert "scans gedaan" in c.get("/").get_data(as_text=True)          # boven de drempel van 5
-assert c.get("/api/v1/statistiek").get_json()["projecten"] == 5
+assert "scans sinds" in c.get("/").get_data(as_text=True)          # boven de drempel van 5
+assert c.get("/api/v1/statistiek").get_json()["projecten"] == 6
 print("ok: telling en resultaten")

@@ -54,11 +54,17 @@ def test_platform():
             nonce = run(blocks[3], work).stdout.strip()
             scan = run(blocks[4].replace("PROJECTMAP", str(demo)).replace("NONCE", nonce), work)
             assert scan.returncode in (0, 2), scan.stderr
-            res = run(blocks[5], work)
+            tel = next(bl for bl in blocks if "meetellen" in bl)
+            t1 = run(tel.replace("PROJECTMAP", str(demo)), work)
+            assert t1.returncode == 0 and "Meegeteld" in t1.stdout, (t1.stdout, t1.stderr)
+            t2 = run(tel.replace("PROJECTMAP", str(demo)), work)
+            assert "al meegeteld" in t2.stderr, (t2.stdout, t2.stderr)
+            inl = next(bl for bl in blocks if "inleveren" in bl)
+            res = run(inl, work)
             assert res.returncode == 0, res.stderr
             r = json.loads(res.stdout)
             assert r["score"] == "B" and r["soort"] == "Zelfcontrole"
-            assert run(blocks[5], work).returncode != 0, "sessiecode mocht geen tweede keer werken"
+            assert run(inl, work).returncode != 0, "sessiecode mocht geen tweede keer werken"
             b = json.loads((work / "rapport" / "bewijs.json").read_text())
             n2 = run(blocks[3], work).stdout.strip()
             code, d = post(f"http://127.0.0.1:{pa}/api/v1/resultaat", {**b, "nonce": n2, "score": {**b["score"], "letter": "A"}})
