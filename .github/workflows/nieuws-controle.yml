@@ -42,7 +42,8 @@ jobs:
           # Verlopen of ontbrekende Claude-sleutel: dan komen er geen Nederlandse samenvattingen meer bij.
           en = len(re.findall(r'class="taal" title="Engels">EN</span>', s))
           ai = s.count('class="ai-label"')
-          aifout = re.findall(r'data-ai-fout="([^"]*)"', s)
+          aifout = re.findall(r'data-ai="([^"]*)" data-ai-fout="([^"]*)"', s)
+          aifout = [f"{a[0]} {a[1]}" for a in aifout]
           notice("AI-samenvattingen", [f"{ai} van {en} Engelse berichten hebben een Nederlandse samenvatting",
                                         "Laatste AI-melding: " + (html.unescape(aifout[0]) if aifout and aifout[0] else "geen")])
           if en >= 10 and ai == 0 and "${{ inputs.omgeving || 'live' }}" == "live":
