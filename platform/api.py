@@ -443,6 +443,8 @@ def telling():
         return fout(f"Token geweigerd: {e}.", 401)
     if str(claims.get("event_name", "")).startswith("pull_request"):
         return jsonify({"geteld": False, "melding": "Pull requests tellen niet mee."}), 200
+    if claims.get("event_name") == "schedule":  # de dagelijkse lekkenwacht is geen nieuwe scan door de eigenaar
+        return jsonify({"geteld": False, "melding": "Dagelijkse controles tellen niet mee."}), 200
     letter = str((request.get_json(silent=True) or {}).get("letter", ""))
     if len(letter) != 1 or letter not in LETTERS:
         return fout("Verwacht: {letter: A–G}.")

@@ -29,6 +29,14 @@ inputs:
     description: "true = alleen de scoreletter (A–G) meetellen in de openbare statistiek op checkmijn.ai/resultaten. Geen code, geen bevindingen, geen naam van de repository (alleen een onomkeerbare code per project). Vraagt permissions: id-token: write."
     required: false
     default: "false"
+  waarschuwen:
+    description: "Lekkenwacht. nee | auto | issue | faal. 'issue' houdt één GitHub-issue bij met kritieke en hoge lekken in je componenten (GitHub mailt je bij nieuwe lekken; het issue sluit vanzelf als alles opgelost is). 'faal' laat de run mislukken. 'auto' = issue in een privé-repository, faal in een openbare. Vraagt permissions: issues: write."
+    required: false
+    default: "nee"
+  token:
+    description: Token voor de lekkenwacht (issues). Standaard het token van de workflow.
+    required: false
+    default: ${{ github.token }}
   manifest:
     description: Adres van het manifest van de dagversie
     required: false
@@ -58,6 +66,8 @@ runs:
         CM_PRIVE: ${{ github.event.repository.private }}
         CM_RAPPORT_LINK: ${{ inputs.rapport-link }}
         CM_MEETELLEN: ${{ inputs.meetellen }}
+        CM_WAARSCHUWEN: ${{ inputs.waarschuwen }}
+        CM_TOKEN: ${{ inputs.token }}
         CM_OUT: ${{ runner.temp }}/checkmijn-rapport
       run: python "${{ github.action_path }}/action/scan_ci.py"
     - name: Rapport bewaren bij deze run

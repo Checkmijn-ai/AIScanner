@@ -474,3 +474,8 @@ h1.check-titel { font-size: clamp(1.5rem, 3.2vw, 2.3rem); max-width: 34em; }
 .b95 { width: 95%; }
 .b100 { width: 100%; }
 .route-herstel { font-size: .85rem; font-weight: 600; color: var(--turq-d); margin: 0 0 8px; }
+ul.vinkjes, ul.kruisjes { list-style: none; padding: 0; margin: 0; }
+ul.vinkjes li, ul.kruisjes li { position: relative; padding-left: 30px; margin: 0 0 12px; color: var(--zacht); }
+ul.vinkjes li b, ul.kruisjes li b { color: var(--navy); }
+ul.vinkjes li::before { content: "✓"; position: absolute; left: 0; top: 0; font-weight: 700; color: var(--a); }
+ul.kruisjes li::before { content: "✕"; position: absolute; left: 0; top: 0; font-weight: 700; color: var(--g); }

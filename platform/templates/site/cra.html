@@ -1,0 +1,68 @@
+{% extends "site/basis.html" %}
+{% import "site/macros.html" as m %}
+{% block inhoud %}
+{% call m.kop("Cyber Resilience Act", "Je CRA-dossier in orde, en het blijft in orde.", "De Europese Cyber Resilience Act (CRA) stelt eisen aan de beveiliging van software. CheckMijn.AI meet wat je al op orde hebt, toont wat nog ontbreekt en levert de bewijsstukken voor je dossier. Bij elke release opnieuw.") %}
+<div class="knoppenrij"><a class="knop" href="#tabel">Welke checks welke eis afdekken</a><a class="knop licht" href="/contact">Plan een gesprek over je CRA-dossier</a></div>
+{% endcall %}
+
+<section class="wrap sectie">
+  <div class="rooster-3">
+    <div class="kaart"><p class="oog mt0">11 september 2026</p><h3>Meldplicht</h3><p class="zacht">Actief misbruikte kwetsbaarheden en ernstige incidenten moet je melden: binnen 24 uur een eerste waarschuwing, binnen 72 uur een melding. Dit geldt al.</p></div>
+    <div class="kaart"><p class="oog mt0">11 december 2027</p><h3>Alle eisen</h3><p class="zacht">Vanaf dan mag je nieuwe producten alleen op de EU-markt brengen als ze aan de eisen voldoen, met technische documentatie, een EU-conformiteitsverklaring en de CE-markering.</p></div>
+    <div class="kaart"><p class="oog mt0">Voor wie?</p><h3>Producten met digitale elementen</h3><p class="zacht">Software die je verkoopt, levert of laat installeren, en apparaten met software. Pure SaaS (alleen online) valt er grotendeels buiten; daarvoor zijn NIS2 en de AVG vaak belangrijker.</p></div>
+  </div>
+</section>
+
+<section class="vlak"><div class="wrap sectie">
+  <div class="rooster-2">
+    <div>
+      <h2 class="mt0">Wat CheckMijn.AI doet</h2>
+      <ul class="vinkjes">
+        <li><b>Gap-analyse:</b> per CRA-eis zie je wat al in orde is en wat nog ontbreekt.</li>
+        <li><b>Bewijs voor je technisch dossier:</b> het keuringsrapport, de SBOM (lijst van componenten) en het bewijs per check.</li>
+        <li><b>Geen bekende lekken:</b> je componenten worden vergeleken met de nieuwste lijst van lekken, elke dag.</li>
+        <li><b>Doorlopend:</b> de CRA vraagt dat je de eisen blijft halen. Met de versiecheck meet je bij elke release opnieuw.</li>
+        <li><b>Voorbereid op de meldplicht:</b> we kijken of je meldbeleid en je meldproces klaar zijn.</li>
+      </ul>
+    </div>
+    <div>
+      <h2 class="mt0">Wat het niet is</h2>
+      <ul class="kruisjes">
+        <li><b>Geen CE-markering of conformiteitsverklaring.</b> Die verklaar en teken je als fabrikant zelf. Wij leveren de onderbouwing.</li>
+        <li><b>Geen aangemelde instantie (notified body).</b> Voor "important"-producten van klasse II en "critical"-producten is een beoordeling door zo'n instantie nodig.</li>
+        <li><b>Geen vermoeden van conformiteit.</b> Dat geeft alleen een geharmoniseerde norm; in oktober 2026 was er nog geen enkele gepubliceerd.</li>
+        <li><b>Geen juridisch advies.</b> Laat je verplichtingen nakijken door een jurist.</li>
+      </ul>
+    </div>
+  </div>
+  {{ m.let_op("Zeg na een scan of keuring dus niet dat je software \"aan de CRA voldoet\". Wel: \"gekeurd volgens de CheckMijn.AI-norm, die de eisen van de CRA afdekt\", met het rapport als bewijs.") }}
+</div></section>
+
+<section class="wrap sectie">
+  <h2 class="mt0">Wat je per niveau afdekt</h2>
+  <p class="zacht">{{ checks|length }} van onze {{ totaal }} checks verwijzen naar een eis uit de CRA. Elk niveau bevat alles van het niveau ervoor.</p>
+  <div class="rooster-3 mt2">
+    <div class="kaart"><span class="label">Niveau 1 · gratis</span><h3>{{ per[1]|length }} checks, automatisch</h3><p class="zacht">Geen bekende lekken, SBOM, bewaking van nieuwe lekken, geen geheimen in de code, versleuteld verkeer, limieten tegen misbruik, je live site.</p></div>
+    <div class="kaart"><span class="label">Niveau 2 · keuring</span><h3>+{{ per[2]|length }} checks</h3><p class="zacht">Veilige standaardinstellingen, inloggen en MFA, logging, versleutelde opslag, een publiek meldbeleid voor kwetsbaarheden, veilige updates en releases.</p></div>
+    <div class="kaart"><span class="label">Niveau 3 · keuring plus</span><h3>+{{ per[3]|length + per[4]|length }} checks</h3><p class="zacht">De documentatie en processen van je dossier: risicobeoordeling, ondersteuningsperiode, aanspreekpunt, gebruikersinformatie, meldproces, pentest met hertest.</p></div>
+  </div>
+
+  <h2 id="tabel">Welke check welke eis afdekt</h2>
+  <p class="zacht">"I" is bijlage I van de CRA (de essentiële eisen; deel II gaat over het omgaan met kwetsbaarheden), "art." een artikel. Klik op een check voor de uitleg.</p>
+  <div class="scroll"><table class="tabel">
+    <thead><tr><th scope="col">Check</th><th scope="col">Wat we controleren</th><th scope="col">CRA</th><th scope="col">Vanaf</th><th scope="col">Hoe</th></tr></thead>
+    <tbody>
+    {% for c in checks %}
+      <tr><td class="id"><a href="/check/{{ c.id }}">{{ c.id }}</a></td><td>{{ c.wat }}</td><td class="klein">{{ c.cra }}</td><td>{% if c.vanaf %}niveau {{ c.vanaf }}{% else %}module{% endif %}</td><td class="zacht klein">{{ 'automatisch' if c.in_scanner else 'keurder' }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+  <p class="zacht klein">De checks van niveau 3 en 4 zijn een concept (norm 0.2) en worden definitief na de pilots. Zodra er geharmoniseerde CRA-normen zijn, leggen we onze checks daarnaast.</p>
+
+  <div class="cta">
+    <h2>Begin met een gratis scan</h2>
+    <p>Niveau 1 toont in tien minuten waar je staat voor de technische CRA-eisen. Voor je volledige dossier is er de keuring.</p>
+    <div class="knoppenrij"><a class="knop" href="/hoe-het-werkt">Check mijn app</a><a class="knop licht" href="/contact">Plan een gesprek</a></div>
+  </div>
+</section>
+{% endblock %}

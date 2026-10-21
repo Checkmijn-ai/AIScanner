@@ -321,6 +321,28 @@ def security_txt():
     return Response(tekst, mimetype="text/plain")
 
 
+# --- CRA ---------------------------------------------------------------------------------------------------
+def cra_checks() -> list[dict]:
+    import re as _re
+    uit = []
+    for c in norm()["checks"]:
+        refs = [x.strip() for x in _re.split(r";", str(c.get("normen", ""))) if "CRA" in x]
+        if not refs:
+            continue
+        niveau = next((int(k[1]) for k in ("n1", "n2", "n3", "n4") if c["niveaus"][k] == "verplicht"), None)
+        uit.append({**c, "cra": _re.sub(r"\s+", " ", refs[0]).replace("CRA ", ""), "vanaf": niveau})
+    return sorted(uit, key=lambda c: (c["vanaf"] or 9, c["id"]))
+
+
+@site.get("/cra")
+def cra():
+    cs = cra_checks()
+    per = {n: [c for c in cs if c["vanaf"] == n] for n in (1, 2, 3, 4)}
+    return pagina("cra.html", "CheckMijn.AI en de Cyber Resilience Act",
+                  "Helpt je CRA-dossier in orde te krijgen, en houdt het in orde. Wat de scan en de keuring wel en niet "
+                  "doen voor de Europese Cyber Resilience Act.", checks=cs, per=per, totaal=len(norm()["checks"]))
+
+
 # --- resultaten (openbare statistiek) -----------------------------------------------------------------------
 TOON_TELLER_VANAF = int(os.environ.get("CHECKMIJN_TOON_TELLER_VANAF", "100"))
 
@@ -537,7 +559,7 @@ def robots():
 @site.get("/sitemap.xml")
 def sitemap():
     paden = ["/", "/hoe-het-werkt", "/niveaus", "/wat-we-controleren", "/wat-je-krijgt", "/open-source", "/score-uitleg", "/waarom", "/bureaus",
-             "/opdrachtgevers", "/vertrouwen", "/framework", "/vragen", "/contact", "/scan", "/nieuws", "/nieuwsbrief", "/resultaten"]
+             "/opdrachtgevers", "/vertrouwen", "/framework", "/vragen", "/contact", "/scan", "/nieuws", "/nieuwsbrief", "/resultaten", "/cra"]
     xml = ('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
            + "".join(f"  <url><loc>{SITE_URL}{p}</loc></url>\n" for p in paden)
            + "".join(f"  <url><loc>{SITE_URL}/check/{c['id']}</loc></url>\n" for c in norm()["checks"]) + "</urlset>\n")

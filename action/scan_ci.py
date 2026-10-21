@@ -67,6 +67,111 @@ RAPPORT_IN_REPO = os.environ.get("CM_RAPPORT_IN_REPO", "false").lower()  # false
 PRIVE = os.environ.get("CM_PRIVE", "").lower() == "true"
 RAPPORT_LINK = os.environ.get("CM_RAPPORT_LINK", "false").lower() == "true"
 MEETELLEN = os.environ.get("CM_MEETELLEN", "false").lower() == "true"
+WAARSCHUWEN = os.environ.get("CM_WAARSCHUWEN", "nee").lower()  # nee | auto | issue | faal
+LABEL = "checkmijn-lekken"
+MARKER = "<!-- checkmijn:sleutels "
+
+
+def lekken(rap: dict) -> list[dict]:
+    """Kritieke en hoge lekken in componenten (F-01) en verdachte pakketten (B-06), met een sleutel per lek."""
+    import re
+    uit = []
+    for c in rap["checks"]:
+        if c["id"] not in ("F-01", "B-06"):
+            continue
+        for b in c["bevindingen"]:
+            if b["ernst"] not in ("Kritiek", "Hoog"):
+                continue
+            kop = b["titel"].split(" · ")[0]
+            m = re.match(r"(.+?):\s*(\d+) bekende", kop)
+            sleutel = f"{m.group(1)}#{m.group(2)}" if m else kop
+            naar = re.search(r"bijwerken naar minstens (\S+)", b.get("bewijs", ""))
+            ids = re.findall(r"GHSA-[\w-]+", b.get("bewijs", ""))
+            uit.append({"sleutel": sleutel.replace(",", " "), "check": c["id"], "ernst": b["ernst"],
+                        "titel": m.group(1) if m else kop, "aantal": int(m.group(2)) if m else 1,
+                        "bestand": b.get("bestand", ""), "naar": naar.group(1) if naar else "",
+                        "ids": ids[:4], "indirect": "indirect" in b["titel"]})
+    return uit
+
+
+def _gh(methode: str, pad: str, data=None):
+    import urllib.request
+    api = os.environ.get("GITHUB_API_URL", "https://api.github.com")
+    req = urllib.request.Request(f"{api}/repos/{os.environ['GITHUB_REPOSITORY']}{pad}", method=methode,
+                                 data=json.dumps(data).encode() if data is not None else None,
+                                 headers={"Authorization": f"Bearer {os.environ.get('CM_TOKEN', '')}",
+                                          "Accept": "application/vnd.github+json", "Content-Type": "application/json"})
+    with urllib.request.urlopen(req, timeout=20) as r:
+        t = r.read()
+        return json.loads(t) if t else {}
+
+
+def lekken_tabel(lijst: list[dict]) -> str:
+    regels = ["| Component | Lekken | Ernst | Bijwerken naar | Meer informatie |", "| --- | --- | --- | --- | --- |"]
+    for x in lijst:
+        info = ", ".join(f"[{i}](https://github.com/advisories/{i})" for i in x["ids"]) or x["check"]
+        regels.append(f"| {x['titel']}{' (indirect)' if x['indirect'] else ''} | {x['aantal']} | {x['ernst']} | "
+                      f"{x['naar'] or 'nog geen oplossing'} | {info} |")
+    return "\n".join(regels)
+
+
+def waarschuw(rap: dict) -> str:
+    """Lekkenwacht: houdt één GitHub-issue bij met de kritieke en hoge lekken in je componenten.
+
+    Nieuw lek: issue openen of een reactie toevoegen (GitHub mailt je dan). Alles opgelost: issue sluiten.
+    In een openbare repository maken we geen issue (dan leest iedereen mee): daar laten we de run mislukken.
+    Geeft een melding terug; zet CM_FAAL_LEK als de run moet mislukken.
+    """
+    if os.environ.get("GITHUB_EVENT_NAME", "").startswith("pull_request") or WAARSCHUWEN in ("nee", "false", ""):
+        return ""
+    lijst = lekken(rap)
+    modus = WAARSCHUWEN if WAARSCHUWEN in ("issue", "faal") else ("issue" if PRIVE else "faal")
+    if modus == "faal":
+        if lijst:
+            os.environ["CM_FAAL_LEK"] = "1"
+            return f"Lekkenwacht: {len(lijst)} kritieke of hoge lekken in componenten; de run mislukt zodat GitHub je waarschuwt."
+        return "Lekkenwacht: geen kritieke of hoge lekken in componenten."
+    try:
+        open_ = [i for i in _gh("GET", f"/issues?state=open&labels={LABEL}&per_page=5") if "pull_request" not in i]
+    except Exception as e:  # noqa: BLE001
+        return f"Lekkenwacht: kon de issues niet lezen ({e.__class__.__name__}). Staat `issues: write` bij permissions?"
+    issue = open_[0] if open_ else None
+    oud = set()
+    if issue and MARKER in (issue.get("body") or ""):
+        oud = set(issue["body"].split(MARKER, 1)[1].split(" -->", 1)[0].split(","))
+    nu_ = {x["sleutel"] for x in lijst}
+    nieuw = [x for x in lijst if x["sleutel"] not in oud]
+    run = run_url()
+    uitleg = ("**Wat moet je doen?** Werk de componenten bij naar de vermelde versie. Bouw je met Lovable, Bolt of v0? "
+              "Vraag dan: *\"Werk de pakketten uit het nieuwste checkmijn.ai-issue bij naar de vermelde versie.\"* "
+              "Na de volgende scan sluit dit issue vanzelf als alles opgelost is.")
+    try:
+        if lijst and not issue:
+            body = (f"checkmijn.ai vond **{len(lijst)} kritieke of hoge lekken** in de componenten van dit project. "
+                    f"Deze lekken zijn publiek bekend, dus aanvallers kennen ze ook.\n\n{lekken_tabel(lijst)}\n\n{uitleg}\n\n"
+                    f"[De scan in GitHub]({run}) · [Lekkenwacht van checkmijn.ai](https://checkmijn.ai/hoe-het-werkt#lekkenwacht)"
+                    f"\n\n{MARKER}{','.join(sorted(nu_))} -->")
+            try:
+                _gh("POST", "/labels", {"name": LABEL, "color": "b1161a", "description": "Lekken gevonden door checkmijn.ai"})
+            except Exception:  # noqa: BLE001  label bestaat al
+                pass
+            i = _gh("POST", "/issues", {"title": f"checkmijn.ai: {len(lijst)} lek(ken) in componenten van dit project",
+                                        "body": body, "labels": [LABEL]})
+            return f"Lekkenwacht: issue #{i.get('number')} geopend ({len(lijst)} lekken). GitHub stuurt je een melding."
+        if issue and nieuw:
+            _gh("POST", f"/issues/{issue['number']}/comments",
+                {"body": f"**{len(nieuw)} nieuw(e) lek(ken) gevonden:**\n\n{lekken_tabel(nieuw)}\n\n{uitleg}\n\n[De scan]({run})"})
+            body = issue["body"].split(MARKER, 1)[0] + f"{MARKER}{','.join(sorted(nu_ | oud))} -->"
+            _gh("PATCH", f"/issues/{issue['number']}", {"body": body})
+            return f"Lekkenwacht: {len(nieuw)} nieuwe lekken gemeld in issue #{issue['number']}."
+        if issue and not lijst:
+            _gh("POST", f"/issues/{issue['number']}/comments",
+                {"body": f"Alle kritieke en hoge lekken in componenten zijn opgelost. [De scan]({run}) · issue gesloten door checkmijn.ai."})
+            _gh("PATCH", f"/issues/{issue['number']}", {"state": "closed", "state_reason": "completed"})
+            return f"Lekkenwacht: alles opgelost, issue #{issue['number']} gesloten."
+    except Exception as e:  # noqa: BLE001  de lekkenwacht mag de scan nooit laten mislukken
+        return f"Lekkenwacht: kon het issue niet bijwerken ({e.__class__.__name__}). Staat `issues: write` bij permissions?"
+    return f"Lekkenwacht: {len(lijst)} bekende lekken, niets nieuws." if lijst else "Lekkenwacht: geen kritieke of hoge lekken in componenten."
 
 
 def oidc_token() -> str | None:
@@ -228,6 +333,20 @@ def rapport_markdown(rap: dict, m: dict, letter: str, historie: list | None = No
     return "\n".join(r)
 
 
+def ongewijzigd_bij_dagscan(rap: dict) -> bool:
+    """Dagelijkse scan (schedule) zonder verschil met de vorige: dan niets terugzetten in de repository
+    (geen dagelijkse commit), en geen nieuwe rapportlink."""
+    if os.environ.get("GITHUB_EVENT_NAME") != "schedule":
+        return False
+    try:
+        vorige = json.loads((PAD / RAPPORT_MAP / "historie.json").read_text())[-1]
+    except Exception:  # noqa: BLE001
+        return False
+    s = rap["samenvatting"]
+    return (vorige.get("commit") == (s.get("commit") or "") and
+            [vorige.get(k) for k in "khml"] == [s["ernst"][e] for e in ("Kritiek", "Hoog", "Middel", "Laag")])
+
+
 def werk_historie_bij(rap: dict, letter: str) -> list:
     """Leest .checkmijn/historie.json en voegt deze scan toe (alleen als het rapport in de repo komt)."""
     doel = PAD / RAPPORT_MAP
@@ -355,13 +474,17 @@ def main() -> int:
         if c["status"] in ("Bevinding", "Niet gescand"):
             zw = c["bevindingen"][0]["ernst"] if c["bevindingen"] else ""
             regels.append(f"| {c['id']} | {c['scan'][:90]} | {c['status']} | {len(c['bevindingen'])} {zw} |")
-    historie = werk_historie_bij(rap, letter) if rapport_in_repo_aan() else []
+    stil = ongewijzigd_bij_dagscan(rap)
+    terugzetten = rapport_in_repo_aan() and not stil
+    historie = werk_historie_bij(rap, letter) if terugzetten else []
     grafiek = verloop_html(historie)
     if grafiek:
         p = OUT / "rapport.html"
         p.write_text(p.read_text(encoding="utf-8").replace("<!--checkmijn:verloop-->", grafiek, 1), encoding="utf-8")
     link = None
-    if RAPPORT_LINK:
+    if stil:
+        regels += ["Dagelijkse controle: niets veranderd sinds de vorige scan, dus het rapport in de repository blijft staan.", ""]
+    if RAPPORT_LINK and not stil:
         link, melding = maak_rapport_link(m)
         log(melding)
         if link and PRIVE:
@@ -373,6 +496,10 @@ def main() -> int:
         else:
             regels += [melding, ""]
     regels += ["", "Het volledige rapport (met bestand en regel per bevinding) staat ook bij de artefacten van deze run.", ""]
+    melding_lw = waarschuw(rap)
+    if melding_lw:
+        log(melding_lw)
+        regels += [f"*{melding_lw}*", ""]
     if MEETELLEN:
         melding = meetellen(m, letter)
         log(melding)
@@ -391,7 +518,7 @@ def main() -> int:
     regels.append("*De scanscore is een uitslag van de scan op een bepaald moment. Ze is geen keurmerk, certificaat "
                   "of garantie dat software veilig is.*")
 
-    if rapport_in_repo_aan():
+    if terugzetten:
         regels += ["", rapport_in_repo(rap, m, letter, link, historie)]
     elif RAPPORT_IN_REPO == "auto" and not PRIVE:
         regels += ["", "Het rapport is niet in de repository gezet, omdat de repository openbaar is: dan zou iedereen de "
@@ -403,6 +530,9 @@ def main() -> int:
             f.write(f"score={letter}\nrapport={OUT}\n")
 
     k, h = s["ernst"]["Kritiek"], s["ernst"]["Hoog"]
+    if os.environ.get("CM_FAAL_LEK"):
+        log("::error::checkmijn.ai lekkenwacht: kritieke of hoge lekken in componenten (zie de samenvatting van deze run).")
+        return 1
     if (FAAL_BIJ == "kritiek" and k) or (FAAL_BIJ == "hoog" and (k or h)):
         log(f"::error::checkmijn.ai: {k} kritieke en {h} hoge bevinding(en).")
         return 1

@@ -51,7 +51,7 @@
   <div class="drie-stappen mt2">
     <div><span class="stapnr">1</span><h3>Meten</h3><p class="zacht">De scanner van vandaag draait in je eigen omgeving, zonder netwerk. Na een paar minuten heb je je score en de lijst van bevindingen. Er gaat niets naar ons.</p></div>
     <div><span class="stapnr">2</span><h3>Herstellen</h3><p class="zacht">Je beslist zelf. Zeg je "ja", dan herstelt je AI-agent de bevindingen: eerst Kritiek, dan Hoog, dan Middel. Je kunt het ook zelf doen of laten doen.</p></div>
-    <div><span class="stapnr">3</span><h3>Opnieuw meten</h3><p class="zacht">Na herstel scan je opnieuw en zie je het verschil, bijvoorbeeld van G naar B. Via GitHub gebeurt dat vanzelf bij elke wijziging en elke maandag.</p></div>
+    <div><span class="stapnr">3</span><h3>Opnieuw meten</h3><p class="zacht">Na herstel scan je opnieuw en zie je het verschil, bijvoorbeeld van G naar B. Via GitHub gebeurt dat vanzelf bij elke wijziging, en elke dag kijkt de lekkenwacht of er nieuwe lekken zijn.</p></div>
   </div>
   <div class="rooster-3 mt2 beloften-klein">
     <div>{{ m.icoon('slot') }}<p><b>Je code blijft bij jou.</b> <span class="zacht">De scanner draait op je eigen computer of in je eigen GitHub.</span></p></div>
@@ -107,7 +107,7 @@
       <ul>
         <li>In je project: <code>.checkmijn/RAPPORT.md</code> met de score, het verloop van je scores en alle bevindingen.</li>
         <li>Bovenaan een <strong>persoonlijke link</strong> naar het opgemaakte rapport, met grafieken.</li>
-        <li>Elke wijziging wordt opnieuw gescand, en elke maandag ook, voor nieuwe lekken.</li>
+        <li>Elke wijziging wordt opnieuw gescand. En elke dag kijkt de <a href="#lekkenwacht">lekkenwacht</a> of er nieuwe lekken zijn in je componenten.</li>
       </ul>
     </div>
     <div>
@@ -128,6 +128,32 @@
   <h2 class="mt0">In je eigen pipeline</h2>
   <p class="zacht">De scanner draait als GitHub Action in je repository. De Action controleert de handtekening en het controlegetal van de dagversie, scant zonder netwerk en zet de uitslag bij de run. Zet dit bestand in <code>.github/workflows/checkmijn.yml</code>:</p>
   {{ m.code("workflow", workflow, ".github/workflows/checkmijn.yml") }}
+</section>
+
+<section class="wrap sectie" id="lekkenwacht">
+  <div class="rooster-2">
+    <div>
+      <p class="oog">Gratis bij scannen via GitHub</p>
+      <h2 class="mt0">Lekkenwacht: een seintje bij een nieuw lek</h2>
+      <p class="lead">Elke dag duikt er wel ergens een lek op in een veelgebruikt pakket. De lekkenwacht kijkt elke dag of het jouw project raakt.</p>
+      <ol class="stappen">
+        <li><span>Elke nacht maken we een nieuwe scanner met de nieuwste lijst van bekende lekken.</span></li>
+        <li><span>Elke ochtend scant GitHub je project daarmee opnieuw, in je eigen omgeving.</span></li>
+        <li><span>Is er een nieuw kritiek of hoog lek in een van je componenten, dan opent de scan een <b>issue</b> in je repository, met wat er lek is en naar welke versie je moet bijwerken. GitHub stuurt je daarover een mail.</span></li>
+        <li><span>Heb je het opgelost, dan sluit het issue bij de volgende scan vanzelf.</span></li>
+      </ol>
+    </div>
+    <div class="kaart">
+      <h3 class="mt0">Wat je moet weten</h3>
+      <ul class="zacht">
+        <li>Er gaat niets naar ons: de lijst van je componenten blijft in je eigen GitHub.</li>
+        <li>Staat alles in orde, dan gebeurt er niets: geen mail, geen extra commit.</li>
+        <li>In een openbare repository maken we geen issue (dan leest iedereen mee); daar mislukt de run, en ook dan mailt GitHub je.</li>
+        <li>De lekkenwacht ziet de pakketten in je project. Lekken in PHP zelf, je server of WordPress-plugins ziet hij niet; daarvoor komt de betaalde Lekkenwacht Plus, met een waarschuwing per mail.</li>
+      </ul>
+      <p class="zacht klein">Aan- of uitzetten: <code>waarschuwen: auto</code> of <code>"nee"</code> in het workflowbestand.</p>
+    </div>
+  </div>
 </section>
 
 <section class="vlak" id="keuring"><div class="wrap sectie">

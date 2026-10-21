@@ -28,6 +28,7 @@ assert c.post("/api/v1/telling", json={"letter": "B"}).status_code == 401
 assert c.post("/api/v1/telling", json={"letter": "B"}, headers={"Authorization": "Bearer fout"}).status_code == 401
 assert tel("1", "Z").status_code == 422 and tel("1", "geen").status_code == 422
 assert tel("1", "B", "pull_request").get_json()["geteld"] is False
+assert tel("1", "B", "schedule").get_json()["geteld"] is False
 
 # project 1: G → E → B; project 2: E → B; project 3: D (één keer); project 4: C → D (slechter)
 for repo, letter in [("1", "G"), ("1", "E"), ("1", "B"), ("2", "E"), ("2", "B"), ("3", "D"), ("4", "C"), ("4", "D")]:
