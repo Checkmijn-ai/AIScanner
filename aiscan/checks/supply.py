@@ -13,7 +13,7 @@ import yaml
 
 from . import check
 from ..core import Finding, Result, snippet
-from ..deps import all_manifests, all_components, norm_py, min_version
+from ..deps import all_manifests, all_components, norm_py, min_version, pnaam
 from ..versions import affected, fixed_in, key as vkey
 
 DATA = Path(__file__).resolve().parent.parent / "data"
@@ -23,6 +23,15 @@ SEV = {"CRITICAL": "Kritiek", "HIGH": "Hoog", "MODERATE": "Middel", "LOW": "Laag
 @lru_cache(maxsize=1)
 def ref():
     return yaml.safe_load((DATA / "reference.yaml").read_text())
+
+
+@lru_cache(maxsize=1)
+def runtimes() -> dict:
+    """Actuele gegevens per runtime uit de dagversie (endoflife.date); leeg als ze ontbreken."""
+    try:
+        return json.loads((DATA / "runtimes.json").read_text()).get("runtimes", {})
+    except Exception:
+        return {}
 
 
 @lru_cache(maxsize=1)
@@ -43,7 +52,7 @@ def sbom(proj, meta):
     r = Result("A-03")
     comps = all_components(proj)
     if not all_manifests(proj):
-        r.status, r.reden = "Niet van toepassing", "Geen npm- of Python-manifest gevonden."
+        r.status, r.reden = "Niet van toepassing", "Geen manifest gevonden (npm, Python, Composer, Go, Ruby of Java)."
         return r
     existing = proj.find("*.cdx.json", "bom.json", "sbom*.json", "*.spdx.json", "*.spdx", "bom.xml")
     _, ci = _ci_text(proj)
@@ -85,7 +94,7 @@ def build(proj, meta):
     r = Result("C-07")
     ms = all_manifests(proj)
     if not ms:
-        r.status, r.reden = "Niet van toepassing", "Geen npm- of Python-manifest gevonden."
+        r.status, r.reden = "Niet van toepassing", "Geen manifest gevonden (npm, Python, Composer, Go, Ruby of Java)."
         return r
     for m in ms:
         if not m.lockfile:
@@ -112,7 +121,7 @@ def lockfiles(proj, meta):
     r = Result("F-03")
     ms = all_manifests(proj)
     if not ms:
-        r.status, r.reden = "Niet van toepassing", "Geen npm- of Python-manifest gevonden."
+        r.status, r.reden = "Niet van toepassing", "Geen manifest gevonden (npm, Python, Composer, Go, Ruby of Java)."
         return r
     for m in ms:
         if not m.lockfile:
@@ -137,7 +146,7 @@ def _vulns(proj):
         if not ver:
             unchecked += 1
             continue
-        name = c.name if c.ecosystem == "npm" else norm_py(c.name)
+        name = pnaam(c)
         for rec in idx.get(c.ecosystem, {}).get(name, []):
             if affected(c.ecosystem, ver, rec):
                 out.append((c, rec))
@@ -168,14 +177,13 @@ def known_vulns(proj, meta):
         if rec.get("mal"):
             continue  # komt bij B-06
         exact = c.version is None and bool(re.fullmatch(r"=?\s*\d+\.\d+\.\d+", (c.spec or "").strip()))
-        groups.setdefault((c.name, c.version or min_version(c.spec), c.direct, c.dev, c.source, c.version is None and not exact), []).append(rec)
-    for (name, ver, direct, dev, src, ranged_c), recs in groups.items():
+        groups.setdefault((c.ecosystem, c.name, c.version or min_version(c.spec), c.direct, c.dev, c.source, c.version is None and not exact), []).append(rec)
+    for (eco, name, ver, direct, dev, src, ranged_c), recs in groups.items():
         recs.sort(key=lambda x: -["LOW", "MODERATE", "HIGH", "CRITICAL"].index(x.get("sev", "MODERATE").upper())
                   if x.get("sev", "").upper() in ("LOW", "MODERATE", "HIGH", "CRITICAL") else 0)
         sev = SEV.get(recs[0].get("sev", "").upper(), "Middel")
         if dev:  # ontwikkelafhankelijkheid: komt niet in productie, telt één niveau lager
             sev = {"Kritiek": "Hoog", "Hoog": "Middel", "Middel": "Laag"}.get(sev, sev)
-        eco = "npm" if src.endswith((".json", ".lock", ".yaml")) and "Pipfile" not in src else "PyPI"
         fixes = [f for rec in recs for f in fixed_in(eco, rec)]
         best = None
         for f in fixes:
@@ -213,22 +221,40 @@ def transitive(proj, meta):
 
 
 # ------------------------------------------------------------------ F-02
-def _eol_check(r, kind, version, where, line=0):
-    table = ref()["eol"].get(kind, {})
-    today = dt.date.today()
-    v = version
+NAMEN = {"node": "Node.js", "python": "Python", "php": "PHP", "ruby": "Ruby", "go": "Go", "django": "Django",
+         "vue": "Vue", "jquery": "jQuery"}
+
+
+def _lijn(kind: str, version: str) -> str:
     if kind in ("node", "vue", "jquery"):
-        v = version.split(".")[0]
-    elif kind in ("python", "django"):
-        v = ".".join(version.split(".")[:2])
-    end = table.get(v)
-    if not end:
-        return
-    d = dt.date.fromisoformat(end)
-    if d < today:
-        r.add(Finding("F-02", "Hoog", f"{kind} {version} wordt niet meer ondersteund (sinds {end})", where, line))
-    elif (d - today).days < 183:
-        r.add(Finding("F-02", "Laag", f"{kind} {version}: ondersteuning stopt op {end}", where, line))
+        return version.split(".")[0]
+    return ".".join(version.split(".")[:2])
+
+
+def _eol_check(r, kind, version, where, line=0):
+    today = dt.date.today()
+    lijn = _lijn(kind, version)
+    actueel = runtimes().get(kind, {}).get(lijn) or {}
+    end = actueel.get("eol") if actueel else ref()["eol"].get(kind, {}).get(lijn)
+    naam = NAMEN.get(kind, kind)
+    if end:
+        d = dt.date.fromisoformat(end)
+        if d < today:
+            r.add(Finding("F-02", "Hoog", f"{naam} {version} krijgt geen beveiligingsupdates meer (sinds {end})", where, line,
+                          bewijs=f"Stap over naar een ondersteunde versie van {naam}."))
+            return
+        if (d - today).days < 183:
+            r.add(Finding("F-02", "Laag", f"{naam} {version}: de beveiligingsupdates stoppen op {end}", where, line))
+    # Een vaste patchversie (bv. php:8.3.12) die achterloopt op de nieuwste van die lijn
+    laatste = actueel.get("laatste")
+    if laatste and version.count(".") >= 2 and vkey("Maven", version) and vkey("Maven", laatste) \
+            and vkey("Maven", version) < vkey("Maven", laatste):
+        sinds = actueel.get("datum") or ""
+        recent = sinds and (today - dt.date.fromisoformat(sinds)).days <= 14
+        r.add(Finding("F-02", "Middel", f"{naam} {version}: er is een nieuwere versie, {laatste}"
+                      + (f" (uitgebracht op {sinds})" if sinds else ""), where, line,
+                      bewijs=("Nieuwe versies bevatten vaak beveiligingsfixes" + (", en deze is net uit: kijk of het om een lek gaat." if recent else ".")
+                              + f" Werk bij naar {naam} {laatste}.")))
 
 
 @check("F-02")
@@ -241,15 +267,43 @@ def eol(proj, meta):
             found = True
             _eol_check(r, "node", m.group(1), proj.rel(p))
     for p in proj.find(".python-version", "runtime.txt"):
-        m = re.search(r"(\d+\.\d+)", proj.text(p))
+        m = re.search(r"(\d+\.\d+(?:\.\d+)?)", proj.text(p))
         if m:
             found = True
             _eol_check(r, "python", m.group(1), proj.rel(p))
-    for p in proj.find("Dockerfile", "Dockerfile.*", "*.dockerfile", "docker-compose*.yml"):
+    for p in proj.find(".php-version"):
+        m = re.search(r"(\d+\.\d+(?:\.\d+)?)", proj.text(p))
+        if m:
+            found = True
+            _eol_check(r, "php", m.group(1), proj.rel(p))
+    for p in proj.find(".ruby-version"):
+        m = re.search(r"(\d+\.\d+(?:\.\d+)?)", proj.text(p))
+        if m:
+            found = True
+            _eol_check(r, "ruby", m.group(1), proj.rel(p))
+    for p in proj.find(".tool-versions"):
         for i, line in enumerate(proj.text(p).splitlines(), 1):
-            for m in re.finditer(r"\b(node|python):(\d+(?:\.\d+)?)", line):
+            m = re.match(r"\s*(nodejs|python|php|ruby|golang)\s+(\d+(?:\.\d+){0,2})", line)
+            if m:
                 found = True
-                _eol_check(r, m.group(1), m.group(2), proj.rel(p), i)
+                _eol_check(r, {"nodejs": "node", "golang": "go"}.get(m.group(1), m.group(1)), m.group(2), proj.rel(p), i)
+    for p in proj.find("composer.json"):
+        d = proj.json(p) or {}
+        plat = ((d.get("config") or {}).get("platform") or {}).get("php")
+        if plat:
+            found = True
+            _eol_check(r, "php", str(plat), proj.rel(p))
+        else:
+            eis = str((d.get("require") or {}).get("php", ""))
+            m = re.fullmatch(r"\s*[~^]?\s*(\d+\.\d+)(?:\.\*|\.\d+)?\s*", eis)  # bv. "~7.4" of "7.4.*": één lijn
+            if m:
+                found = True
+                _eol_check(r, "php", m.group(1), proj.rel(p))
+    for p in proj.find("Dockerfile", "Dockerfile.*", "*.dockerfile", "docker-compose*.yml", "compose*.yml"):
+        for i, line in enumerate(proj.text(p).splitlines(), 1):
+            for m in re.finditer(r"\b(node|python|php|ruby|golang):(\d+(?:\.\d+){0,2})", line):
+                found = True
+                _eol_check(r, "go" if m.group(1) == "golang" else m.group(1), m.group(2), proj.rel(p), i)
     for p in proj.find("package.json"):
         d = proj.json(p) or {}
         eng = (d.get("engines") or {}).get("node")
@@ -259,7 +313,7 @@ def eol(proj, meta):
                 found = True
                 _eol_check(r, "node", m.group(1), proj.rel(p))
     for c in all_components(proj):
-        name = c.name if c.ecosystem == "npm" else norm_py(c.name)
+        name = pnaam(c)
         why = ref()["verouderd"].get(c.ecosystem, {}).get(name)
         if why and c.direct:
             r.add(Finding("F-02", "Middel", f"{c.name}: {why}", c.source))
@@ -345,6 +399,8 @@ def _dl(a: str, b: str) -> int:
 
 def _registry(eco, name, timeout=8):
     import requests
+    if eco not in ("npm", "PyPI"):
+        return None  # andere registers (nog) niet nagekeken
     try:
         if eco == "npm":
             u = "https://registry.npmjs.org/" + name.replace("/", "%2F")
@@ -374,7 +430,7 @@ def suspicious_packages(proj, meta):
     pop = {k: set(v) for k, v in ref()["populair"].items()}
     # 1. bekende kwaadaardige pakketten
     for c in comps:
-        name = c.name if c.ecosystem == "npm" else norm_py(c.name)
+        name = pnaam(c)
         for rec in idx.get(c.ecosystem, {}).get(name, []):
             if rec.get("mal") and (not c.version or affected(c.ecosystem, c.version, rec)):
                 r.add(Finding("B-06", "Kritiek", f"{c.name} {c.version or ''}: bekend kwaadaardig pakket", c.source,
@@ -383,7 +439,7 @@ def suspicious_packages(proj, meta):
     for c in comps:
         if not c.direct:
             continue
-        name = c.name if c.ecosystem == "npm" else norm_py(c.name)
+        name = pnaam(c)
         if name in pop.get(c.ecosystem, set()):
             continue
         for p in pop.get(c.ecosystem, set()):
@@ -481,7 +537,7 @@ def unused(proj, meta):
                 if not pat.search(js_src) and n not in scripts:
                     r.add(Finding("C-19", meta["ernst"], f"'{n}' lijkt nergens gebruikt te worden", proj.rel(m.path),
                                   bevestigen=True, bewijs="Geen import, require of verwijzing gevonden in de broncode."))
-        else:
+        elif m.ecosystem == "PyPI":
             if len(m.direct) >= 15 and all(v.startswith("==") for v in m.direct.values()):
                 r.info.append(f"{proj.rel(m.path)} lijkt een volledige 'pip freeze': directe en indirecte afhankelijkheden zijn niet te "
                               "onderscheiden, dus ongebruikte pakketten worden hier niet gemeld.")

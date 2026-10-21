@@ -1,11 +1,11 @@
-"""Bouwt een compacte, offline lekkenindex (npm en PyPI) uit de GitHub Advisory Database (OSV-formaat).
+"""Bouwt een compacte, offline lekkenindex (npm, PyPI, Composer, Go, RubyGems, Maven) uit de GitHub Advisory Database.
 
 Gebruik: python tools/build_advisory_index.py <pad naar advisory-database> <uitvoer.json.gz>
 Bron: https://github.com/github/advisory-database (CC-BY 4.0)
 """
 import gzip, json, os, re, sys
 src, dst = sys.argv[1], sys.argv[2]
-idx = {"npm": {}, "PyPI": {}}
+idx = {"npm": {}, "PyPI": {}, "Packagist": {}, "Go": {}, "RubyGems": {}, "Maven": {}}
 n = 0
 for dp, _, fns in os.walk(os.path.join(src, "advisories", "github-reviewed")):
     for fn in fns:
@@ -24,8 +24,9 @@ for dp, _, fns in os.walk(os.path.join(src, "advisories", "github-reviewed")):
                 continue
             name = a["package"]["name"]
             if eco == "PyPI":
-                import re
                 name = re.sub(r"[-_.]+", "-", name).lower()
+            elif eco == "Packagist":
+                name = name.lower()
             ranges = []
             for r in a.get("ranges", []):
                 if r.get("type") in ("SEMVER", "ECOSYSTEM"):

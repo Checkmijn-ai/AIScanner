@@ -156,6 +156,15 @@ def main(argv=None):
         else:
             log("Lekkenindex bouwen")
             bouw_index(ghsa, stage / "aiscan" / "data" / "advisories.json.gz", dag)
+        # runtimes: ondersteuning en nieuwste versie per lijn (PHP, Node.js, Python, Ruby, Go)
+        try:
+            spec = importlib.util.spec_from_file_location("bri", ROOT / "tools" / "build_runtime_index.py")
+            bri = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(bri)
+            bri.bouw(str(stage / "aiscan" / "data" / "runtimes.json"))
+            log("Runtimes bijgewerkt (endoflife.date)")
+        except Exception as e:  # noqa: BLE001  zonder deze gegevens geldt de vaste tabel
+            log(f"Runtimes niet bijgewerkt: {e.__class__.__name__}")
 
         # 3. catalogus
         checks = catalogus.laad()

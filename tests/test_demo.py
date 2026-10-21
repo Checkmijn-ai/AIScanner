@@ -11,7 +11,7 @@ VERWACHT = {  # scan-ID -> stukjes tekst die in een bevinding moeten staan
     "E-03": ["Secure of HttpOnly", "standaardwaarde", "vervaldatum"],
     "E-04": ["template string", "aan elkaar te plakken", "commando-injectie"],
     "E-05": ["Stripe", "git-geschiedenis"], "E-06": ["MD5", "Math.random"],
-    "F-01": ["mysql2 2.3.0", "axios 0.21.1", "minimist 1.2.5"], "F-02": ["node 16"], "F-03": ["integriteit"],
+    "F-01": ["mysql2 2.3.0", "axios 0.21.1", "minimist 1.2.5"], "F-02": ["Node.js 16"], "F-03": ["integriteit"],
     "H-02": ["eval(expr)"], "H-08": ["tokens"], "P-05": ["handtekening", "SSRF"],
     "U-01": ["gebouwde frontend", "browser"], "U-02": ["source maps"], "U-03": ["localStorage"],
     "U-07": ["postMessage", "dangerouslySetInnerHTML"], "W-03": ["publieke map"],

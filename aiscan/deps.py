@@ -1,4 +1,5 @@
-"""Afhankelijkheden inlezen uit manifesten en lockfiles (npm, yarn, pnpm, pip, Pipenv, Poetry)."""
+"""Afhankelijkheden inlezen uit manifesten en lockfiles: npm, yarn, pnpm, bun, pip, Pipenv, Poetry, uv, Composer (PHP),
+Go-modules, Bundler (Ruby) en Maven/Gradle (Java)."""
 from __future__ import annotations
 
 import re
@@ -16,7 +17,7 @@ import yaml
 class Component:
     name: str
     version: str | None
-    ecosystem: str            # npm | PyPI
+    ecosystem: str            # npm | PyPI | Packagist | Go | RubyGems | Maven (namen zoals in de GitHub Advisory Database)
     direct: bool = False
     dev: bool = False
     integrity: str | None = None
@@ -28,10 +29,20 @@ class Component:
 
     @property
     def purl(self):
+        v = f"@{self.version}" if self.version else ""
         if self.ecosystem == "npm":
             n = self.name.replace("@", "%40", 1) if self.name.startswith("@") else self.name
-            return f"pkg:npm/{n}@{self.version}" if self.version else f"pkg:npm/{n}"
-        return f"pkg:pypi/{self.name.lower()}@{self.version}" if self.version else f"pkg:pypi/{self.name.lower()}"
+            return f"pkg:npm/{n}{v}"
+        if self.ecosystem == "Packagist":
+            return f"pkg:composer/{self.name}{v}"
+        if self.ecosystem == "Go":
+            return f"pkg:golang/{self.name}{v}"
+        if self.ecosystem == "RubyGems":
+            return f"pkg:gem/{self.name}{v}"
+        if self.ecosystem == "Maven":
+            g, _, a = self.name.partition(":")
+            return f"pkg:maven/{g}/{a}{v}"
+        return f"pkg:pypi/{self.name.lower()}{v}"
 
 
 @dataclass
@@ -305,9 +316,184 @@ def py_manifests(proj) -> list[Manifest]:
     return out
 
 
+# ---------------- PHP (Composer)
+def php_manifests(proj) -> list[Manifest]:
+    out = []
+    for cj in proj.find("composer.json"):
+        d = proj.json(cj)
+        if not isinstance(d, dict):
+            continue
+        plat = lambda n: n == "php" or n.startswith(("ext-", "lib-")) or n in ("composer-plugin-api", "composer-runtime-api")  # noqa: E731
+        direct = {n.lower(): v for n, v in (d.get("require") or {}).items() if not plat(n)}
+        dev = {n.lower(): v for n, v in (d.get("require-dev") or {}).items() if not plat(n)}
+        m = Manifest(cj, "Packagist", direct, dev)
+        lp = cj.parent / "composer.lock"
+        ld = proj.json(lp) if lp.exists() else None
+        if isinstance(ld, dict):
+            m.lockfile = lp
+            m.lock_has_integrity = True  # Composer controleert pakketten via de bron; geen aparte melding
+            for sect, isdev in (("packages", False), ("packages-dev", True)):
+                for pkg in ld.get(sect) or []:
+                    n = str(pkg.get("name", "")).lower()
+                    if not n:
+                        continue
+                    lic = pkg.get("license")
+                    m.components.append(Component(n, str(pkg.get("version", "")).lstrip("v") or None, "Packagist",
+                                                  direct=n in direct or n in dev, dev=isdev,
+                                                  license=", ".join(lic) if isinstance(lic, list) else lic,
+                                                  source=proj.rel(lp), paths=[n]))
+        else:
+            for n, v in {**direct, **dev}.items():
+                m.components.append(Component(n, None, "Packagist", direct=True, dev=n in dev,
+                                              source=proj.rel(cj), paths=[n], spec=str(v)))
+        out.append(m)
+    return out
+
+
+# ---------------- Go
+def go_manifests(proj) -> list[Manifest]:
+    out = []
+    for gm in proj.find("go.mod"):
+        tekst = proj.text(gm)
+        direct, comps = {}, []
+        blok = False
+        for regel in tekst.splitlines():
+            r = regel.split("//")[0].strip()
+            ind = "// indirect" in regel
+            if r.startswith("require ("):
+                blok = True
+                continue
+            if blok and r == ")":
+                blok = False
+                continue
+            mm = None
+            if blok:
+                mm = re.match(r"(\S+)\s+(v\S+)", r)
+            elif r.startswith("require "):
+                mm = re.match(r"require\s+(\S+)\s+(v\S+)", r)
+            if mm:
+                n, v = mm.group(1), mm.group(2)
+                if not ind:
+                    direct[n] = v
+                comps.append(Component(n, v.lstrip("v").replace("+incompatible", ""), "Go", direct=not ind,
+                                       source=proj.rel(gm), paths=[n]))
+        if not comps:
+            continue
+        m = Manifest(gm, "Go", direct, {}, lockfile=gm, components=comps)
+        m.lock_has_integrity = (gm.parent / "go.sum").exists()
+        out.append(m)
+    return out
+
+
+# ---------------- Ruby (Bundler)
+def ruby_manifests(proj) -> list[Manifest]:
+    out = []
+    for gl in proj.find("Gemfile.lock"):
+        tekst = proj.text(gl)
+        sectie, comps, direct = "", [], {}
+        for regel in tekst.splitlines():
+            if regel and not regel.startswith(" "):
+                sectie = regel.strip()
+                continue
+            if sectie == "DEPENDENCIES":
+                mm = re.match(r"\s{2}([A-Za-z0-9_.\-]+)", regel)
+                if mm:
+                    direct[mm.group(1)] = ""
+            mm = re.match(r"^\s{4}([A-Za-z0-9_.\-]+) \(([^)]+)\)$", regel)
+            if mm and sectie in ("GEM", "GIT", "PATH"):
+                ver = re.sub(r"-(x86|arm|aarch|java|universal|x64|mingw|darwin|linux).*$", "", mm.group(2))
+                comps.append(Component(mm.group(1), ver, "RubyGems", source=proj.rel(gl), paths=[mm.group(1)]))
+        for c in comps:
+            c.direct = c.name in direct
+        if comps:
+            out.append(Manifest(gl, "RubyGems", direct, {}, lockfile=gl, components=comps, lock_has_integrity=True))
+    for gf in proj.find("Gemfile"):
+        if (gf.parent / "Gemfile.lock").exists():
+            continue
+        direct = {mm.group(1): mm.group(2) or "" for mm in re.finditer(r"^\s*gem\s+['\"]([^'\"]+)['\"](?:\s*,\s*['\"]([^'\"]+)['\"])?", proj.text(gf), re.M)}
+        if direct:
+            out.append(Manifest(gf, "RubyGems", direct, {}, components=[
+                Component(n, None, "RubyGems", direct=True, source=proj.rel(gf), paths=[n], spec=v) for n, v in direct.items()]))
+    return out
+
+
+# ---------------- Java (Maven en Gradle)
+def java_manifests(proj) -> list[Manifest]:
+    import xml.etree.ElementTree as ET
+    out = []
+    for pom in proj.find("pom.xml"):
+        try:
+            tekst = proj.text(pom)
+            if "<!ENTITY" in tekst:
+                continue
+            root = ET.fromstring(tekst)
+        except Exception:
+            continue
+        ns = {"m": root.tag.split("}")[0].strip("{")} if root.tag.startswith("{") else {}
+        q = (lambda t: f"m:{t}") if ns else (lambda t: t)
+        props = {}
+        pe = root.find(q("properties"), ns)
+        if pe is not None:
+            for el in pe:
+                props[el.tag.split("}")[-1]] = (el.text or "").strip()
+        pv = root.find(q("version"), ns)
+        if pv is not None:
+            props["project.version"] = (pv.text or "").strip()
+        direct, comps = {}, []
+        for dep in root.iter(("{%s}dependency" % ns["m"]) if ns else "dependency"):
+            g = dep.find(q("groupId"), ns)
+            a = dep.find(q("artifactId"), ns)
+            v = dep.find(q("version"), ns)
+            sc = dep.find(q("scope"), ns)
+            if g is None or a is None:
+                continue
+            ver = (v.text or "").strip() if v is not None else ""
+            ver = re.sub(r"\$\{([^}]+)\}", lambda x: props.get(x.group(1), x.group(0)), ver)
+            n = f"{(g.text or '').strip()}:{(a.text or '').strip()}"
+            direct[n] = ver
+            vast = ver if ver and "$" not in ver and not ver.startswith(("[", "(")) else None
+            comps.append(Component(n, vast, "Maven", direct=True, dev=(sc is not None and (sc.text or "").strip() == "test"),
+                                   source=proj.rel(pom), paths=[n], spec=None if vast else ver or None))
+        if comps:
+            # Maven heeft geen lockfile: de versies in pom.xml liggen vast, de indirecte niet.
+            out.append(Manifest(pom, "Maven", direct, {}, lockfile=pom, components=comps, lock_has_integrity=True))
+    for gl in proj.find("gradle.lockfile", "*/gradle.lockfile"):
+        comps = []
+        for regel in proj.text(gl).splitlines():
+            mm = re.match(r"^([^#:\s]+):([^:\s]+):([^=\s]+)=(.*)$", regel.strip())
+            if mm:
+                comps.append(Component(f"{mm.group(1)}:{mm.group(2)}", mm.group(3), "Maven",
+                                       dev="test" in mm.group(4).lower() and "runtime" not in mm.group(4).lower(),
+                                       source=proj.rel(gl), paths=[mm.group(2)]))
+        if comps:
+            out.append(Manifest(gl, "Maven", {}, {}, lockfile=gl, components=comps, lock_has_integrity=True))
+    for bg in proj.find("build.gradle", "build.gradle.kts"):
+        if (bg.parent / "gradle.lockfile").exists():
+            continue
+        direct, comps = {}, []
+        for mm in re.finditer(r"""(implementation|api|compileOnly|runtimeOnly|testImplementation)\s*\(?\s*['"]([\w.\-]+):([\w.\-]+):([\w.\-]+)['"]""", proj.text(bg)):
+            n = f"{mm.group(2)}:{mm.group(3)}"
+            direct[n] = mm.group(4)
+            comps.append(Component(n, mm.group(4), "Maven", direct=True, dev=mm.group(1).startswith("test"),
+                                   source=proj.rel(bg), paths=[n]))
+        if comps:
+            out.append(Manifest(bg, "Maven", direct, {}, components=comps))
+    return out
+
+
+def pnaam(c) -> str:
+    """De naam zoals in de lekkendatabank: PyPI genormaliseerd, Composer in kleine letters."""
+    if c.ecosystem == "PyPI":
+        return norm_py(c.name)
+    if c.ecosystem == "Packagist":
+        return c.name.lower()
+    return c.name
+
+
 def all_manifests(proj):
     if not hasattr(proj, "_manifests"):
-        proj._manifests = npm_manifests(proj) + py_manifests(proj)
+        proj._manifests = (npm_manifests(proj) + py_manifests(proj) + php_manifests(proj) + go_manifests(proj)
+                           + ruby_manifests(proj) + java_manifests(proj))
     return proj._manifests
 
 

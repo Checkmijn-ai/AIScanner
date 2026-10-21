@@ -7,7 +7,7 @@ import re
 from . import check
 from .supply import ref
 from ..core import Finding, Result, mask, snippet, redact
-from ..deps import all_components, norm_py
+from ..deps import all_components, norm_py, pnaam
 from ..secretscan import scan_text, nice
 
 AGENT_FILES = ("CLAUDE.md", "CLAUDE.local.md", ".claude/*", "AGENTS.md", "GEMINI.md", ".gemini/*", ".cursorrules",
@@ -98,7 +98,7 @@ def ai_usage(proj, meta):
     r = Result("A-09")
     pk = {k: set(v) for k, v in ref()["ai_pakketten"].items()}
     pkgs = sorted({c.name for c in all_components(proj) if c.direct and
-                   ((c.name if c.ecosystem == "npm" else norm_py(c.name)) in pk.get(c.ecosystem, set()))})
+                   (pnaam(c) in pk.get(c.ecosystem, set()))})
     endpoints, tools = set(), set()
     for p in proj.source_files({".js", ".jsx", ".ts", ".tsx", ".mjs", ".py", ".rb", ".php", ".java", ".kt", ".go", ".cs"}):
         t = proj.text(p)

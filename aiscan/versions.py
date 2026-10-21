@@ -1,4 +1,4 @@
-"""Versies vergelijken voor npm (semver) en PyPI (PEP 440)."""
+"""Versies vergelijken: npm (semver), PyPI (PEP 440), en een algemene vergelijking voor Composer, Go, RubyGems en Maven."""
 from __future__ import annotations
 import re
 from packaging.version import Version, InvalidVersion
@@ -15,11 +15,39 @@ def _npm_key(v: str):
     return (int(m.group(1)), int(m.group(2) or 0), int(m.group(3) or 0), prekey)
 
 
+_RELEASE_WOORDEN = {"final", "ga", "release", "rel", "sp"}
+
+
+def _algemeen_key(v: str):
+    """1.2.3 < 1.2.10; 1.2.3-beta < 1.2.3; 1.2.3.RELEASE == 1.2.3 (Maven); v1.2.3 == 1.2.3 (Go, Composer)."""
+    v = v.strip().lstrip("vV")
+    if not v or not v[0].isdigit():
+        return None
+    delen = re.split(r"[.\-+_]", v.split("+")[0])
+    getallen, rest = [], []
+    for i, d in enumerate(delen):
+        if d.isdigit() and not rest:
+            getallen.append(int(d))
+        elif d:
+            mm = re.match(r"^(\d+)([A-Za-z].*)$", d)
+            if mm and not rest:  # 1.2.3rc1
+                getallen.append(int(mm.group(1)))
+                rest.append(mm.group(2).lower())
+            else:
+                rest.append(d.lower())
+    rest = [x for x in rest if x not in _RELEASE_WOORDEN]
+    getallen = (getallen + [0] * 4)[:6]
+    pre = (1,) if not rest else (0,) + tuple((0, int(x)) if x.isdigit() else (1, x) for x in rest)
+    return (tuple(getallen), pre)
+
+
 def key(eco: str, v: str):
     if v is None:
         return None
     if eco == "npm":
         return _npm_key(v)
+    if eco in ("Packagist", "Go", "RubyGems", "Maven"):
+        return _algemeen_key(v)
     try:
         return Version(v)
     except InvalidVersion:
