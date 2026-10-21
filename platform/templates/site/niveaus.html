@@ -1,0 +1,40 @@
+{% extends "site/basis.html" %}
+{% import "site/macros.html" as m %}
+{% block inhoud %}
+{{ m.kop("Niveaus", "Hoe diep kijken we?", "De letter (A–G) zegt hoe goed je software is. Het niveau (1–4) zegt hoe diep we gekeken hebben. Ze staan altijd samen, bijvoorbeeld \"B · niveau 2\". Elk niveau bevat alles van het niveau ervoor.") }}
+<section class="wrap sectie">
+  <div class="scroll">
+    <table class="tabel">
+      <caption class="sr">Vergelijking van niveau 1 tot en met 4</caption>
+      <thead><tr><th scope="col">Kenmerk</th>{% for l in levels %}<th scope="col">Niveau {{ l.n }}<br><span class="zacht">{{ l.naam }}</span></th>{% endfor %}</tr></thead>
+      <tbody>
+      {% for label, key in [("Voor", "voor"), ("Wie meet", "wie"), ("Checks", "checks"), ("Werkt het echt?", "werkt"), ("Aanvalstests", "aanval"), ("Hoogste letter", "hoogste"), ("Geldig", "geldig"), ("Beschikbaar", "status")] %}
+        <tr><th scope="row">{{ label }}</th>{% for l in levels %}<td>{% if key == "status" %}<span class="label">{{ l[key] }}</span>{% elif key == "hoogste" %}<span class="chip l-{{ l[key] }}">{{ l[key] }}</span>{% else %}{{ l[key] }}{% endif %}</td>{% endfor %}</tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Niveau 1 controleert automatisch</h2>
+  <div class="rooster-2">
+    <div><h3>Afhankelijkheden</h3><p class="zacht">Bekende lekken (dagelijks bijgewerkt), verzonnen of verdachte pakketten, verouderde frameworks, licenties, lockfiles.</p></div>
+    <div><h3>Geheimen</h3><p class="zacht">API-sleutels, wachtwoorden en tokens in code, configuratie, de JavaScript-bundel en de volledige git-geschiedenis.</p></div>
+    <div><h3>Bouwen met AI</h3><p class="zacht">Agentbestanden (zoals CLAUDE.md en MCP-configuratie) zonder geheimen of onveilige instructies, en waar AI in het product zit.</p></div>
+    <div><h3>Code</h3><p class="zacht">Injectie (SQL, OS, XSS), zwakke cryptografie, foutafhandeling, achtergebleven rommel, onveilige functies in de browser.</p></div>
+    <div><h3>AI in het product</h3><p class="zacht">De uitvoer van het model wordt niet blind uitgevoerd, er zijn limieten op verbruik.</p></div>
+    <div><h3>Pipeline en repository</h3><p class="zacht">Tests en beveiligingsscans in de pipeline, een beschermde hoofdbranch, veilige repo-instellingen.</p></div>
+    <div><h3>Live site</h3><p class="zacht">TLS, beveiligingsheaders, cookies, geen trackers vóór toestemming, e-mailbeveiliging (SPF, DKIM, DMARC).</p></div>
+  </div>
+
+  <h2>Niveau 2 doet daar bovenop</h2>
+  <div class="rooster-2">
+    <div class="kaart"><h3>Testen of het werkt</h3><p class="zacht">Knoppen, validaties en beveiliging doen wat ze beloven. We testen inloggen, rechten en invoer met foute en kwaadwillige gegevens, en scannen de draaiende app in een testomgeving.</p></div>
+    <div class="kaart"><h3>Gerichte aanvalstests</h3><p class="zacht">14 tests op de plekken waar het meestal misgaat:</p>
+      <ul class="zacht"><li>kan gebruiker A de gegevens van gebruiker B zien</li><li>zijn klanten van elkaar gescheiden</li><li>zijn de API's afgeschermd</li><li>inloggen via een externe dienst</li><li>misleiden van AI-functies (prompt injection) en lekken via AI</li><li>GraphQL, XML en WebSockets</li><li>gateway en firewall</li><li>opslag en verkeer van mobiele apps</li></ul></div>
+    <div class="kaart"><h3>Een keurder kijkt mee</h3><p class="zacht">Rechten en inloggen, structuur van de code, hosting en cloud, databank, logging, koppelingen, AI-inventaris, en de privacyverklaring tegenover wat de app echt doet.</p></div>
+    <div class="kaart"><h3>Bewijs van het proces</h3><p class="zacht">Meldbeleid voor kwetsbaarheden, wijzigingsbeheer, releases, foutenbeheer.</p></div>
+  </div>
+  <p class="zacht mt2">Niveau 2 is geen volledige pentest. Die begint bij niveau 3.</p>
+  <div class="knoppenrij"><a class="knop" href="/hoe-het-werkt">Check mijn app, gratis niveau 1</a><a class="knop licht" href="/contact">Plan een gesprek over niveau 2 of 3</a></div>
+</section>
+{% endblock %}

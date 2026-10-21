@@ -1,111 +1,84 @@
 # checkmijn.ai online zetten
 
-Dit zijn drie onderdelen, elk op een eigen plek:
+Alles draait op één server in de EU: de website, de API, de scorepagina's en de versleutelde rapporten. GitHub zet
+elke wijziging er automatisch op.
 
-| Onderdeel | Adres | Waar |
+| Adres | Wat | Uit de tak |
 | --- | --- | --- |
-| Website | checkmijn.ai | Lovable (publiceren vanuit Lovable) |
-| Dagversie van de scanner | checkmijn-ai.github.io/AIScanner | GitHub Pages, elke nacht automatisch |
-| API voor scorepagina's en badges | api.checkmijn.ai | Je eigen server in de EU, met dit pakket |
+| https://checkmijn.ai | Website, rapporten, scan.md | `main` |
+| https://api.checkmijn.ai | API, scorepagina's en badges | `main` |
+| https://test.checkmijn.ai | Testversie, om wijzigingen eerst te bekijken | `test` |
+| https://checkmijn-ai.github.io/AIScanner | De dagversie van de scanner (elke nacht) | GitHub Pages |
 
 ---
 
-## 1. GitHub (eenmalig, ±5 minuten)
+## 1. De server aanmaken (±10 minuten)
 
-In de repository **Checkmijn-ai/AIScanner**:
+1. Maak bij **Hetzner Cloud** een project aan en kies **Add Server**:
+   - Location: **Nuremberg** of **Falkenstein** (Duitsland)
+   - Image: **Ubuntu 24.04**
+   - Type: **CX32** (4 vCPU, 8 GB), of CX22 als het krap mag
+   - **SSH keys → Add SSH key:** plak de publieke sleutel `checkmijn-uitrol.pub` die je van Claude kreeg
+   - Name: `checkmijn`
+2. **Firewalls → Create Firewall:** sta binnenkomend alleen toe: TCP 22, TCP 80, TCP 443 en UDP 443. Koppel de
+   firewall aan de server.
+3. Noteer het **IPv4-adres**, bv. `203.0.113.10`.
 
-1. **Pages aanzetten.** Ga naar *Settings → Pages* en kies bij *Source* "**GitHub Actions**".
-2. **De sleutel om de dagversie te ondertekenen.** Ga naar *Settings → Secrets and variables → Actions → New repository secret*:
-   - Name: `DAGVERSIE_SLEUTEL`
-   - Secret: de volledige inhoud van het bestand `dagversie.pem` dat je gekregen hebt, inclusief de regels met BEGIN en END.
+## 2. GitHub de sleutel geven
 
-   Bewaar daarna een kopie van dat bestand offline, bv. in je wachtwoordbeheerder, en verwijder het uit je downloads.
-3. **De eerste dagversie bouwen.** Ga naar *Actions → Dagversie → Run workflow*. Na ±5 minuten staat de dagversie op
-   https://checkmijn-ai.github.io/AIScanner/latest.json. Daarna gebeurt dit elke nacht om 03:15.
+In **Checkmijn-ai/AIScanner → Settings → Secrets and variables → Actions → New repository secret**:
 
----
+| Name | Secret |
+| --- | --- |
+| `UITROL_HOST` | het IPv4-adres van de server |
+| `UITROL_SLEUTEL` | de volledige inhoud van `checkmijn-uitrol` (de privésleutel), met de regels BEGIN en END |
 
-## 2. Server voor de API (±20 minuten)
-
-Een kleine server is genoeg, bv. **Hetzner Cloud CX22** (±€5 per maand), in Falkenstein, Neurenberg of Helsinki. Een
-gelijkaardige server bij Scaleway, OVHcloud of Combell kan ook.
-
-1. **Server maken.** Kies *Ubuntu 24.04* en voeg je SSH-sleutel toe. Noteer het IPv4-adres, bv. `203.0.113.10`.
-2. **Firewall** (in het Hetzner-paneel, *Firewalls*). Sta alleen poort 22 (SSH), 80 en 443 toe.
-3. **Inloggen en installeren:**
-
-   ```
-   ssh root@203.0.113.10
-   apt update && apt -y upgrade
-   curl -fsSL https://get.docker.com | sh
-   git clone https://github.com/Checkmijn-ai/AIScanner /opt/checkmijn
-   ```
-
-4. **Eerst DNS instellen** (stap 3 hieronder), en dan pas starten:
-
-   ```
-   cd /opt/checkmijn/server
-   docker compose up -d --build
-   ```
-
-   Caddy haalt automatisch een certificaat. Na een minuut moet https://api.checkmijn.ai/api/v1/versie de dagversie tonen.
-
-5. **Bijwerken**, als er een nieuwe versie van de API is:
-
-   ```
-   cd /opt/checkmijn && git pull && cd server && docker compose up -d --build
-   ```
-
-6. **Automatische beveiligingsupdates** van Ubuntu: `apt -y install unattended-upgrades`.
-
----
+Bewaar daarna een kopie van `checkmijn-uitrol` in je wachtwoordbeheerder en verwijder het bestand uit je downloads.
 
 ## 3. DNS in Cloudflare
 
-Ga in Cloudflare naar je domein **checkmijn.ai → DNS → Records**.
-
-### API
-
-| Type | Name | Content | Proxy status |
-| --- | --- | --- | --- |
-| A | `api` | het IPv4-adres van je server | **DNS only** (grijze wolk) |
-
-Zet de proxy op "DNS only", zodat Caddy zelf een certificaat kan halen. Later kan de oranje wolk aan, met *SSL/TLS →
-Full (strict)*.
-
-### Website (Lovable)
-
-1. Ga in Lovable naar je project, dan *Settings → Domains → Connect domain*, en vul `checkmijn.ai` in.
-2. Lovable toont de records die je moet aanmaken, meestal A-records voor `@` en `www` en een TXT-record om het domein te
-   bevestigen. **Neem ze exact over in Cloudflare**, met de proxy op **DNS only** (grijze wolk).
-3. Wacht tot Lovable "Active" toont. Dat duurt meestal minuten, soms tot een paar uur.
-
-### E-mail (ook als je nog geen e-mail verstuurt)
-
-Wij controleren dit bij klanten (check O-06), dus ons eigen domein moet het ook halen.
-
-**Meldadres security@checkmijn.ai:**
-1. Ga naar *Email → Email Routing*, zet het aan en laat Cloudflare de MX- en SPF-records toevoegen.
-2. Maak een regel: `security@checkmijn.ai` → je eigen mailadres.
-
-**DMARC:** voeg dit TXT-record toe.
+Ga naar **checkmijn.ai → DNS → Records**. Zet bij elk record de proxy op **DNS only** (grijze wolk), zodat de server
+zelf een certificaat kan halen.
 
 | Type | Name | Content |
 | --- | --- | --- |
-| TXT | `_dmarc` | `v=DMARC1; p=reject; rua=mailto:security@checkmijn.ai` |
+| A | `@` | het IPv4-adres |
+| A | `www` | het IPv4-adres |
+| A | `api` | het IPv4-adres |
+| A | `test` | het IPv4-adres |
 
-Verstuur je later mail vanaf checkmijn.ai, bv. via Google Workspace of Microsoft 365, voeg dan hun SPF- en DKIM-records toe.
+Staan er nog records van Lovable voor `@` of `www`, verwijder die dan eerst.
 
-**Algemeen:**
-- Zet *DNSSEC* aan bij *DNS → Settings*.
-- Zet de domeinvergrendeling aan bij je registrar, als die het aanbiedt.
-- Zet tweestapsverificatie aan op je Cloudflare-account.
+**E-mail** (Email → Email Routing): maak twee adressen die doorsturen naar je eigen mailbox:
+`hallo@checkmijn.ai` (contact op de site) en `security@checkmijn.ai` (meldingen van kwetsbaarheden).
+Voeg ook het DMARC-record toe: TXT `_dmarc` met `v=DMARC1; p=reject; rua=mailto:security@checkmijn.ai`.
+Zet *DNSSEC* aan bij DNS → Settings.
 
----
+## 4. De eerste keer uitrollen
+
+Ga naar **Actions → Uitrollen → Run workflow** en kies `main`. De eerste keer installeert de workflow ook Docker,
+automatische beveiligingsupdates en een firewall op de server. Dat duurt ±5 minuten.
+
+In de log van de stap *SSH klaarzetten* staat een regel die begint met het IP-adres en `ssh-ed25519`. Zet die regel
+als secret **`UITROL_HOSTKEY`**. Zo kan niemand zich later als jouw server voordoen.
+
+Daarna gaat het vanzelf:
+- een wijziging op `main` staat binnen een paar minuten op checkmijn.ai;
+- een wijziging op `test` staat op test.checkmijn.ai.
 
 ## Nakijken
 
-- https://checkmijn-ai.github.io/AIScanner/latest.json → toont de dagversie met `"handtekening"`.
-- https://api.checkmijn.ai/api/v1/versie → toont hetzelfde.
-- https://checkmijn.ai/scan.md → toont de instructie van vandaag (na het samenvoegen van de pull request van de website).
-- Scan je eigen site: `python -m aiscan . --url https://checkmijn.ai` → het doel is minstens een B.
+- https://checkmijn.ai → de website
+- https://checkmijn.ai/scan.md → de instructie van vandaag
+- https://api.checkmijn.ai/api/v1/versie → de dagversie
+- https://test.checkmijn.ai → de testversie (zodra de tak `test` bestaat)
+
+## Met de hand (als het nodig is)
+
+```
+ssh root@<ip>
+cd /opt/checkmijn/server
+docker compose ps          # wat draait er
+docker compose logs -f live   # de log van de site en de API
+bash uitrol.sh main        # opnieuw uitrollen
+```

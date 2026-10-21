@@ -33,7 +33,9 @@ De uitslag staat in de samenvatting van de run. Het volledige rapport is een art
 | `action.yml`, `action/` | De GitHub Action |
 | `voorbeelden/checkmijn.yml` | De workflow om in je project te zetten |
 | `platform/` | Nachtelijke bouw van de dagversie, catalogus van checks, API voor bewijs en scorepagina's |
-| `server/` | Docker-pakket om de API te draaien op een eigen server, met installatie-instructies |
+| `platform/website.py`, `platform/templates/site/`, `platform/static/` | De website checkmijn.ai (zelfde app als de API) |
+| `server/` | Docker, Caddy en `uitrol.sh`: website en API op een eigen server in de EU, met installatie-instructies |
+| `.github/workflows/uitrollen.yml` | Zet `main` op checkmijn.ai en `test` op test.checkmijn.ai |
 | `.github/workflows/dagversie.yml` | Bouwt elke nacht de dagversie en publiceert ze op GitHub Pages |
 | `tests/` | Testproject met opzettelijke fouten, en een test van begin tot eind |
 

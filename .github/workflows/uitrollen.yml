@@ -1,0 +1,75 @@
+# Rolt de website en de API uit op de eigen server.
+#   push naar main → checkmijn.ai en api.checkmijn.ai
+#   push naar test → test.checkmijn.ai
+# Nodig (Settings → Secrets and variables → Actions):
+#   UITROL_HOST       het IP-adres van de server
+#   UITROL_SLEUTEL    de privésleutel voor SSH (de publieke sleutel staat op de server bij root)
+#   UITROL_HOSTKEY    (aanbevolen) de regel uit `ssh-keyscan -t ed25519 <ip>`; zonder dit vertrouwen we de server bij elke run opnieuw
+name: Uitrollen
+on:
+  push:
+    branches: [main, test]
+    paths-ignore: ["**.md", "tests/**", "tools/**"]
+  workflow_dispatch:
+    inputs:
+      tak:
+        description: "main (live) of test"
+        default: main
+permissions:
+  contents: read
+concurrency:
+  group: uitrollen-${{ github.event.inputs.tak || github.ref_name }}
+  cancel-in-progress: false
+jobs:
+  uitrollen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5.0.0
+      - name: Is de server ingesteld?
+        id: klaar
+        env:
+          HOST: ${{ secrets.UITROL_HOST }}
+        run: |
+          if [ -z "$HOST" ]; then
+            echo "::warning::Nog geen server ingesteld (secret UITROL_HOST ontbreekt); niets uitgerold."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: SSH klaarzetten
+        if: steps.klaar.outputs.ok == 'true'
+        env:
+          HOST: ${{ secrets.UITROL_HOST }}
+          SLEUTEL: ${{ secrets.UITROL_SLEUTEL }}
+          HOSTKEY: ${{ secrets.UITROL_HOSTKEY }}
+        run: |
+          install -m 700 -d ~/.ssh
+          umask 077
+          printf '%s\n' "$SLEUTEL" > ~/.ssh/uitrol
+          if [ -n "$HOSTKEY" ]; then
+            printf '%s\n' "$HOSTKEY" > ~/.ssh/known_hosts
+          else
+            ssh-keyscan -t ed25519 "$HOST" > ~/.ssh/known_hosts 2>/dev/null
+            echo "::notice::Vingerafdruk van de server (zet deze regel als secret UITROL_HOSTKEY):"
+            cat ~/.ssh/known_hosts
+          fi
+      - name: Uitrollen
+        if: steps.klaar.outputs.ok == 'true'
+        env:
+          HOST: ${{ secrets.UITROL_HOST }}
+          TAK: ${{ github.event.inputs.tak || github.ref_name }}
+        run: |
+          ssh -i ~/.ssh/uitrol -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=20 \
+            "root@$HOST" "bash -s -- $TAK" < server/uitrol.sh
+      - name: Controleren
+        if: steps.klaar.outputs.ok == 'true'
+        env:
+          TAK: ${{ github.event.inputs.tak || github.ref_name }}
+        run: |
+          if [ "$TAK" = "main" ]; then URL=https://checkmijn.ai; else URL=https://test.checkmijn.ai; fi
+          for i in $(seq 1 20); do
+            if curl -fsS -o /dev/null "$URL/robots.txt"; then echo "$URL werkt"; exit 0; fi
+            sleep 6
+          done
+          echo "::warning::$URL antwoordt (nog) niet. Staat het DNS-record goed?"

@@ -1,33 +1,53 @@
-# Starten op de server:  cd server && docker compose up -d --build
+# checkmijn.ai op één server:
+#   live  → checkmijn.ai, www.checkmijn.ai en api.checkmijn.ai  (code uit /opt/checkmijn, tak main)
+#   test  → test.checkmijn.ai                                    (code uit /opt/checkmijn-test, tak test)
+#   caddy → HTTPS met automatische certificaten
+# Uitrollen gebeurt vanuit GitHub (workflow "Uitrollen"); met de hand: cd /opt/checkmijn/server && docker compose up -d --build
+x-app: &app
+  restart: unless-stopped
+  read_only: true
+  tmpfs:
+    - /tmp
+  security_opt:
+    - no-new-privileges:true
+  cap_drop: [ALL]
 services:
-  api:
+  live:
+    <<: *app
     build:
       context: ..
       dockerfile: server/Dockerfile
-    restart: unless-stopped
     volumes:
-      - api-data:/data
+      - live-data:/data
     environment:
       AISCAN_SITE: https://api.checkmijn.ai
-      AISCAN_PUBLIC_URL: https://checkmijn-ai.github.io/AIScanner
-    read_only: true
-    tmpfs:
-      - /tmp
-    security_opt:
-      - no-new-privileges:true
+      AISCAN_SITE_ORIGIN: https://checkmijn.ai
+      CHECKMIJN_OMGEVING: live
+  test:
+    <<: *app
+    build:
+      context: ../../checkmijn-test
+      dockerfile: server/Dockerfile
+    volumes:
+      - test-data:/data
+    environment:
+      AISCAN_SITE: https://test.checkmijn.ai
+      AISCAN_SITE_ORIGIN: https://test.checkmijn.ai
+      CHECKMIJN_OMGEVING: test
+    profiles: ["test"]
   caddy:
     image: caddy:2.8
     restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
+      - "443:443/udp"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy-data:/data
       - caddy-config:/config
-    depends_on:
-      - api
 volumes:
-  api-data:
+  live-data:
+  test-data:
   caddy-data:
   caddy-config:

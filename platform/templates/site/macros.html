@@ -1,0 +1,44 @@
+{% macro code(id, tekst, label="Tekst") -%}
+<div class="codeblok">
+  <div class="balk"><span>{{ label }}</span><button type="button" class="kopieer" data-kopieer="{{ id }}" hidden>Kopieer</button></div>
+  <pre id="{{ id }}">{{ tekst }}</pre>
+</div>
+{%- endmacro %}
+
+{% macro kop(oog, titel, intro="") -%}
+<div class="paginakop"><div class="wrap">
+  {% if oog %}<p class="oog">{{ oog }}</p>{% endif %}
+  <h1>{{ titel }}</h1>
+  {% if intro %}<p class="lead">{{ intro }}</p>{% endif %}
+  {{ caller() if caller }}
+</div></div>
+{%- endmacro %}
+
+{% macro cta() -%}
+<div class="knoppenrij"><a class="knop" href="/hoe-het-werkt">Check mijn app</a><a class="knop licht" href="/contact">Plan een gesprek</a></div>
+{%- endmacro %}
+
+{% macro let_op(tekst) -%}
+<aside class="let-op" role="note"><strong>Let op:</strong> {{ tekst }}</aside>
+{%- endmacro %}
+
+{% macro badge(letter, niveau, soort) -%}
+<div class="badge-vb" role="img" aria-label="Voorbeeldbadge: score {{ letter }}, niveau {{ niveau }}, {{ soort|lower }}">
+  <span class="letter l-{{ letter }}">{{ letter }}</span>
+  <span class="tekst"><b>CheckMijn.AI</b><span class="zacht klein">{{ letter }} · niveau {{ niveau }} · {{ soort|lower }}</span></span>
+</div>
+{%- endmacro %}
+
+{% macro icoon(naam) -%}
+<span class="icoon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+{%- if naam == 'slot' %}<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+{%- elif naam == 'meetlat' %}<path d="M3 17 17 3l4 4L7 21z"/><path d="m7 13 2 2M10 10l2 2M13 7l2 2"/>
+{%- elif naam == 'weegschaal' %}<path d="M12 3v18M5 21h14M7 7h10M7 7l-3 7a3 3 0 0 0 6 0zM17 7l-3 7a3 3 0 0 0 6 0z"/>
+{%- elif naam == 'oog' %}<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>
+{%- elif naam == 'schild' %}<path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/>
+{%- elif naam == 'gebouw' %}<rect x="5" y="3" width="14" height="18" rx="1"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2M10 21v-4h4v4"/>
+{%- elif naam == 'klembord' %}<rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4h6v3H9zM9 12l2 2 4-4"/>
+{%- elif naam == 'bank' %}<path d="M3 10h18L12 4zM5 10v8M9 10v8M15 10v8M19 10v8M3 20h18"/>
+{%- else %}<circle cx="12" cy="12" r="8"/>{% endif -%}
+</svg></span>
+{%- endmacro %}

@@ -1,0 +1,23 @@
+{% extends "site/basis.html" %}
+{% import "site/macros.html" as m %}
+{% block inhoud %}
+{{ m.kop("Vertrouwen en veiligheid", "Hoe we met je gegevens omgaan", "Een controleur die je code nodig heeft, wordt zelf een risico. Daarom is CheckMijn.AI zo ontworpen dat je broncode bij jou blijft, en dat wij je rapporten niet kunnen lezen.") }}
+<section class="wrap sectie">
+  <div class="rooster-2">
+    {% for t, d in [
+      ("Je code blijft bij jou", "De scan draait in je eigen omgeving: je GitHub of je eigen machine. Wil je een scorepagina, dan ontvangen we alleen een bewijsbestand met per check de uitkomst, zonder code, paden of geheimen."),
+      ("Rapporten die wij niet kunnen lezen", "Het opgemaakte rapport wordt versleuteld (AES-256-GCM) voor het onze server bereikt. De sleutel staat alleen in jouw persoonlijke link, na het #-teken, en een browser stuurt dat deel nooit naar een server."),
+      ("Alleen echte scans", "Een rapport inleveren kan alleen vanuit GitHub Actions. GitHub bewijst met een ondertekend token uit welke repository de scan komt."),
+      ("Geen AI in de meting", "De meting gebruikt vaste regels. Dezelfde code geeft altijd dezelfde uitkomst."),
+      ("Tijdens het scannen staat het netwerk van de scanner dicht", "De scanner draait met --offline. Elke scan bevestigt dat."),
+      ("Geheimen worden gemaskeerd", "In elk rapport, zonder uitzondering."),
+      ("Elke dagversie is ondertekend", "Met Ed25519. Je kunt het zelf nakijken met onze publieke sleutel."),
+      ("Publieke lijst van checks en van alle wijzigingen", "Iedereen kan nagaan hoe en wanneer de meetlat verandert."),
+      ("Alles in de EU", "Deze site, de API en de versleutelde rapporten staan op een server in de EU. Geen trackers, geen cookies van derden."),
+      ("Kwetsbaarheid gevonden bij ons?", "Meld het via security@checkmijn.ai (zie security.txt). We reageren binnen twee werkdagen.")] %}
+      <div><h3>{{ t }}</h3><p class="zacht">{{ d }}</p></div>
+    {% endfor %}
+  </div>
+  <p class="zacht mt2">Technische bronnen: <a href="/public-key.pem">public-key.pem</a> · <a href="/versies.json">versies.json</a> · <a href="/changelog.json">changelog.json</a> · <a href="/.well-known/security.txt">security.txt</a> · <a href="https://github.com/Checkmijn-ai/AIScanner">broncode</a></p>
+</section>
+{% endblock %}

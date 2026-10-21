@@ -1,0 +1,14 @@
+{% extends "site/basis.html" %}
+{% import "site/macros.html" as m %}
+{% block inhoud %}
+{% call m.kop("Gratis framework", "Het framework, vrij te gebruiken", "Gebruik onze " ~ checks|length ~ " checks als checklist in je eigen werkproces. Gratis, onder een open licentie (CC BY 4.0).") %}
+<div class="knoppenrij"><a class="knop licht klein" href="/framework.md">Checklist (.md)</a><a class="knop licht klein" href="/framework.csv">Spreadsheet (.csv)</a><a class="knop licht klein" href="/checks.json">Data (.json)</a></div>
+{% endcall %}
+<section class="wrap sectie">
+  <ul class="checks">
+  {% for c in checks %}
+    <li><span class="id">{{ c.id }}</span><div><p class="mt0">{{ c.scan }}</p><span class="normen">{{ c.normen }}</span></div><div class="rechts">{{ c.domein }}</div></li>
+  {% endfor %}
+  </ul>
+</section>
+{% endblock %}

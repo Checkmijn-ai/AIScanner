@@ -1,0 +1,251 @@
+"""De website van checkmijn.ai: gewone HTML uit Jinja-templates, zonder trackers en met weinig JavaScript.
+
+Dezelfde Flask-app serveert de API (api.checkmijn.ai) en de website (checkmijn.ai, test.checkmijn.ai).
+Alle teksten staan in platform/templates/site/. De lijst van checks komt rechtstreeks uit aiscan/data/checks.yaml.
+"""
+from __future__ import annotations
+
+import csv
+import io
+import json
+import os
+from functools import lru_cache
+from pathlib import Path
+
+import yaml
+from flask import Blueprint, Response, abort, render_template, request, send_from_directory, url_for
+
+ROOT = Path(__file__).resolve().parents[1]
+site = Blueprint("site", __name__, template_folder="templates", static_folder="static", static_url_path="/static")
+
+SITE_URL = os.environ.get("AISCAN_SITE_ORIGIN", "https://checkmijn.ai").rstrip("/")
+CONTACT = os.environ.get("CHECKMIJN_CONTACT", "hallo@checkmijn.ai")
+TEST = os.environ.get("CHECKMIJN_OMGEVING", "") == "test"
+AGENT_ZIN = "Volg de instructie op checkmijn.ai/scan.md voor dit project."
+BOUWTOOL_1 = ("Volg de instructie op https://checkmijn.ai/scan.md, route B (via GitHub), voor dit project.\n"
+              "Maak het bestand .github/workflows/checkmijn.yml precies zoals daar staat, en verander verder niets.\n"
+              "Geef zelf geen score: de scan gebeurt in GitHub.")
+BOUWTOOL_2 = ("Lees .checkmijn/RAPPORT.md. Toon mij eerst de scanscore, de vorige score en de bevindingen\n"
+              "Kritiek en Hoog, en verander nog niets. Herstel pas als ik \"ja\" zeg: eerst Kritiek, dan Hoog, dan Middel.\n"
+              "Wijzig .checkmijn/ en .github/workflows/checkmijn.yml niet, en geef zelf geen score.")
+BRON: dict = {}  # api.py zet hier "tekst": functie die een bestand van de dagversie als bytes geeft
+
+DISCLAIMER = ("De scanscore is een uitslag van de scan op een bepaald moment. Ze is geen keurmerk, certificaat of "
+              "garantie dat software veilig is.")
+
+NAV = [("hoe_het_werkt", "Hoe het werkt"), ("niveaus", "Niveaus"), ("controles", "Wat we controleren"),
+       ("score", "De score"), ("bureaus", "Voor bureaus"), ("opdrachtgevers", "Voor opdrachtgevers")]
+
+GRADES = [
+    ("A", "Geen kritieke of hoge bevindingen, hoogstens 2 middelzware. Alleen vanaf niveau 2."),
+    ("B", "Geen kritieke of hoge bevindingen. Het hoogste wat niveau 1 geeft."),
+    ("C", "Geen kritieke, hoogstens 2 hoge bevindingen."),
+    ("D", "Geen kritieke, hoogstens 5 hoge bevindingen."),
+    ("E", "Hoogstens 1 kritieke bevinding."),
+    ("F", "Hoogstens 3 kritieke bevindingen."),
+    ("G", "4 of meer kritieke bevindingen."),
+]
+
+LEVELS = [
+    {"n": 1, "naam": "Basisscan", "status": "Nu, gratis", "voor": "Interne tools, kleine apps, een eerste meting",
+     "wie": "Volledig automatisch", "checks": "45", "werkt": "—", "aanval": "—", "hoogste": "B",
+     "geldig": "Zolang de scan actueel is"},
+    {"n": 2, "naam": "Gekeurd", "status": "In voorbereiding (pilots)", "voor": "De meeste zakelijke apps",
+     "wie": "Automatisch + erkende keurder", "checks": "±100, plus checks die je erbij kiest",
+     "werkt": "Ja: functies doen wat ze beloven, negatieve tests op inloggen, rechten en invoer, scan van de draaiende app",
+     "aanval": "14 gerichte aanvalstests op de meest voorkomende risico's", "hoogste": "A",
+     "geldig": "12 maanden, met automatische checks bij elke release"},
+    {"n": 3, "naam": "Gekeurd Plus", "status": "In voorbereiding (pilots)",
+     "voor": "Aanbestedingen, veel persoonsgegevens, klanten onder NIS2", "wie": "Keurder + pentester",
+     "checks": "Alles van niveau 2 + verplichte uitbreidingen", "werkt": "Ja, dieper, met een steekproef in de code",
+     "aanval": "Handmatige pentest (vanaf 4 dagen) + hertest", "hoogste": "A", "geldig": "12 maanden"},
+    {"n": 4, "naam": "Kritiek", "status": "Vanaf juli 2028",
+     "voor": "Zorg, overheid, financiële sector (DORA), hoog-risico-AI", "wie": "Keurder + pentester, doorlopend",
+     "checks": "Alles, met de strengste drempels", "werkt": "Ja: volledige review van de kritieke code",
+     "aanval": "Pentest op aanvalsscenario's (vanaf 8 dagen)", "hoogste": "A", "geldig": "12 maanden, doorlopend toezicht"},
+]
+
+FAQ = [
+    ("Krijgen jullie mijn code?", "Nee. De scanner draait in je eigen GitHub of op je eigen machine. Wil je een "
+     "scorepagina, dan stuur je alleen een bewijsbestand met per check de uitkomst, zonder code, paden of geheimen."),
+    ("Ik bouw in Lovable, Bolt of v0. Kan ik scannen?", "Ja, via GitHub. Koppel je project aan een privé-repository en "
+     "vraag je bouwtool om het workflowbestand van checkmijn.ai toe te voegen (zie Hoe het werkt). GitHub scant dan bij "
+     "elke wijziging, en het rapport komt terug in je project. Je bouwtool toont eerst de score en een link naar het "
+     "opgemaakte rapport, en herstelt pas na je akkoord."),
+    ("Wat bewaren jullie van het rapport?", "Het opgemaakte rapport bewaren we versleuteld. De sleutel zit alleen in jouw "
+     "persoonlijke link, na het #-teken, en komt nooit bij ons. Wij kunnen het dus niet lezen. Zonder account wissen we "
+     "het na 90 dagen."),
+    ("Moet ik iets installeren?", "Nee. Je AI-agent of je pipeline draait de scanner uit één bestand en ruimt daarna op."),
+    ("Gebruiken jullie AI om te beoordelen?", "Nee. De meting gebruikt vaste regels: dezelfde code geeft altijd "
+     "dezelfde uitkomst. AI mag je helpen herstellen, maar telt niet mee in de score."),
+    ("Kan iemand vals spelen bij een zelfcontrole?", "Een zelfcontrole draait op een machine die wij niet controleren. "
+     "Daarom staat ze ook zo op de badge. Wie zekerheid wil, kiest een keuring."),
+    ("Is dit een certificaat?", "Nee, het is een onafhankelijke scanscore. Een officieel keurmerk komt er later, via een "
+     "onafhankelijke organisatie, met deze scan als basis."),
+    ("Waarom geeft niveau 1 geen A?", "Een automatische scan ziet niet alles. Voor een A moet een keurder hebben "
+     "meegekeken."),
+    ("Testen jullie ook of mijn app werkt?", "Vanaf niveau 2, samen met gerichte aanvalstests. Een volledige pentest zit "
+     "in niveau 3."),
+    ("Welke programmeertalen?", "JavaScript/TypeScript en Python, met de populaire webframeworks. Meer volgt."),
+    ("Hoe lang is een score geldig?", "Een scorepagina van niveau 1 blijft 30 dagen actueel; daarna wordt de badge "
+     "grijs. Een scan bij elke wijziging houdt hem vanzelf actueel. Een keuring is 12 maanden geldig."),
+    ("Controleren jullie of een tekst door AI geschreven is?", "Nee. We controleren software die met AI gebouwd is."),
+]
+
+BESTEK = ("De leverancier levert bij oplevering een scanscore van checkmijn.ai van C of beter op niveau 2, niet ouder "
+          "dan 30 dagen.")
+
+
+@lru_cache(maxsize=1)
+def checks() -> list[dict]:
+    data = yaml.safe_load((ROOT / "aiscan" / "data" / "checks.yaml").read_text(encoding="utf-8"))
+    return [c for c in data if c.get("status", "actief") == "actief"]
+
+
+@lru_cache(maxsize=1)
+def workflow() -> str:
+    return (ROOT / "voorbeelden" / "checkmijn.yml").read_text(encoding="utf-8")
+
+
+@site.app_context_processor
+def _algemeen():
+    return {"NAV": NAV, "DISCLAIMER": DISCLAIMER, "CONTACT": CONTACT, "SITE_URL": SITE_URL, "TEST": TEST,
+            "pad": request.path}
+
+
+def pagina(sjabloon: str, titel: str, beschrijving: str, **kw):
+    return render_template(f"site/{sjabloon}", titel=titel, beschrijving=beschrijving, **kw)
+
+
+@site.get("/")
+def home():
+    return pagina("home.html", "Onafhankelijke controle van software die met AI gebouwd is",
+                  "Check je AI-software voor je ze lanceert, koopt of oplevert. Een meetlat, geen mening: 45 vaste "
+                  "checks, Europese normen en een score van A tot G.")
+
+
+@site.get("/hoe-het-werkt")
+def hoe_het_werkt():
+    return pagina("hoe-het-werkt.html", "Hoe het werkt",
+                  "Scan met je AI-agent, via GitHub (ook voor Lovable, Bolt en v0) of laat keuren vanaf niveau 2.",
+                  agent_zin=AGENT_ZIN, workflow=workflow(), bouwtool_1=BOUWTOOL_1, bouwtool_2=BOUWTOOL_2)
+
+
+@site.get("/niveaus")
+def niveaus():
+    return pagina("niveaus.html", "Niveaus", "Hoe diep kijken we? Niveau 1 (Basisscan, nu gratis) tot niveau 4 (Kritiek).",
+                  levels=LEVELS)
+
+
+@site.get("/wat-we-controleren")
+def controles():
+    cs = checks()
+    domeinen = sorted({c["domein"] for c in cs})
+    return pagina("controles.html", "Wat we controleren",
+                  "Alle 45 checks van niveau 1, gekoppeld aan CRA, AVG, AI Act, NIS2, OWASP en ISO.", checks=cs,
+                  domeinen=domeinen)
+
+
+@site.get("/score-uitleg")
+def score():
+    return pagina("score.html", "De score", "Wat betekent de letter? De score van A tot G, de soorten scans en hoe een "
+                  "score verloopt.", grades=GRADES)
+
+
+@site.get("/waarom")
+def waarom():
+    return pagina("waarom.html", "Waarom een scan, en niet alleen een AI-review",
+                  "Een AI-review geeft een mening. Onze scan is een meetlat.")
+
+
+@site.get("/bureaus")
+def bureaus():
+    return pagina("bureaus.html", "Voor bureaus", "Lever bewijs mee bij elke oplevering: een onafhankelijke score en "
+                  "rapport voor software die met AI gebouwd is.")
+
+
+@site.get("/opdrachtgevers")
+def opdrachtgevers():
+    return pagina("opdrachtgevers.html", "Voor opdrachtgevers en inkopers", "Weet wat je leverancier oplevert: een "
+                  "rapport dat je zonder IT-kennis begrijpt.", bestek=BESTEK)
+
+
+@site.get("/vertrouwen")
+def vertrouwen():
+    return pagina("vertrouwen.html", "Vertrouwen en veiligheid", "Je code blijft bij jou, geen AI in de meting, elke "
+                  "dagversie ondertekend, rapporten versleuteld.")
+
+
+@site.get("/framework")
+def framework():
+    return pagina("framework.html", "Gratis framework", "De 45 checks als checklist, CSV of JSON, onder CC BY 4.0.",
+                  checks=checks())
+
+
+@site.get("/framework.md")
+def framework_md():
+    tekst = "# checkmijn.ai — framework (CC BY 4.0)\n\n" + "\n".join(
+        f"- [ ] **{c['id']}** {c['scan']} ({c['normen']})" for c in checks()) + "\n"
+    return Response(tekst, mimetype="text/markdown",
+                    headers={"Content-Disposition": "attachment; filename=checkmijn-framework.md"})
+
+
+@site.get("/framework.csv")
+def framework_csv():
+    buf = io.StringIO()
+    w = csv.writer(buf, delimiter=";")
+    w.writerow(["id", "domein", "scan", "normen", "ernst", "methode"])
+    for c in checks():
+        w.writerow([c["id"], c["domein"], c["scan"], c["normen"], c["ernst"], c.get("methode", "")])
+    return Response("﻿" + buf.getvalue(), mimetype="text/csv",
+                    headers={"Content-Disposition": "attachment; filename=checkmijn-framework.csv"})
+
+
+@site.get("/vragen")
+def vragen():
+    return pagina("vragen.html", "Veelgestelde vragen", "Antwoorden over code, rapporten, de score en de niveaus.", faq=FAQ)
+
+
+@site.get("/contact")
+def contact():
+    return pagina("contact.html", "Contact", "Plan een gesprek, word pilotklant of vraag een bureau-abonnement aan.")
+
+
+@site.get("/scan")
+def scan():
+    return pagina("scan.html", "Scaninstructie (scan.md)", "De instructie die je AI-agent volgt om de scanner van "
+                  "checkmijn.ai uit te voeren.", md=BRON["tekst"]("scan.md").decode("utf-8"), agent_zin=AGENT_ZIN, bouwtool_1=BOUWTOOL_1)
+
+
+@site.get("/rapport/<rid>")
+def rapport(rid):
+    return pagina("rapport.html", "Scanrapport", "Versleuteld scanrapport.", rid=rid)
+
+
+@site.get("/.well-known/security.txt")
+def security_txt():
+    tekst = ("Contact: mailto:security@checkmijn.ai\nExpires: 2027-10-20T00:00:00.000Z\nPreferred-Languages: nl, en\n"
+             f"Canonical: {SITE_URL}/.well-known/security.txt\nPolicy: {SITE_URL}/vertrouwen\n")
+    return Response(tekst, mimetype="text/plain")
+
+
+@site.get("/robots.txt")
+def robots():
+    if TEST:
+        return Response("User-agent: *\nDisallow: /\n", mimetype="text/plain")
+    return Response(f"User-agent: *\nDisallow: /rapport/\nDisallow: /api/\nSitemap: {SITE_URL}/sitemap.xml\n",
+                    mimetype="text/plain")
+
+
+@site.get("/sitemap.xml")
+def sitemap():
+    paden = ["/", "/hoe-het-werkt", "/niveaus", "/wat-we-controleren", "/score-uitleg", "/waarom", "/bureaus",
+             "/opdrachtgevers", "/vertrouwen", "/framework", "/vragen", "/contact", "/scan"]
+    xml = ('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+           + "".join(f"  <url><loc>{SITE_URL}{p}</loc></url>\n" for p in paden) + "</urlset>\n")
+    return Response(xml, mimetype="application/xml")
+
+
+@site.get("/favicon.ico")
+def favicon():
+    return send_from_directory(Path(site.static_folder) / "img", "favicon.svg", mimetype="image/svg+xml")

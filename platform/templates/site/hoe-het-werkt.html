@@ -1,0 +1,84 @@
+{% extends "site/basis.html" %}
+{% import "site/macros.html" as m %}
+{% block inhoud %}
+{% call m.kop("Hoe het werkt", "Zo werkt CheckMijn.AI", "Er wordt niets geïnstalleerd en je code verlaat je bedrijf nooit. Kies de route die bij je past: met een AI-agent die een terminal heeft, of via GitHub als je bouwt in Lovable, Bolt of v0.") %}
+<div class="knoppenrij"><a class="knop licht klein" href="#agent">Met een AI-agent</a><a class="knop licht klein" href="#bouwtools">Lovable, Bolt of v0</a><a class="knop licht klein" href="#github">In je pipeline</a><a class="knop licht klein" href="#keuring">Keuring</a></div>
+{% endcall %}
+
+<section class="wrap sectie" id="agent">
+  <div class="rooster-2">
+    <div>
+      <p class="oog">Route 1 · gratis</p>
+      <h2 class="mt0">Met je AI-agent</h2>
+      <p class="zacht">Voor agents met een terminal, zoals Claude Code, Cursor, Copilot of Replit.</p>
+      <ol class="stappen">
+        <li><span>Open je project in je agent en plak de zin hiernaast.</span></li>
+        <li><span>De agent legt eerst uit dat er geen code, bestanden of geheimen naar buiten gaan, en wacht op je akkoord.</span></li>
+        <li><span>Hij haalt de scanner van vandaag op en controleert het controlegetal. De scanner meet zonder netwerk; de agent beoordeelt zelf niets.</span></li>
+        <li><span>Je ziet eerst de score en de bevindingen. Pas als jij "ja" zegt, gaat de agent herstellen.</span></li>
+        <li><span>Hij scant opnieuw en toont de nieuwe score naast de oude, bv. G → B.</span></li>
+      </ol>
+    </div>
+    <div>
+      {{ m.code("agent-zin", agent_zin, "Plak dit in je AI-agent") }}
+      <p class="zacht klein">Wil je zien wat de agent precies doet? Lees de <a href="/scan">volledige instructie</a>.</p>
+    </div>
+  </div>
+</section>
+
+<section class="vlak" id="bouwtools"><div class="wrap sectie">
+  <p class="oog">Route 2 · gratis</p>
+  <h2 class="mt0">Met Lovable, Bolt of v0</h2>
+  <p class="lead">Die tools hebben geen terminal. De scanner draait dan in GitHub, bij elke wijziging. Je bouwtool leest het rapport en herstelt de bevindingen, na jouw akkoord.</p>
+  <div class="rooster-3 mt2">
+    <div class="kaart"><span class="nummer">1</span><h3>Koppel je project aan GitHub</h3><p class="zacht">Gebruik de GitHub-koppeling van je bouwtool en kies een <strong>privé</strong>-repository.</p></div>
+    <div class="kaart"><span class="nummer">2</span><h3>Plak dit in de chat</h3>{{ m.code("bouwtool-1", bouwtool_1, "Stap 2") }}</div>
+    <div class="kaart"><span class="nummer">3</span><h3>Na een paar minuten</h3>{{ m.code("bouwtool-2", bouwtool_2, "Stap 3") }}</div>
+  </div>
+  <div class="rooster-2 mt2">
+    <div>
+      <h3>Wat je krijgt</h3>
+      <ul>
+        <li>In je project: <code>.checkmijn/RAPPORT.md</code> met de score, het verloop van je scores en alle bevindingen.</li>
+        <li>Bovenaan een <strong>persoonlijke link</strong> naar het opgemaakte rapport, met grafieken.</li>
+        <li>Elke wijziging wordt opnieuw gescand, en elke maandag ook, voor nieuwe lekken.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Wat er met je gegevens gebeurt</h3>
+      <ul>
+        <li>De code verlaat GitHub niet.</li>
+        <li>Het opgemaakte rapport bewaren we <strong>versleuteld</strong>. De sleutel zit alleen in jouw link, dus wij kunnen het niet lezen.</li>
+        <li>In een openbare repository komt het rapport niet in je project, want dan zou iedereen de lekken lezen.</li>
+      </ul>
+    </div>
+  </div>
+  <p class="zacht klein">Weigert je bouwtool het bestand te maken? Maak het dan zelf in GitHub: <em>Add file → Create new file</em>, naam <code>.github/workflows/checkmijn.yml</code>, met de inhoud hieronder.</p>
+</div></section>
+
+<section class="wrap sectie" id="github">
+  <p class="oog">Route 3 · gratis</p>
+  <h2 class="mt0">In je eigen pipeline</h2>
+  <p class="zacht">De scanner draait als GitHub Action in je repository. De Action controleert de handtekening en het controlegetal van de dagversie, scant zonder netwerk en zet de uitslag bij de run. Zet dit bestand in <code>.github/workflows/checkmijn.yml</code>:</p>
+  {{ m.code("workflow", workflow, ".github/workflows/checkmijn.yml") }}
+</section>
+
+<section class="vlak" id="keuring"><div class="wrap sectie">
+  <p class="oog">Route 4 · pilot</p>
+  <h2 class="mt0">Keuring, vanaf niveau 2</h2>
+  <p class="lead">Een erkende keurder kijkt mee, in jouw omgeving, test of de app echt werkt en voert gerichte aanvalstests uit. Pas daarna is een A mogelijk.</p>
+  <div class="knoppenrij"><a class="knop licht" href="/niveaus">Bekijk de niveaus</a><a class="knop" href="/contact">Word pilotklant</a></div>
+</div></section>
+
+<section class="wrap sectie">
+  <h2 class="mt0">Elke dag een nieuwe versie</h2>
+  <p class="zacht">Elke nacht om 03:15 halen we de nieuwste lijst met bekende lekken op (GitHub Advisory Database), bouwen we een nieuwe dagversie van de scanner, berekenen we het controlegetal en ondertekenen we het manifest met Ed25519. Je vindt ze in <a href="/latest.json">latest.json</a> en <a href="/versies.json">versies.json</a>. De broncode staat open ter inzage op <a href="https://github.com/Checkmijn-ai/AIScanner">GitHub</a>.</p>
+  <div class="rooster-4 mt2">
+    <div class="kaart"><span class="nummer">03:15</span><p class="mt1">Lekkenlijst ophalen</p></div>
+    <div class="kaart"><span class="nummer">2</span><p class="mt1">Scanner bouwen</p></div>
+    <div class="kaart"><span class="nummer">3</span><p class="mt1">Controlegetal en Ed25519-handtekening</p></div>
+    <div class="kaart"><span class="nummer">4</span><p class="mt1">Publiceren</p></div>
+  </div>
+  {{ m.cta() }}
+</section>
+{% endblock %}

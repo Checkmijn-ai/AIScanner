@@ -1,0 +1,12 @@
+{% extends "site/basis.html" %}
+{% set noindex = true %}
+{% block kop %}<meta name="referrer" content="no-referrer"><script src="{{ url_for('site.static', filename='rapport.js') }}" defer></script>{% endblock %}
+{% block inhoud %}
+<div class="rapportbalk"><div class="wrap">
+  <span>🔒 Versleuteld rapport. De sleutel zit alleen in jouw link; CheckMijn.AI kan dit rapport niet lezen. <span id="rapport-info"></span></span>
+  <button type="button" class="knop klein" id="download" hidden>Download</button>
+</div></div>
+<div class="wrap sectie" id="melding"><p class="lead">Het rapport wordt opgehaald en in je browser ontsleuteld…</p><noscript><p>Om het rapport te ontsleutelen, is JavaScript nodig.</p></noscript></div>
+<div id="rapport" data-id="{{ rid }}"></div>
+{% endblock %}
+{% block voet %}{% endblock %}

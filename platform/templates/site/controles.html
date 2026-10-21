@@ -1,0 +1,25 @@
+{% extends "site/basis.html" %}
+{% import "site/macros.html" as m %}
+{% block inhoud %}
+{% call m.kop("Catalogus", "Wat we controleren", "De " ~ checks|length ~ " checks van niveau 1, elk gekoppeld aan de wetten en normen waar ze uit komen. Dit is de lijst die de scanner van vandaag gebruikt.") %}
+<div class="knoppenrij"><a class="knop licht klein" href="/checks.json">checks.json</a><a class="knop licht klein" href="/framework">Als checklist</a></div>
+{% endcall %}
+<section class="wrap sectie">
+  <div class="filter" role="search">
+    <label for="zoek">Zoeken<input id="zoek" type="search" placeholder="Bv. geheimen, cookie, lockfile"></label>
+    <label for="domein">Onderwerp<select id="domein"><option value="">Alle</option>{% for d in domeinen %}<option>{{ d }}</option>{% endfor %}</select></label>
+    <label for="ernst-filter">Standaardernst<select id="ernst-filter"><option value="">Alle</option><option>Kritiek</option><option>Hoog</option><option>Middel</option><option>Laag</option></select></label>
+  </div>
+  <p class="zacht klein" id="teller" aria-live="polite">{{ checks|length }} checks</p>
+  <ul class="checks">
+  {% for c in checks %}
+    <li data-domein="{{ c.domein }}" data-ernst="{{ c.ernst }}">
+      <span class="id">{{ c.id }}</span>
+      <div><p class="mt0">{{ c.scan }}</p><span class="normen">{{ c.normen }}</span></div>
+      <div class="rechts"><span class="ernst e-{{ c.ernst }}">{{ c.ernst }}</span><br>{{ c.domein.split('. ', 1)[1] if '. ' in c.domein else c.domein }}</div>
+    </li>
+  {% endfor %}
+  </ul>
+  <p class="zacht klein mt2">Niveau 2, 3 en 4 voegen meer checks toe: samen 288. <a href="/niveaus">Bekijk de niveaus</a>.</p>
+</section>
+{% endblock %}

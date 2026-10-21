@@ -1,0 +1,26 @@
+{% extends "site/basis.html" %}
+{% import "site/macros.html" as m %}
+{% block inhoud %}
+{{ m.kop("De score", "Wat betekent de letter?", "De score loopt van A tot G, zoals het energielabel, met vaste en publieke grenzen.") }}
+<section class="wrap sectie">
+  <div class="schaal" aria-hidden="true">{% for L, _ in grades %}<span class="l-{{ L }}">{{ L }}</span>{% endfor %}</div>
+  <table class="tabel mt2">
+    <caption class="sr">Betekenis van de letters</caption>
+    <tbody>{% for L, uitleg in grades %}<tr><td><span class="chip l-{{ L }}">{{ L }}</span></td><td>{{ uitleg }}</td></tr>{% endfor %}</tbody>
+  </table>
+  <p class="zacht">Per check telt de zwaarste bevinding. Tien lekken in één pakket wegen dus niet zwaarder dan tien verschillende problemen. Een letter krijg je alleen als minstens 70% van de checks die op je app van toepassing zijn, ook echt gescand is.</p>
+
+  <h2>Drie soorten scans</h2>
+  <p class="zacht">Ze staan altijd op de badge en de scorepagina.</p>
+  <div class="rooster-3">
+    <div class="kaart"><h3>1. Zelfcontrole</h3><p class="zacht">Je liet de scan zelf draaien, door je AI-agent of op je eigen machine.</p></div>
+    <div class="kaart"><h3>2. Geverifieerd</h3><p class="zacht">De scan draaide in je pipeline, met een ondertekende verklaring dat er niet geknoeid is.</p></div>
+    <div class="kaart"><h3>3. Gekeurd</h3><p class="zacht">Niveau 2 of hoger, met een erkende keurder.</p></div>
+  </div>
+
+  <h2>Een score verloopt</h2>
+  <p class="zacht">Software verandert, en elke dag worden nieuwe lekken bekend. Een scorepagina van niveau 1 blijft 30 dagen actueel, een keuring 12 maanden. Daarna wordt de badge grijs. Een scan bij elke wijziging houdt de score vanzelf actueel.</p>
+  {{ m.let_op(DISCLAIMER) }}
+  {{ m.cta() }}
+</section>
+{% endblock %}

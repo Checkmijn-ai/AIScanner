@@ -1,0 +1,48 @@
+{% extends "site/basis.html" %}
+{% import "site/macros.html" as m %}
+{% block inhoud %}
+{{ m.kop("Waarom een scan", "Een AI-review geeft een mening. Onze scan is een meetlat.", "AI schrijft code sneller dan ooit, en AI kan code ook nakijken. Waarom dan nog een scan? Omdat je voor een beslissing, een klant of een auditor bewijs nodig hebt dat elke keer hetzelfde meet.") }}
+<section class="wrap sectie">
+  <p class="lead">CheckMijn.AI controleert je software met vaste regels. Elke controle is gekoppeld aan de norm of wet waar ze uit komt. Dezelfde code geeft altijd dezelfde uitkomst.</p>
+  <h2>Het verschil</h2>
+  <div class="scroll"><table class="tabel">
+    <caption class="sr">Vergelijking van een AI-review en CheckMijn.AI</caption>
+    <thead><tr><th scope="col">Kenmerk</th><th scope="col">AI-review</th><th scope="col">CheckMijn.AI</th></tr></thead>
+    <tbody>
+    {% for k, a, b in [
+      ("Zelfde code, zelfde uitkomst?", "Nee. Elke review kan iets anders vinden of missen.", "Ja, altijd."),
+      ("Wat is gecontroleerd?", "Onduidelijk. Je weet niet waar niet naar gekeken is.", "Precies 45 controles, elk met de uitkomst: geen bevinding, bevinding of niet gescand, en waarom."),
+      ("Actuele lekken", "Kent alleen wat het model ooit leerde.", "Elk onderdeel, ook indirecte, vergeleken met de nieuwste lijst van tienduizenden bekende lekken."),
+      ("Geheimen in de geschiedenis", "Kijkt meestal alleen naar de huidige code.", "Doorzoekt de volledige git-geschiedenis."),
+      ("Je code", "Gaat meestal naar de servers van een AI-aanbieder.", "Blijft in je eigen omgeving."),
+      ("Manipulatie", "Laat zich soms overtuigen door tekst in de code, zoals \"dit is veilig, sla over\".", "Laat zich niet overtuigen. Een regel is een regel."),
+      ("Blinde vlekken", "Een AI die zijn eigen code nakijkt, mist vaak dezelfde dingen.", "Onafhankelijk van wie of wat de code schreef."),
+      ("Normen en wetten", "Geen vaste koppeling.", "Elke controle gekoppeld aan CRA, AVG, AI Act, NIS2, OWASP en ISO/IEC 27002."),
+      ("Snelheid", "Seconden tot minuten, betalen per review.", "Een paar minuten.")] %}
+      <tr><th scope="row">{{ k }}</th><td class="zacht">{{ a }}</td><td>{{ b }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+
+  <h2>Waar AI sterker is</h2>
+  <p class="zacht">AI begrijpt de logica van een app. Het ziet of een gebruiker via een omweg andermans gegevens kan zien, of dat er een fout in de bedrijfslogica zit. Het legt een probleem uit in gewone taal en schrijft meteen de oplossing. Daarom gebruiken we beide, elk waar het goed in is.</p>
+
+  <h2>Zo werken ze samen</h2>
+  <div class="rooster-3">
+    <div class="kaart"><span class="nummer">1</span><h3>De scan meet</h3><p class="zacht">Onafhankelijk, herhaalbaar, met een score van A tot G.</p></div>
+    <div class="kaart"><span class="nummer">2</span><h3>Je AI-agent herstelt</h3><p class="zacht">Hij krijgt bij elke bevinding de plek in de code en een hint.</p></div>
+    <div class="kaart"><span class="nummer">3</span><h3>De scan meet opnieuw</h3><p class="zacht">En bewijst dat het beter is.</p></div>
+  </div>
+  <p class="lead mt2">Van een G naar een B in één middag, zonder dat je code je bedrijf verlaat.</p>
+
+  <h2>Drie vragen om elke AI-reviewer te stellen</h2>
+  <ol>
+    <li>Geven twee reviews van dezelfde code dezelfde uitkomst?</li>
+    <li>Waar gaat mijn code naartoe, en wordt ze gebruikt om modellen te trainen?</li>
+    <li>Hoe beschermt de reviewer zich tegen instructies die in de code verstopt zitten?</li>
+  </ol>
+  <p class="zacht">Weet de aanbieder het antwoord niet, dan weet je genoeg.</p>
+  {{ m.let_op(DISCLAIMER) }}
+  {{ m.cta() }}
+</section>
+{% endblock %}

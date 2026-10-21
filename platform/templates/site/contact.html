@@ -1,0 +1,25 @@
+{% extends "site/basis.html" %}
+{% import "site/macros.html" as m %}
+{% block inhoud %}
+{{ m.kop("Contact", "Hoe kunnen we helpen?", "Kies wat bij je past. We reageren binnen één werkdag.") }}
+<section class="wrap sectie">
+  <div class="rooster-3">
+    {% for t, d, onderwerp in [
+      ("Plan een gesprek", "Een kennismaking van 30 minuten, online of bij je op kantoor.", "Kennismaking"),
+      ("Word pilotklant", "Doe mee met de pilot voor keuringen op niveau 2.", "Pilot niveau 2"),
+      ("Bureau-abonnement", "Scans voor al je projecten en klanten.", "Bureau-abonnement")] %}
+    <div class="kaart">
+      <h3>{{ t }}</h3>
+      <p class="zacht">{{ d }}</p>
+      <a class="knop" href="mailto:{{ CONTACT }}?subject={{ ('CheckMijn.AI: ' ~ onderwerp)|urlencode }}">Mail ons</a>
+    </div>
+    {% endfor %}
+  </div>
+  <p class="mt2">Of mail rechtstreeks naar <a href="mailto:{{ CONTACT }}">{{ CONTACT }}</a>. Vertel wie je bent, welke software het betreft en hoeveel apps.</p>
+  <p class="zacht klein">Stuur geen code of bestanden mee: die hebben we niet nodig.</p>
+  <h2>Partner worden?</h2>
+  <p class="zacht">We zoeken regiopartners in Nederland en Vlaanderen: zwaargewichten met minstens 10 jaar ervaring in de IT, waarvan 5 jaar in cybersecurity. <a href="mailto:{{ CONTACT }}?subject={{ 'CheckMijn.AI: regiopartner'|urlencode }}">Laat het ons weten</a>.</p>
+  <h2>Een kwetsbaarheid melden</h2>
+  <p class="zacht">Mail naar <a href="mailto:security@checkmijn.ai">security@checkmijn.ai</a>. Zie ook <a href="/.well-known/security.txt">security.txt</a>.</p>
+</section>
+{% endblock %}

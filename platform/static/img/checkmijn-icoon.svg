@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100.00 100.00" width="100" height="100" role="img" aria-label="CheckMijn.AI">
+<title>CheckMijn.AI</title>
+<defs><mask id="mf" maskUnits="userSpaceOnUse" x="-20.00" y="-20.00" width="140.00" height="140.00">
+  <rect x="-20.00" y="-20.00" width="140.00" height="140.00" fill="#fff"/>
+  <path d="M50.00,62.00 L112.00,0.00" stroke="#000" stroke-width="30.00" stroke-linecap="butt"/>
+</mask></defs>
+<path d="M14.00,32.00 A18.00,18.00 0 0 1 32.00,14.00 L68.00,14.00 A18.00,18.00 0 0 1 86.00,32.00 L86.00,68.00 A18.00,18.00 0 0 1 68.00,86.00 L32.00,86.00 A18.00,18.00 0 0 1 14.00,68.00 Z" fill="none" stroke="#02254F" stroke-width="13.00" mask="url(#mf)"/>
+<path d="M31.00,49.00 L46.00,64.00 L84.00,26.00" fill="none" stroke="#00B8B0" stroke-width="15.00" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

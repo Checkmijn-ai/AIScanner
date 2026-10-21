@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100.00 100.00" width="100" height="100" role="img" aria-label="CheckMijn.AI">
+<title>CheckMijn.AI</title>
+<rect width="100" height="100" rx="22" fill="#02254F"/>
+<defs><mask id="mh" maskUnits="userSpaceOnUse" x="-3.20" y="-3.20" width="106.40" height="106.40">
+  <rect x="-3.20" y="-3.20" width="106.40" height="106.40" fill="#fff"/>
+  <path d="M50.00,59.12 L97.12,12.00" stroke="#000" stroke-width="22.80" stroke-linecap="butt"/>
+</mask></defs>
+<path d="M22.64,36.32 A13.68,13.68 0 0 1 36.32,22.64 L63.68,22.64 A13.68,13.68 0 0 1 77.36,36.32 L77.36,63.68 A13.68,13.68 0 0 1 63.68,77.36 L36.32,77.36 A13.68,13.68 0 0 1 22.64,63.68 Z" fill="none" stroke="#FFFFFF" stroke-width="9.88" mask="url(#mh)"/>
+<path d="M35.56,49.24 L46.96,60.64 L75.84,31.76" fill="none" stroke="#00B8B0" stroke-width="11.40" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

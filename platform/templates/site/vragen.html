@@ -1,0 +1,11 @@
+{% extends "site/basis.html" %}
+{% import "site/macros.html" as m %}
+{% block inhoud %}
+{{ m.kop("Vragen", "Veelgestelde vragen") }}
+<section class="wrap sectie">
+  {% for v, a in faq %}
+  <details class="vraag"{% if loop.first %} open{% endif %}><summary>{{ v }}</summary><p>{{ a }}</p></details>
+  {% endfor %}
+  <p class="mt2">Staat je vraag er niet bij? <a href="/contact">Neem contact op</a>.</p>
+</section>
+{% endblock %}

@@ -1,21 +1,36 @@
-# Caddy haalt zelf een certificaat bij Let's Encrypt (zet het DNS-record in Cloudflare op "DNS only").
+# Caddy haalt zelf certificaten bij Let's Encrypt. Zet de DNS-records in Cloudflare eerst op "DNS only" (grijze wolk).
 {
 	email security@checkmijn.ai
 }
 
-api.checkmijn.ai {
-	encode gzip
+(beveiliging) {
+	encode zstd gzip
 	header {
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"
 		X-Content-Type-Options "nosniff"
-		X-Frame-Options "DENY"
 		Referrer-Policy "no-referrer"
 		-Server
 	}
 	request_body {
 		max_size 6MB
 	}
-	reverse_proxy api:8000 {
+}
+
+checkmijn.ai, api.checkmijn.ai {
+	import beveiliging
+	reverse_proxy live:8000 {
+		header_up -CF-Connecting-IP
+	}
+}
+
+www.checkmijn.ai {
+	redir https://checkmijn.ai{uri} permanent
+}
+
+test.checkmijn.ai {
+	import beveiliging
+	header X-Robots-Tag "noindex, nofollow"
+	reverse_proxy test:8000 {
 		header_up -CF-Connecting-IP
 	}
 }

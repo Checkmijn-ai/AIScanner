@@ -1,0 +1,15 @@
+{% extends "site/basis.html" %}
+{% import "site/macros.html" as m %}
+{% block inhoud %}
+{% call m.kop("scan.md", "Instructie voor AI-agents", "Dit is precies wat je AI-agent leest. De scanner van checkmijn.ai doet de meting, niet de agent. De instructie wordt elke nacht opnieuw gemaakt, met het controlegetal van de scanner van die dag.") %}
+<div class="knoppenrij"><a class="knop licht klein" href="/scan.md">Ruwe tekst</a><a class="knop licht klein" href="/latest.json">Ondertekend manifest</a></div>
+{% endcall %}
+<section class="wrap sectie">
+  <div class="rooster-2">
+    <div>{{ m.code("agent-zin", agent_zin, "Agent met terminal") }}</div>
+    <div>{{ m.code("bouwtool-1", bouwtool_1, "Lovable, Bolt of v0 (via GitHub)") }}</div>
+  </div>
+  <h2>scan.md van vandaag</h2>
+  <pre class="scanmd">{{ md }}</pre>
+</section>
+{% endblock %}

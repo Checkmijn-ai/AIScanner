@@ -48,6 +48,7 @@ from flask import Flask, Response, abort, g, jsonify, render_template, request
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / "platform"))
 from aiscan.score import uit_bewijs  # noqa: E402
 
 PUBLIC = Path(os.environ.get("AISCAN_PUBLIC", ROOT / "public"))
@@ -64,7 +65,7 @@ STATUSSEN = {"Geen bevinding", "Bevinding", "Niet van toepassing", "Niet gescand
 ERNST = {None, "Info", "Laag", "Middel", "Hoog", "Kritiek"}
 KLEUR = {"A": "#1b7f3b", "B": "#4f9d2a", "C": "#97a91d", "D": "#c9a200", "E": "#e07f12", "F": "#d9480f", "G": "#b1161a"}
 
-app = Flask(__name__, template_folder=str(ROOT / "platform" / "templates"))
+app = Flask(__name__, template_folder=str(ROOT / "platform" / "templates"), static_folder=None)
 app.config["MAX_CONTENT_LENGTH"] = 6 * 1024 * 1024  # versleuteld rapport; een bewijs wordt apart beperkt
 MAX_BEWIJS = 256 * 1024  # een bewijs is klein; nooit code
 MAX_RAPPORT = 5 * 1024 * 1024
@@ -147,6 +148,44 @@ def lees(naam):
         abort(Response(json.dumps({"fout": f"{naam} ontbreekt op de server; draai eerst build_daily.py"}), 503,
                        mimetype="application/json"))
     return json.loads(p.read_text())
+
+
+def lees_tekst(naam: str) -> bytes:
+    """Een bestand van de dagversie (scan.md, latest.json, ...), van GitHub Pages of lokaal, 10 minuten in de cache."""
+    if PUBLIC_URL:
+        import urllib.request
+        tijd, inhoud = _CACHE.get(("raw", naam), (0, None))
+        if time.time() - tijd > 600 or inhoud is None:
+            try:
+                with urllib.request.urlopen(f"{PUBLIC_URL}/{naam}", timeout=10) as r:
+                    inhoud = r.read()
+                _CACHE[("raw", naam)] = (time.time(), inhoud)
+            except Exception:
+                if inhoud is None:
+                    abort(Response(f"{naam} is nu niet bereikbaar; probeer later opnieuw", 503, mimetype="text/plain"))
+        return inhoud
+    p = PUBLIC / naam
+    if not p.exists():
+        abort(404)
+    return p.read_bytes()
+
+
+DAGVERSIE_BESTANDEN = {"scan.md": "text/markdown; charset=utf-8", "latest.json": "application/json",
+                       "checks.json": "application/json", "versies.json": "application/json",
+                       "changelog.json": "application/json", "public-key.pem": "text/plain; charset=utf-8",
+                       "checkmijn.yml": "text/plain; charset=utf-8"}
+
+
+def _dagversie_bestand(naam):
+    def view():
+        return Response(lees_tekst(naam), mimetype=DAGVERSIE_BESTANDEN[naam],
+                        headers={"Access-Control-Allow-Origin": "*", "Cache-Control": "public, max-age=300"})
+    view.__name__ = "dagversie_" + naam.replace(".", "_").replace("-", "_")
+    return view
+
+
+for _naam in DAGVERSIE_BESTANDEN:
+    app.add_url_rule(f"/{_naam}", view_func=_dagversie_bestand(_naam))
 
 
 # ------------------------------------------------------------------ API
@@ -374,17 +413,46 @@ def rapport_ophalen(rid):
                     "aangemaakt": r["aangemaakt"][:10], "verloopt": r["verloopt"][:10]})
 
 
+CSP_API = "default-src 'none'; style-src 'unsafe-inline'; img-src 'self'; frame-ancestors 'none'"
+CSP_SITE = ("default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; "
+            "font-src 'self'; frame-src 'self'; form-action 'self' mailto:; base-uri 'none'; object-src 'none'; "
+            "frame-ancestors 'none'")
+# Het versleutelde rapport heeft eigen stijlen in de pagina; het wordt in een sandbox-iframe getoond, zonder scripts.
+CSP_RAPPORT = CSP_SITE.replace("style-src 'self'", "style-src 'self' 'unsafe-inline'")
+
+
 @app.after_request
 def headers(resp):
     resp.headers["X-Content-Type-Options"] = "nosniff"
     resp.headers["Referrer-Policy"] = "no-referrer"
-    resp.headers["Content-Security-Policy"] = "default-src 'none'; style-src 'unsafe-inline'; img-src 'self'"
+    resp.headers["X-Frame-Options"] = "DENY"
+    resp.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+    if request.path.startswith(("/api/", "/score/")):
+        resp.headers["Content-Security-Policy"] = CSP_API
+    elif request.path.startswith("/rapport/"):
+        resp.headers["Content-Security-Policy"] = CSP_RAPPORT
+    else:
+        resp.headers["Content-Security-Policy"] = CSP_SITE
     if request.path.startswith(("/api/v1/score", "/score/")):
         resp.headers["Access-Control-Allow-Origin"] = "*"
     if request.path.startswith("/api/v1/rapport/"):
         resp.headers["Access-Control-Allow-Origin"] = SITE_ORIGIN
         resp.headers["Cache-Control"] = "private, no-store"
     return resp
+
+
+# ------------------------------------------------------------------ website
+import website as _site_mod  # noqa: E402  (platform/website.py)
+
+app.register_blueprint(_site_mod.site)
+_site_mod.BRON["tekst"] = lees_tekst
+
+
+@app.errorhandler(404)
+def niet_gevonden(e):
+    if request.path.startswith("/api/"):
+        return jsonify({"fout": "Niet gevonden."}), 404
+    return render_template("site/404.html", titel="Pagina niet gevonden", beschrijving=""), 404
 
 
 if __name__ == "__main__":

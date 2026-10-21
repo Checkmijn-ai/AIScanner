@@ -1,0 +1,69 @@
+{% extends "site/basis.html" %}
+{% import "site/macros.html" as m %}
+{% block inhoud %}
+<section class="held"><div class="wrap rooster">
+  <div>
+    <p class="oog">Onafhankelijke controle van software die met AI gebouwd is</p>
+    <h1>Check je AI-software voor je ze lanceert, koopt of oplevert.</h1>
+    <p class="lead">Een meetlat, geen mening: vaste regels, Europese normen en een score van A tot G. Je code verlaat je bedrijf nooit.</p>
+    {{ m.cta() }}
+  </div>
+  <div class="kaart vlak">
+    <p class="oog">Voorbeeldbadge</p>
+    {{ m.badge("B", 1, "Zelfcontrole") }}
+    <p class="zacht klein mt1">Elke badge linkt naar een scorepagina met de datum, de versie van de scanner en de geteste checks.</p>
+    <a class="klein" href="/score-uitleg">Wat betekent de letter?</a>
+  </div>
+</div></section>
+
+<section class="vlak"><div class="wrap sectie cijfers">
+  <div><b>45</b><span class="zacht">checks op niveau 1</span></div>
+  <div><b>Dagelijks</b><span class="zacht">een nieuwe, ondertekende scanner</span></div>
+  <div><b>6</b><span class="zacht">wetten en normen: CRA, AVG, AI Act, NIS2, OWASP en ISO</span></div>
+  <div><b>0</b><span class="zacht">regels code naar buiten</span></div>
+</div></section>
+
+<section class="wrap sectie">
+  <h2 class="mt0">Vijf beloften</h2>
+  <div class="rooster-3">
+    <div>{{ m.icoon('slot') }}<h3>Je code verlaat je bedrijf nooit</h3><p class="zacht">De scan draait in je eigen omgeving: je GitHub of je AI-agent. Wij krijgen hoogstens een bewijsbestand zonder code, en een rapport dat we zelf niet kunnen lezen.</p></div>
+    <div>{{ m.icoon('meetlat') }}<h3>Een meetlat, geen mening</h3><p class="zacht">In de meting zit geen AI. Dezelfde code geeft altijd dezelfde uitkomst, en elke check is publiek beschreven.</p></div>
+    <div>{{ m.icoon('weegschaal') }}<h3>Gebouwd op Europese normen</h3><p class="zacht">Elke check is gekoppeld aan de norm of wet waar hij uit komt.</p></div>
+    <div>{{ m.icoon('oog') }}<h3>Een score die je directie begrijpt</h3><p class="zacht">Van A tot G, zoals het energielabel, met vaste en publieke grenzen.</p></div>
+    <div>{{ m.icoon('schild') }}<h3>Eerlijk over wat we niet weten</h3><p class="zacht">Elk rapport zegt wat gecontroleerd is, wat niet, en wat nog bevestigd moet worden.</p></div>
+  </div>
+</section>
+
+<section class="wrap sectie">
+  <h2 class="mt0">Drie momenten</h2>
+  <div class="rooster-3">
+    <div class="kaart"><span class="nummer">01</span><h3>Lanceren</h3><p class="zacht">Weet wat je live zet.</p></div>
+    <div class="kaart"><span class="nummer">02</span><h3>Kopen of overnemen</h3><p class="zacht">Weet wat je koopt.</p></div>
+    <div class="kaart"><span class="nummer">03</span><h3>Opleveren</h3><p class="zacht">Lever bewijs mee aan je klant.</p></div>
+  </div>
+</section>
+
+<section class="wrap sectie">
+  <div class="kaart vlak">
+    <h2 class="mt0">Zo werkt het, kort</h2>
+    <p class="lead">Meten → herstellen → opnieuw meten. Van een G naar een B in één middag, met je eigen AI-agent. Ook als je bouwt in Lovable, Bolt of v0.</p>
+    <a class="knop licht" href="/hoe-het-werkt">Bekijk hoe het werkt</a>
+  </div>
+</section>
+
+<section class="wrap sectie">
+  <h2 class="mt0">Voor wie</h2>
+  <div class="rooster-3">
+    <a class="kaart" href="/bureaus">{{ m.icoon('gebouw') }}<h3>Bureaus</h3><p class="zacht">Lever bij elke oplevering een onafhankelijke score en rapport mee, en bewijs dat je werk in orde is.</p><span class="meer">Lees meer →</span></a>
+    <a class="kaart" href="/opdrachtgevers">{{ m.icoon('klembord') }}<h3>Opdrachtgevers en inkopers</h3><p class="zacht">Een rapport dat je zonder IT-kennis begrijpt, met de normen en wetten erbij.</p><span class="meer">Lees meer →</span></a>
+    <a class="kaart" href="/contact">{{ m.icoon('bank') }}<h3>Kopers en investeerders</h3><p class="zacht">Een snelle, herhaalbare meting voor overnames en due diligence.</p><span class="meer">Neem contact op →</span></a>
+  </div>
+
+  <div class="cta">
+    <h2>Check mijn app, gratis.</h2>
+    <p>Eén zin aan je AI-agent, of één bestand in je GitHub-repository. Binnen tien minuten weet je waar je staat.</p>
+    <div class="knoppenrij"><a class="knop" href="/hoe-het-werkt">Check mijn app</a><a class="knop licht" href="/contact">Plan een gesprek</a></div>
+  </div>
+  {{ m.let_op(DISCLAIMER) }}
+</section>
+{% endblock %}

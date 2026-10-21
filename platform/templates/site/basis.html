@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{ titel }}{% if pad != '/' %} | CheckMijn.AI{% else %} | CheckMijn.AI{% endif %}</title>
+{% if beschrijving %}<meta name="description" content="{{ beschrijving }}">{% endif %}
+{% if TEST or noindex %}<meta name="robots" content="noindex, nofollow">{% endif %}
+<link rel="canonical" href="{{ SITE_URL }}{{ pad }}">
+<meta property="og:title" content="{{ titel }}">
+{% if beschrijving %}<meta property="og:description" content="{{ beschrijving }}">{% endif %}
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="CheckMijn.AI">
+<meta name="theme-color" content="#02254f">
+<link rel="icon" href="{{ url_for('site.static', filename='img/favicon.svg') }}" type="image/svg+xml">
+<link rel="apple-touch-icon" href="{{ url_for('site.static', filename='img/apple-touch-icon.png') }}">
+<link rel="stylesheet" href="{{ url_for('site.static', filename='site.css') }}">
+<script src="{{ url_for('site.static', filename='site.js') }}" defer></script>
+{% block kop %}{% endblock %}
+</head>
+<body>
+<a class="skip" href="#inhoud">Naar de inhoud</a>
+{% if TEST %}<div class="testbalk">Testversie (test.checkmijn.ai). Wat je hier ziet, staat nog niet live.</div>{% endif %}
+<header class="kop">
+  <div class="wrap">
+    <a class="logo" href="/" aria-label="CheckMijn.AI, naar de homepage"><img src="{{ url_for('site.static', filename='img/checkmijn-logo-liggend.svg') }}" alt="CheckMijn.AI" width="193" height="36"></a>
+    <nav class="hoofd" aria-label="Hoofdnavigatie">
+      <ul>{% for ep, naam in NAV %}<li><a href="{{ url_for('site.' ~ ep) }}"{% if pad == url_for('site.' ~ ep) %} aria-current="page"{% endif %}>{{ naam }}</a></li>{% endfor %}</ul>
+    </nav>
+    <div class="knoppen">
+      <a class="knop licht klein" href="/contact">Plan een gesprek</a>
+      <a class="knop klein" href="/hoe-het-werkt">Check mijn app</a>
+    </div>
+    <details class="menu">
+      <summary>Menu</summary>
+      <div class="paneel">
+        <ul>{% for ep, naam in NAV %}<li><a href="{{ url_for('site.' ~ ep) }}">{{ naam }}</a></li>{% endfor %}<li><a href="/vragen">Veelgestelde vragen</a></li><li><a href="/contact">Contact</a></li></ul>
+        <a class="knop" href="/hoe-het-werkt">Check mijn app</a>
+      </div>
+    </details>
+  </div>
+</header>
+<main id="inhoud">
+{% block inhoud %}{% endblock %}
+</main>
+{% block voet %}
+<footer class="voet">
+  <div class="wrap kolommen">
+    <div>
+      <img src="{{ url_for('site.static', filename='img/checkmijn-logo-liggend.svg') }}" alt="CheckMijn.AI" width="171" height="32">
+      <p class="zacht klein mt1">Onafhankelijke controle van software die met AI gebouwd is. Uit Nederland en Vlaanderen.</p>
+    </div>
+    <div><h2>Dienst</h2><ul><li><a href="/hoe-het-werkt">Hoe het werkt</a></li><li><a href="/niveaus">Niveaus</a></li><li><a href="/wat-we-controleren">Wat we controleren</a></li><li><a href="/score-uitleg">De score</a></li><li><a href="/waarom">Waarom een scan</a></li></ul></div>
+    <div><h2>Voor wie</h2><ul><li><a href="/bureaus">Bureaus</a></li><li><a href="/opdrachtgevers">Opdrachtgevers en inkopers</a></li><li><a href="/framework">Gratis framework</a></li><li><a href="/scan">Instructie voor AI-agents</a></li></ul></div>
+    <div><h2>Organisatie</h2><ul><li><a href="/vertrouwen">Vertrouwen en veiligheid</a></li><li><a href="/vragen">Veelgestelde vragen</a></li><li><a href="/contact">Contact</a></li><li><a href="https://github.com/Checkmijn-ai/AIScanner">Broncode op GitHub</a></li></ul></div>
+  </div>
+  <div class="wrap onder">
+    <p>{{ DISCLAIMER }}</p>
+    <p class="bronnen"><a href="/latest.json">latest.json</a><a href="/checks.json">checks.json</a><a href="/public-key.pem">public-key.pem</a><a href="/.well-known/security.txt">security.txt</a></p>
+  </div>
+</footer>
+{% endblock %}
+</body>
+</html>
