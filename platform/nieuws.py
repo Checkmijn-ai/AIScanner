@@ -1,6 +1,6 @@
 """Nieuws voor checkmijn.ai/nieuws: RSS- en Atom-feeds ophalen, indelen in drie tabbladen en ontdubbelen.
 
-Draait twee keer per dag via cron op de server (zie server/uitrol.sh):
+Draait drie keer per dag via cron op de server (zie server/uitrol.sh):
     python /app/platform/nieuws.py            # ophalen en opslaan
     python /app/platform/nieuws.py --toon     # laat zien wat er nu in staat
 
