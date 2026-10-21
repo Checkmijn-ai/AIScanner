@@ -282,3 +282,7 @@ h1.check-titel { font-size: clamp(1.5rem, 3.2vw, 2.3rem); max-width: 34em; }
 .held .knop.licht, .cta .knop.licht { background: transparent; color: #fff; border-color: rgba(255,255,255,.4); }
 .held .knop.licht:hover, .cta .knop.licht:hover { background: transparent; border-color: #fff; color: #fff; }
 @media (max-width: 480px) { .balk .grens { display: none; } }
+
+.vergelijk .prijsje { margin-bottom: 2px; }
+.vergelijk .prijsje + p { margin: 0 0 12px; }
+.vergelijk .wij .prijsje + p { color: var(--turq); font-weight: 600; }
