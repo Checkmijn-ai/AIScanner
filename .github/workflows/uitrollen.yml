@@ -46,7 +46,7 @@ jobs:
         run: |
           install -m 700 -d ~/.ssh
           umask 077
-          printf '%s\n' "$SLEUTEL" > ~/.ssh/uitrol
+          printf '%s\n' "$SLEUTEL" | tr -d '\r' > ~/.ssh/uitrol
           if [ -n "$HOSTKEY" ]; then
             printf '%s\n' "$HOSTKEY" > ~/.ssh/known_hosts
           else
@@ -63,6 +63,12 @@ jobs:
           fi
           if ! grep -q "BEGIN OPENSSH PRIVATE KEY" ~/.ssh/uitrol; then
             echo "::error::Het secret UITROL_SLEUTEL lijkt niet op een privésleutel (verwacht: -----BEGIN OPENSSH PRIVATE KEY-----)."
+            exit 1
+          fi
+          if PUB=$(ssh-keygen -y -f ~/.ssh/uitrol 2>/tmp/kg.txt); then
+            echo "::notice::Publieke sleutel bij UITROL_SLEUTEL (moet op de server staan): $PUB"
+          else
+            echo "::error::UITROL_SLEUTEL is geen geldige privésleutel: $(cat /tmp/kg.txt)"
             exit 1
           fi
       - name: Uitrollen
