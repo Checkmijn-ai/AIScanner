@@ -479,3 +479,10 @@ ul.vinkjes li, ul.kruisjes li { position: relative; padding-left: 30px; margin: 
 ul.vinkjes li b, ul.kruisjes li b { color: var(--navy); }
 ul.vinkjes li::before { content: "✓"; position: absolute; left: 0; top: 0; font-weight: 700; color: var(--a); }
 ul.kruisjes li::before { content: "✕"; position: absolute; left: 0; top: 0; font-weight: 700; color: var(--g); }
+.code-inzien { border: 1px dashed var(--turq-d); border-radius: 12px; padding: 16px 18px; margin-top: 20px; background: #fff; }
+.code-inzien .ci-kop { display: flex; gap: 12px; align-items: center; margin: 0 0 10px; }
+.code-inzien .ci-kop .icoon { margin: 0; flex: none; }
+.code-inzien ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; }
+.code-inzien li { font-size: .92rem; }
+.code-inzien li a { text-decoration: none; }
+.code-inzien li a:hover code { background: var(--turq-l); }

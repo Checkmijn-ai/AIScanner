@@ -63,3 +63,10 @@
 </form>
 {% endif %}
 {%- endmacro %}
+
+{% macro code_inzien(bestanden) -%}
+<div class="code-inzien">
+  <p class="ci-kop">{{ icoon('oog') }}<span><b>Bekijk zelf de code.</b> <span class="zacht">Alles is open source; niets hoef je op ons woord te geloven.</span></span></p>
+  <ul>{% for url, naam, uitleg in bestanden %}<li><a href="{{ url }}" rel="noopener"><code>{{ naam }}</code></a><span class="zacht"> {{ uitleg }}</span></li>{% endfor %}</ul>
+</div>
+{%- endmacro %}

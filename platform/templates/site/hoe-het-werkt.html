@@ -19,6 +19,19 @@
   </div>
 </div></section>
 
+<section class="vlak" id="routes"><div class="wrap sectie">
+  <p class="oog">Aan de slag</p>
+  <h2 class="mt0">Kies hoe je wilt scannen</h2>
+  <p class="zacht">Niet zeker? Lees eerst <a href="#wat">wat het is en wat het doet</a>.</p>
+  <div class="routes mt2">
+    <a class="kaart route" href="#agent"><span class="label">Gratis · 10 minuten</span><h3>Met je AI-agent</h3><p class="zacht">Je werkt met Claude Code, Cursor, Copilot of Replit. Eén zin plakken, klaar.</p><p class="route-herstel">✓ Je agent herstelt de bevindingen, na jouw "ja"</p><span class="meer">Zo doe je het →</span></a>
+    <a class="kaart route" href="#bouwtools"><span class="label">Gratis · 15 minuten</span><h3>Lovable, Bolt of v0</h3><p class="zacht">Je bouwt zonder terminal. De scan draait in GitHub, bij elke wijziging.</p><p class="route-herstel">✓ Je bouwtool herstelt de bevindingen, na jouw "ja"</p><span class="meer">Zo doe je het →</span></a>
+    <a class="kaart route" href="#github"><span class="label">Gratis · voor ontwikkelaars</span><h3>In je pipeline</h3><p class="zacht">Eén bestand in je repository. Elke wijziging krijgt een score.</p><p class="route-herstel">Herstellen doe je zelf, of je laat je agent het rapport lezen</p><span class="meer">Zo doe je het →</span></a>
+    <a class="kaart route" href="#keuring"><span class="label">Vanaf €5.700 · pilot</span><h3>Laten keuren</h3><p class="zacht">Een erkende keurder kijkt mee en test aan. Nodig voor een A of voor je klant.</p><p class="route-herstel">Met een herstelplan; de keurder controleert opnieuw</p><span class="meer">Meer over keuren →</span></a>
+  </div>
+</div></section>
+
+
 <section class="wrap sectie" id="wat">
   <p class="oog">Wat is het?</p>
   <h2 class="mt0">Een meetlat voor software die met AI gebouwd is</h2>
@@ -60,17 +73,6 @@
   </div>
 </section>
 
-<section class="vlak" id="routes"><div class="wrap sectie">
-  <p class="oog">Aan de slag</p>
-  <h2 class="mt0">Kies hoe je wilt scannen</h2>
-  <div class="routes mt2">
-    <a class="kaart route" href="#agent"><span class="label">Gratis · 10 minuten</span><h3>Met je AI-agent</h3><p class="zacht">Je werkt met Claude Code, Cursor, Copilot of Replit. Eén zin plakken, klaar.</p><p class="route-herstel">✓ Je agent herstelt de bevindingen, na jouw "ja"</p><span class="meer">Zo doe je het →</span></a>
-    <a class="kaart route" href="#bouwtools"><span class="label">Gratis · 15 minuten</span><h3>Lovable, Bolt of v0</h3><p class="zacht">Je bouwt zonder terminal. De scan draait in GitHub, bij elke wijziging.</p><p class="route-herstel">✓ Je bouwtool herstelt de bevindingen, na jouw "ja"</p><span class="meer">Zo doe je het →</span></a>
-    <a class="kaart route" href="#github"><span class="label">Gratis · voor ontwikkelaars</span><h3>In je pipeline</h3><p class="zacht">Eén bestand in je repository. Elke wijziging krijgt een score.</p><p class="route-herstel">Herstellen doe je zelf, of je laat je agent het rapport lezen</p><span class="meer">Zo doe je het →</span></a>
-    <a class="kaart route" href="#keuring"><span class="label">Vanaf €5.700 · pilot</span><h3>Laten keuren</h3><p class="zacht">Een erkende keurder kijkt mee en test aan. Nodig voor een A of voor je klant.</p><p class="route-herstel">Met een herstelplan; de keurder controleert opnieuw</p><span class="meer">Meer over keuren →</span></a>
-  </div>
-</div></section>
-
 <section class="wrap sectie" id="agent">
   <div class="rooster-2">
     <div>
@@ -87,7 +89,12 @@
     </div>
     <div>
       {{ m.code("agent-zin", agent_zin, "Plak dit in je AI-agent") }}
-      <p class="zacht klein">Wil je zien wat de agent precies doet? Lees de <a href="/scan">volledige instructie</a>.</p>
+      {{ m.code_inzien([
+        ("/scan.md", "scan.md", "de volledige instructie die je agent volgt, stap voor stap"),
+        ("/latest.json", "latest.json", "welke scanner van vandaag, met controlegetal en handtekening"),
+        ("/public-key.pem", "public-key.pem", "onze publieke sleutel, om de handtekening te controleren"),
+        (BRONCODE ~ "/tree/main/aiscan", "aiscan/", "de broncode van de scanner zelf"),
+      ]) }}
     </div>
   </div>
 </section>
@@ -121,6 +128,12 @@
     </div>
   </div>
   <p class="zacht klein">Weigert je bouwtool het bestand te maken? Maak het dan zelf in GitHub: <em>Add file → Create new file</em>, naam <code>.github/workflows/checkmijn.yml</code>, met de inhoud van route 3 hieronder.</p>
+  {{ m.code_inzien([
+    ("/checkmijn.yml", "checkmijn.yml", "het bestand dat in je project komt"),
+    ("/scan.md", "scan.md", "de instructie die je bouwtool leest (route B)"),
+    (BRONCODE ~ "/blob/main/action.yml", "action.yml", "wat de GitHub Action doet"),
+    (BRONCODE ~ "/blob/main/action/scan_ci.py", "action/scan_ci.py", "controle van handtekening, scan, rapport en lekkenwacht"),
+  ]) }}
 </div></section>
 
 <section class="wrap sectie" id="github">
@@ -128,6 +141,12 @@
   <h2 class="mt0">In je eigen pipeline</h2>
   <p class="zacht">De scanner draait als GitHub Action in je repository. De Action controleert de handtekening en het controlegetal van de dagversie, scant zonder netwerk en zet de uitslag bij de run. Zet dit bestand in <code>.github/workflows/checkmijn.yml</code>:</p>
   {{ m.code("workflow", workflow, ".github/workflows/checkmijn.yml") }}
+  {{ m.code_inzien([
+    ("/checkmijn.yml", "checkmijn.yml", "dit bestand, om te downloaden"),
+    (BRONCODE ~ "/blob/main/action.yml", "action.yml", "de GitHub Action en al haar instellingen"),
+    (BRONCODE ~ "/blob/main/action/scan_ci.py", "action/scan_ci.py", "wat er in je pipeline gebeurt, regel voor regel"),
+    (BRONCODE ~ "/blob/main/.github/workflows/dagversie.yml", "dagversie.yml", "hoe de scanner elke nacht gebouwd en ondertekend wordt"),
+  ]) }}
 </section>
 
 <section class="wrap sectie" id="lekkenwacht">
