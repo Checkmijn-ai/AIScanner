@@ -14,10 +14,11 @@ TEST = re.compile(r"\b((npm|yarn|pnpm|bun) (run )?test\b|bun test|deno test|turb
                   r"gradlew? test|rspec|phpunit|dotnet test|cargo test|nox\b)")
 SAST = re.compile(r"(codeql|semgrep|opengrep|sonar(cloud|qube|-scanner)?|snyk code|\bbandit\b|njsscan|gosec|"
                   r"eslint-plugin-security|horusec|checkmarx|veracode|fortify)", re.I)
-DEPSCAN = re.compile(r"(npm audit|yarn (npm )?audit|pnpm audit|pip-audit|osv-scanner|google/osv-scanner|\btrivy\b|"
+DEPSCAN = re.compile(r"(npm audit|yarn (npm )?audit|pnpm audit|bun audit|composer audit|bundle(r)?[- ]audit|govulncheck|"
+                     r"cargo audit|dotnet list package --vulnerable|pip-audit|osv-scanner|google/osv-scanner|\btrivy\b|"
                      r"snyk (test|monitor)|snyk/actions|\bsafety (check|scan)\b|dependency-check|\bgrype\b|"
                      r"dependency-review-action|retire\b|audit-ci)", re.I)
-THRESHOLD = re.compile(r"(--audit-level|--severity-threshold|severity-cutoff|fail-on|exit-code:\s*['\"]?1|--fail-on|"
+THRESHOLD = re.compile(r"(composer audit|govulncheck|cargo audit|bundle(r)?[- ]audit|--audit-level|--severity-threshold|severity-cutoff|fail-on|exit-code:\s*['\"]?1|--fail-on|"
                        r"--exit-code 1|fail-on-severity|--error)", re.I)
 SOFT = re.compile(r"(continue-on-error:\s*true|\|\|\s*(true|exit 0)|allow_failure:\s*true)", re.I)
 
