@@ -68,6 +68,15 @@
   </div>
 </section>
 
+{% if nieuws_kort %}
+<section class="wrap sectie">
+  <div class="kopmetlink"><h2 class="mt0">Uit het nieuws</h2><a class="meer" href="/nieuws">Al het nieuws →</a></div>
+  <div class="rooster-3">
+    {% for i in nieuws_kort %}<a class="kaart nieuwskaart" href="/nieuws#{{ i.tab }}"><span class="meta"><span class="bron">{{ i.bron }}</span><span class="taal">{{ i.taal|upper }}</span><span>{{ dagkop(i.datum) }}</span></span><h3>{{ i.titel }}</h3></a>{% endfor %}
+  </div>
+</section>
+{% endif %}
+
 <section class="wrap sectie">
   <h2 class="mt0">Voor wie</h2>
   <div class="rooster-3">
