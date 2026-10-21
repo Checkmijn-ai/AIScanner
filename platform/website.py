@@ -424,7 +424,8 @@ def laatste_nieuws(n: int = 3) -> list[dict]:
 @site.get("/robots.txt")
 def robots():
     if TEST:
-        return Response("User-agent: *\nDisallow: /\n", mimetype="text/plain")
+        # Testomgeving: niet indexeren (elke pagina heeft ook noindex). /nieuws mag gelezen worden om de feeds te controleren.
+        return Response("User-agent: *\nAllow: /nieuws\nDisallow: /\n", mimetype="text/plain")
     return Response(f"User-agent: *\nDisallow: /rapport/\nDisallow: /api/\nSitemap: {SITE_URL}/sitemap.xml\n",
                     mimetype="text/plain")
 
