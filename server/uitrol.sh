@@ -96,7 +96,7 @@ docker compose ps
 
 # Nieuws meteen bijwerken met de nieuwe code (dubbels worden overgeslagen, dus dit kan altijd).
 DIENST=live; [ "$TAK" = "test" ] && DIENST=test
-log "Nieuws ophalen ($DIENST)"
-timeout 300 docker compose --profile test exec -T "$DIENST" python /app/platform/nieuws.py || true
+log "Nieuws ophalen ($DIENST), op de achtergrond"
+docker compose --profile test exec -d "$DIENST" python /app/platform/nieuws.py || true
 }
 main "$@" </dev/null

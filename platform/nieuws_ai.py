@@ -65,7 +65,7 @@ SYSTEEM_SAMENVATTING = (
 )
 
 
-def samenvatten(d: dict, aanroep=None) -> int:
+def samenvatten(d: dict, aanroep=None, tussendoor=None) -> int:
     items = [i for i in d.get("items", []) if i.get("taal") == "en" and not i.get("samenvatting_nl")][:MAX_PER_RUN]
     klaar = 0
     for start in range(0, len(items), PER_VERZOEK):
@@ -86,6 +86,8 @@ def samenvatten(d: dict, aanroep=None) -> int:
             if s:
                 i["samenvatting_nl"] = s
                 klaar += 1
+        if tussendoor:
+            tussendoor()  # na elk blok bewaren: een onderbroken run verliest niets
     return klaar
 
 
@@ -162,10 +164,10 @@ def post_van_de_dag(d: dict, nu: datetime, aanroep=None) -> bool:
     return True
 
 
-def werk_bij(d: dict, nu: datetime, aanroep=None) -> bool:
+def werk_bij(d: dict, nu: datetime, aanroep=None, tussendoor=None) -> bool:
     d["ai_status"] = {"ok": bool(sleutel() or aanroep), "fout": "" if (sleutel() or aanroep) else "geen sleutel",
                       "model": MODEL, "tijd": nu.isoformat(timespec="seconds")}
-    n = samenvatten(d, aanroep) if (sleutel() or aanroep) else 0
+    n = samenvatten(d, aanroep, tussendoor) if (sleutel() or aanroep) else 0
     p = post_van_de_dag(d, nu, aanroep)
     if n:
         print(f"{n} samenvattingen gemaakt")

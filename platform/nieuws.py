@@ -522,7 +522,7 @@ def ophalen(pad: Path = PAD, bronnen: list[dict] = BRONNEN, haler=haal, met_ai: 
     if met_ai:
         try:
             import nieuws_ai
-            if nieuws_ai.werk_bij(d, nu):
+            if nieuws_ai.werk_bij(d, nu, tussendoor=lambda: bewaar(d, pad)):
                 bewaar(d, pad)
         except Exception as e:  # pragma: no cover
             print(f"AI-stap overgeslagen: {type(e).__name__}: {e}", file=sys.stderr)
