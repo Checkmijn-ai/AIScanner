@@ -158,9 +158,23 @@ Vraag daarna letterlijk:
 
 > "Wil je dat ik de bevindingen herstel? Ik begin dan met Kritiek en Hoog. (ja/nee)"
 
-**Wacht op het antwoord.** Pas bij "ja" herstel je, eerst **Kritiek**, dan **Hoog**, daarna **Middel**. Een bevinding met *(nakijken)* is niet zeker: kijk eerst of ze klopt. Wijzig `.checkmijn/` en het workflowbestand nooit zelf, en schrijf zelf geen score.
+**Wacht op het antwoord.** Eén "ja" geldt voor **deze hele sessie**: vraag het daarna niet opnieuw. Herstel dan in **één ronde alles** wat je kunt: eerst **Kritiek**, dan **Hoog**, daarna **Middel**. Niet een paar per keer.
 
-**B6. Na het herstel:** zeg: "Klaar. GitHub scant nu opnieuw; typ over 2 à 3 minuten **verder** voor je nieuwe score." Typt de gebruiker dan "verder", toon de nieuwe score naast de vorige (bv. "C → B"), met wat hersteld is, wat nog openstaat, en de nieuwe link naar het opgemaakte rapport (volledig, letterlijk).
+Een bevinding met *(nakijken)* is niet zeker. Kijk of ze klopt:
+- **Klopt ze:** herstel ze.
+- **Klopt ze niet** (bv. HTML uit je eigen vertalingen, een gewoon ID in `sessionStorage`, `secure: false` voor een mailserver): verander dan **niets** aan de code alleen om de scanner stil te krijgen. Noem ze kort als "onterecht gemeld" met één zin waarom, en ga verder. Vermeld ze bij latere rondes niet opnieuw.
+
+Wijzig `.checkmijn/` en het workflowbestand nooit zelf, en schrijf zelf geen score.
+
+**B6. Na het herstel:** zeg kort: "Klaar. GitHub scant nu opnieuw; typ over 2 à 3 minuten **verder** voor je nieuwe score."
+
+**B7. Typt de gebruiker weer "verder"?** Lees het nieuwe rapport en toon **kort** (hoogstens vijf regels):
+- de nieuwe score naast de vorige (bv. "D → C") en het aantal Kritiek en Hoog;
+- de volledige link naar het opgemaakte rapport (letterlijk, met het deel na `#`).
+
+Zijn er nog **echte** kritieke of hoge bevindingen, herstel ze dan **meteen**, zonder opnieuw toestemming te vragen (het "ja" van eerder geldt nog), en eindig weer met B6. Zijn er alleen nog onterechte meldingen of geen kritieke en hoge meer, zeg dan dat je klaar bent en vat in één zin samen wat er nog openstaat (Middel en Laag). Stop als de gebruiker "stop" zegt.
+
+Antwoord altijd in de taal van de gebruiker.
 
 **Repository openbaar?** Dan komt er geen rapport in het project, want dan zou iedereen de bevindingen lezen. De gebruiker ziet de uitslag in GitHub, bij Actions → checkmijn.ai → de laatste run. Raad aan de repository privé te maken.
 

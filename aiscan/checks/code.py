@@ -81,7 +81,8 @@ RULES = [
       aggregate=True),
 
     # ---------------- E-03 sessies
-    R("E-03", JS, r"(secure|httpOnly)\s*:\s*false", "Hoog", "Sessiecookie zonder Secure of HttpOnly"),
+    R("E-03", JS, r"(secure|httpOnly)\s*:\s*false", "Hoog", "Sessiecookie zonder Secure of HttpOnly",
+      file_needs=r"(?i)cookie|express-session|cookie-session|session\(", file_lacks=r"createTransport|nodemailer|(?i:smtp)"),
     R("E-03", JS, r"secret\s*:\s*['\"](keyboard cat|secret|changeme|mysecret|supersecret|your[-_ ]?secret)['\"]", "Hoog",
       "Sessiegeheim is een standaardwaarde", flags=I),
     R("E-03", JS, r"jwt\.sign\s*\((?![^)]*expiresIn)[^)]*\)", "Middel", "JWT zonder vervaldatum (expiresIn)", bevestigen=True),
@@ -135,7 +136,7 @@ RULES = [
       "bcrypt met te weinig rondes (minder dan 10)"),
 
     # ---------------- U-03 tokens in browseropslag
-    R("U-03", JS, r"(localStorage|sessionStorage)\.setItem\s*\(\s*['\"`](?![^'\"`]*(redirect|return|url|slug|path|lang|theme))[^'\"`]*(token|jwt|password|secret|api[_-]?key|credential|session[_-]?id|auth[_-]?(token|key|data)|access[_-]?key)",
+    R("U-03", JS, r"(localStorage|sessionStorage)\.setItem\s*\(\s*['\"`](?![^'\"`]*(redirect|return|url|slug|path|lang|theme))[^'\"`]*(token|jwt|password|secret|api[_-]?key|credential|(?<![a-z0-9_])session[_-]?id|auth[_-]?(token|key|data)|access[_-]?key)",
       "Hoog", "Token of geheim in localStorage of sessionStorage: leesbaar voor elk script (XSS)", flags=I),
     R("U-03", JS, r"document\.cookie\s*=.*(token|jwt|session|auth)", "Middel", "Token in een cookie vanuit JavaScript: kan niet HttpOnly zijn", flags=I),
 
@@ -144,7 +145,9 @@ RULES = [
       bevestigen=True, file_lacks=r"DOMPurify|sanitize"),
     R("U-07", JS, r"insertAdjacentHTML\s*\(|document\.write\s*\(", "Hoog", "HTML uit tekst in de pagina gezet: XSS", bevestigen=True,
       file_lacks=r"DOMPurify|sanitize"),
-    R("U-07", JS, r"^(?!.*application/ld\+json)(?!.*__html:\s*(DOMPurify\.sanitize|(safe|escape|sanitiz|purify)\w*)\s*\().*dangerouslySetInnerHTML",
+    R("U-07", JS, r"dangerouslySetInnerHTML=\{\{\s*__html:\s*(i18n\.|i18next\.)?t\s*\(", "Laag",
+      "HTML uit een vertaling: veilig zolang vertalingen niet van gebruikers komen en er geen invoer in wordt ingevuld", bevestigen=True),
+    R("U-07", JS, r"^(?!.*application/ld\+json)(?!.*__html:\s*(DOMPurify\.sanitize|(safe|escape|sanitiz|purify)\w*|(i18n\.|i18next\.)?t)\s*\().*dangerouslySetInnerHTML",
       "Hoog", "dangerouslySetInnerHTML zonder sanitisatie: XSS",
       bevestigen=True, file_lacks=r"DOMPurify|sanitize|marked\.parse.*sanitize|const THEMES"),
     R("U-07", JS, r"dangerouslySetInnerHTML=\{\{\s*__html:\s*(safe|escape|sanitiz|purify)\w*\s*\(", "Laag",
