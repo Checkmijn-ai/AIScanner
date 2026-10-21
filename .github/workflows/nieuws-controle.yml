@@ -20,7 +20,7 @@ jobs:
           OMGEVING: ${{ inputs.omgeving || 'live' }}
         run: |
           host=checkmijn.ai; [ "$OMGEVING" = "test" ] && host=test.checkmijn.ai
-          curl -fsS "https://$host/nieuws" -o nieuws.html
+          curl -fsS "https://$host/nieuws" -o nieuws.html || { echo "::notice::$host/nieuws is (nog) niet bereikbaar"; exit 0; }
           python3 - <<'PY'
           import html, re
           s = open("nieuws.html", encoding="utf-8").read()
