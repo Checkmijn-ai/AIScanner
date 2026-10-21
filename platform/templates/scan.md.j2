@@ -81,7 +81,7 @@ Uitgangscode 0: geen kritieke of hoge bevindingen. Uitgangscode 2: er zijn kriti
 
 Vraag daarna letterlijk:
 
-> "Wil je dat ik de bevindingen herstel? Ik begin dan met Kritiek en Hoog. (ja/nee)"
+> "Wil je dat ik de bevindingen herstel: Kritiek, Hoog en Middel? Je antwoord geldt voor deze hele sessie, ook na elke nieuwe scan. (ja/nee)"
 
 **Wacht op het antwoord.** Pas bij "ja" herstel je, eerst **Kritiek**, dan **Hoog**, daarna **Middel**. Een bevinding met `"bevestigen": true` is niet zeker: kijk eerst of ze klopt.
 
@@ -156,23 +156,23 @@ Is het rapport er: **toon eerst de uitslag, en verander nog niets.** Lees het be
 
 Vraag daarna letterlijk:
 
-> "Wil je dat ik de bevindingen herstel? Ik begin dan met Kritiek en Hoog. (ja/nee)"
+> "Wil je dat ik de bevindingen herstel: Kritiek, Hoog en Middel? Je antwoord geldt voor deze hele sessie, ook na elke nieuwe scan. (ja/nee)"
 
-**Wacht op het antwoord.** Eén "ja" geldt voor **deze hele sessie**: vraag het daarna niet opnieuw. Herstel dan in **één ronde alles** wat je kunt: eerst **Kritiek**, dan **Hoog**, daarna **Middel**. Niet een paar per keer.
+**Wacht op het antwoord.** Dit is de **enige** keer dat je om toestemming vraagt. Bij "ja": herstel in **één ronde** alle bevindingen Kritiek, Hoog en Middel die echt kloppen. Niet een paar per keer, en vraag daarna nooit opnieuw "ja/nee" voor bevindingen uit het rapport. Alleen als een herstel de werking van de app merkbaar verandert (bv. een functie uitzetten of een databank aanpassen), vraag je dat ene herstel apart.
 
 Een bevinding met *(nakijken)* is niet zeker. Kijk of ze klopt:
 - **Klopt ze:** herstel ze.
-- **Klopt ze niet** (bv. HTML uit je eigen vertalingen, een gewoon ID in `sessionStorage`, `secure: false` voor een mailserver): verander dan **niets** aan de code alleen om de scanner stil te krijgen. Noem ze kort als "onterecht gemeld" met één zin waarom, en ga verder. Vermeld ze bij latere rondes niet opnieuw.
+- **Klopt ze niet** (bv. HTML uit je eigen vertalingen, een gewoon ID in `sessionStorage`, `secure: false` voor een mailserver): verander dan **niets** aan de code alleen om de scanner stil te krijgen. Noem ze één keer "onterecht gemeld", met één zin waarom, en vermeld ze daarna niet meer.
 
 Wijzig `.checkmijn/` en het workflowbestand nooit zelf, en schrijf zelf geen score.
 
 **B6. Na het herstel:** zeg kort: "Klaar. GitHub scant nu opnieuw; typ over 2 à 3 minuten **verder** voor je nieuwe score."
 
-**B7. Typt de gebruiker weer "verder"?** Lees het nieuwe rapport en toon **kort** (hoogstens vijf regels):
-- de nieuwe score naast de vorige (bv. "D → C") en het aantal Kritiek en Hoog;
-- de volledige link naar het opgemaakte rapport (letterlijk, met het deel na `#`).
-
-Zijn er nog **echte** kritieke of hoge bevindingen, herstel ze dan **meteen**, zonder opnieuw toestemming te vragen (het "ja" van eerder geldt nog), en eindig weer met B6. Zijn er alleen nog onterechte meldingen of geen kritieke en hoge meer, zeg dan dat je klaar bent en vat in één zin samen wat er nog openstaat (Middel en Laag). Stop als de gebruiker "stop" zegt.
+**B7. Typt de gebruiker weer "verder"?**
+1. **Lees `.checkmijn/RAPPORT.md` opnieuw uit het project**, niet uit je geheugen. Kijk naar de bovenste regel van *Verloop van de scans*: is die niet nieuwer dan je laatste wijziging, dan loopt de scan nog. Zeg dan alleen: "De scan is nog bezig. Typ over een minuut opnieuw **verder**."
+2. Toon **kort** (hoogstens vijf regels): de nieuwe score naast de vorige (bv. "D → C"), het aantal Kritiek, Hoog en Middel, en de volledige link naar het opgemaakte rapport (letterlijk, met het deel na `#`).
+3. Staan er nog echte bevindingen Kritiek, Hoog of Middel open, **herstel ze meteen**, zonder te vragen, en eindig met B6.
+4. **Stop** als er alleen nog Laag of onterechte meldingen over zijn, als een ronde niets meer verbeterd heeft, of na drie rondes. Zeg dan: "Klaar: score X. Er staan nog N lage bevindingen open; die zijn optioneel." Stop ook meteen als de gebruiker "stop" zegt.
 
 Antwoord altijd in de taal van de gebruiker.
 

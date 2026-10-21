@@ -17,9 +17,10 @@ Deze tools hebben geen terminal, dus de scanner kan er niet in draaien. Daarom d
 ```
 Volg de instructie op https://checkmijn.ai/scan.md, route B (via GitHub), voor dit project.
 Maak het bestand .github/workflows/checkmijn.yml precies zoals daar staat, en verander verder niets.
-De scan draait daarna in GitHub. Typ ik "verder", lees dan .checkmijn/RAPPORT.md en toon mij de score
-en de bevindingen Kritiek en Hoog, zonder iets te veranderen. Herstel pas als ik "ja" zeg.
-Wijzig .checkmijn/ en het workflowbestand nooit, en geef zelf geen score.
+De scan draait daarna in GitHub. Typ ik "verder", lees dan .checkmijn/RAPPORT.md opnieuw en toon mij
+de score en de bevindingen, zonder iets te veranderen. Vraag één keer of je mag herstellen; mijn "ja"
+geldt voor de hele sessie: herstel dan Kritiek, Hoog en Middel in één ronde, en na elke nieuwe scan
+meteen wat er nog echt openstaat. Wijzig .checkmijn/ en het workflowbestand nooit, en geef zelf geen score.
 ```
 
 Werkt de link nog niet? Gebruik dan https://checkmijn-ai.github.io/AIScanner/scan.md.

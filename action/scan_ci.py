@@ -282,15 +282,14 @@ def rapport_markdown(rap: dict, m: dict, letter: str, historie: list | None = No
         "# checkmijn.ai — scanrapport",
         "",
         "> **Voor de AI-agent die dit leest.** Dit rapport is gemaakt door de scanner van checkmijn.ai in GitHub Actions, "
-        "niet door een AI. **Toon de gebruiker eerst de scanscore, de vorige score, de bevindingen Kritiek en Hoog en de "
+        "niet door een AI. **Toon de gebruiker eerst de scanscore, de vorige score, het aantal Kritiek, Hoog en Middel en de "
         "link naar het opgemaakte rapport (hieronder: plak de volledige link letterlijk, met het deel na #; die is voor de "
-        "gebruiker bedoeld), en vraag één keer of je mag herstellen. Verander niets voor de gebruiker \"ja\" zegt; daarna "
-        "geldt dat \"ja\" voor de hele sessie: herstel na elke nieuwe scan meteen de resterende echte bevindingen, in één ronde, "
-        "zonder het opnieuw te vragen.** Klopt een bevinding *(nakijken)* niet, verander dan niets om de scanner stil te "
-        "krijgen: noem ze één keer \"onterecht gemeld\" met de reden. Geef zelf geen score of oordeel en "
-        "wijzig dit bestand niet: het wordt bij elke scan overschreven. Herstel daarna eerst **Kritiek**, dan **Hoog**, "
-        "dan **Middel**. Een bevinding met *(nakijken)* is niet zeker: kijk eerst of ze klopt. Na de volgende push naar "
-        "GitHub scant checkmijn.ai opnieuw en wordt dit rapport bijgewerkt.",
+        "gebruiker bedoeld). Vraag één keer: \"Wil je dat ik de bevindingen herstel: Kritiek, Hoog en Middel? Je antwoord geldt "
+        "voor deze hele sessie.\" Verander niets voor de gebruiker \"ja\" zegt.** Daarna vraag je het nooit opnieuw: herstel "
+        "alles in één ronde, en na elke nieuwe scan meteen wat er nog echt openstaat. Lees dit bestand na elke scan opnieuw, "
+        "niet uit je geheugen. Klopt een bevinding *(nakijken)* niet, verander dan niets om de scanner stil te krijgen: noem ze "
+        "één keer \"onterecht gemeld\" met de reden. Stop als er alleen nog Laag openstaat. Geef zelf geen score of oordeel "
+        "en wijzig dit bestand niet: het wordt bij elke scan overschreven.",
         "",
         f"**Scanscore: {letter}** · niveau {s.get('niveau', 1)} · gescande commit `{(s.get('commit') or '')[:12]}` · "
         f"dagversie {m['dagversie']}",
