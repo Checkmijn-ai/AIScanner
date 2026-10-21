@@ -2,16 +2,18 @@
 {% import "site/macros.html" as m %}
 {% block kop %}<link rel="alternate" type="application/rss+xml" title="CheckMijn.AI nieuws" href="/nieuws.xml">{% endblock %}
 {% macro bericht(i) -%}
-<article class="bericht" data-taal="{{ i.taal }}">
-  <div class="meta"><span class="bron">{{ i.bron }}</span><span class="taal" title="{{ 'Nederlands' if i.taal == 'nl' else 'Engels' }}">{{ i.taal|upper }}</span><time datetime="{{ i.datum }}">{{ tijd(i.datum) }}</time></div>
+<article class="bericht" data-taal="{{ i.taal }}" data-dichtbij="{{ '1' if i.dichtbij else '0' }}">
+  <div class="meta"><span class="bron">{{ i.bron }}</span><span><span class="taal" title="{{ 'Nederlands' if i.taal == 'nl' else 'Engels' }}">{{ i.taal|upper }}</span>{% if i.dichtbij %} <span class="nlbe" title="Nieuws uit Nederland of België">NL/BE</span>{% endif %}</span><time datetime="{{ i.datum }}">{{ tijd(i.datum) }}</time></div>
   <h3><a href="{{ i.url }}" rel="noopener">{{ i.titel }}</a></h3>
-  {% if i.samenvatting %}<p class="zacht">{{ i.samenvatting }}</p>{% endif %}
+  {% if i.samenvatting_nl %}<p class="zacht">{{ i.samenvatting_nl }} <span class="ai-label" title="Nederlandse samenvatting gemaakt met AI, op basis van de titel en de inleiding">AI-samenvatting</span></p>
+  {% elif i.samenvatting %}<p class="zacht">{{ i.samenvatting }}</p>{% endif %}
   {% if i.ook %}<p class="ook">Ook bij: {% for o in i.ook %}<a href="{{ o.url }}" rel="noopener">{{ o.bron }}</a>{% if o.taal != i.taal %} <span class="taal">{{ o.taal|upper }}</span>{% endif %}{{ ", " if not loop.last }}{% endfor %}</p>{% endif %}
   {% if i.checks %}<p class="raakt">Raakt aan: {% for c in i.checks %}<a class="checkchip" href="/check/{{ c }}">{{ c }} · {{ check_namen.get(c, '') }}</a>{% endfor %}</p>{% endif %}
 </article>
 {%- endmacro %}
 {% block inhoud %}
 {% call m.kop("Nieuws", "AI en security, elke dag", "Het belangrijkste nieuws over AI-security, cyberincidenten en AI, uit Nederlandse, Vlaamse en Engelstalige bronnen. Twee keer per dag bijgewerkt. Hetzelfde nieuws uit meerdere bronnen zie je maar één keer.") %}
+{{ m.nieuwsbrief_form("kop", NB_ACTIEF) }}
 <p class="zacht klein nieuwsstand">{% if bijgewerkt %}<span class="stip" aria-hidden="true"></span>Bijgewerkt {{ bijgewerkt }} · elke dag rond 07:10 en 17:10{% else %}Het eerste nieuws wordt opgehaald.{% endif %} · <a href="/nieuws.xml">RSS-feed</a></p>
 {% endcall %}
 
@@ -20,8 +22,8 @@
     <div class="tabs" role="tablist" aria-label="Soort nieuws" hidden>
       {% for k, t in tabs.items() %}<button type="button" role="tab" id="tab-{{ k }}" aria-controls="{{ k }}" aria-selected="{{ 'true' if loop.first else 'false' }}"{% if not loop.first %} tabindex="-1"{% endif %}>{{ t.naam }} <span class="aantal">{{ t.aantal }}</span></button>{% endfor %}
     </div>
-    <div class="taalkeuze" role="group" aria-label="Taal" hidden>
-      <button type="button" data-taal="" aria-pressed="true">Alles</button><button type="button" data-taal="nl" aria-pressed="false">NL</button><button type="button" data-taal="en" aria-pressed="false">EN</button>
+    <div class="taalkeuze" role="group" aria-label="Taal en regio" hidden>
+      <button type="button" data-taal="" aria-pressed="true">Alles</button><button type="button" data-taal="nl" aria-pressed="false">NL</button><button type="button" data-taal="en" aria-pressed="false">EN</button><button type="button" data-taal="dichtbij" aria-pressed="false">Uit NL/BE</button>
     </div>
   </div>
 
@@ -37,7 +39,7 @@
     {% else %}
       <p class="leeg">Nog geen berichten in dit tabblad. Het nieuws wordt twee keer per dag opgehaald.</p>
     {% endfor %}
-    <p class="leeg taalleeg" hidden>Geen berichten in deze taal.</p>
+    <p class="leeg taalleeg" hidden>Geen berichten met deze keuze.</p>
   </section>
   {% endfor %}
 
@@ -49,6 +51,8 @@
         <li>Elk bericht staat in één tabblad. Gaat een bericht over AI én beveiliging, dan staat het bij AI-security.</li>
         <li>Brengen meerdere bronnen hetzelfde nieuws, ook in een andere taal, dan tonen we het één keer, met "Ook bij".</li>
         <li>"Raakt aan" verwijst naar de check die over hetzelfde risico gaat, zodat je ziet wat het betekent voor je eigen app.</li>
+        <li>Bij Engelse berichten staat een korte Nederlandse samenvatting, gemaakt met AI (Claude) op basis van alleen de titel en de inleiding. Die is gemarkeerd als "AI-samenvatting".</li>
+        <li>"NL/BE" betekent dat het bericht over Nederland of België gaat.</li>
         <li>We tonen alleen de titel en een korte inleiding. Het volledige bericht staat bij de bron. Berichten blijven drie weken staan.</li>
       </ul>
     </div>

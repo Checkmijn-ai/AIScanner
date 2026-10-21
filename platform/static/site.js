@@ -56,7 +56,7 @@
       panelen.forEach(function (p) {
         var zichtbaar = 0;
         p.querySelectorAll(".bericht").forEach(function (a) {
-          var ok = !taal || a.getAttribute("data-taal") === taal;
+          var ok = !taal || (taal === "dichtbij" ? a.getAttribute("data-dichtbij") === "1" : a.getAttribute("data-taal") === taal);
           a.hidden = !ok;
           if (ok) zichtbaar++;
         });

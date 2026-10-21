@@ -122,5 +122,54 @@ for tekst in ("AI-security", "Cybersecurity", "AI-nieuws", "Ook bij:", "Albert H
 assert 'style="' not in html and "<script>" not in html
 rss = c.get("/nieuws.xml")
 assert rss.status_code == 200 and rss.get_data(as_text=True).count("<item>") == n
-assert "Uit het nieuws" in c.get("/").get_data(as_text=True)
+home = c.get("/").get_data(as_text=True)
+assert "Vandaag in AI en security" in home and 'class="nieuwschip"' in home and "Binnenkort" in home
+
+# 9. NL/BE-label
+assert ah["dichtbij"] is True and pi.get("dichtbij") is False
+
+# 10. AI: samenvattingen en post van de dag (met een nep-API; zonder sleutel gebeurt er niets)
+import json as _json  # noqa: E402
+import nieuws_ai  # noqa: E402
+
+gevraagd = []
+def nep_ai(systeem, tekst):
+    gevraagd.append(systeem[:30])
+    if "samenvattingen" in systeem:
+        return _json.dumps({x["id"]: f"NL: {x['titel'][:20]} <script>" for x in _json.loads(tekst)})
+    return "Een post over " + _json.loads(tekst)["titel"]
+d = nw.laad()
+assert d["posts"][0]["door"] == "sjabloon"   # het ophalen hierboven maakte al een post uit het sjabloon (geen sleutel)
+d.pop("posts")
+assert nieuws_ai.werk_bij(d, nu, aanroep=nep_ai)
+en = [i for i in d["items"] if i["taal"] == "en"]
+assert en and all(i["samenvatting_nl"].startswith("NL: ") and "<" not in i["samenvatting_nl"] for i in en)
+assert not any(i.get("samenvatting_nl") for i in d["items"] if i["taal"] == "nl")
+assert len(d["posts"]) == 1 and d["posts"][0]["door"] == "AI"
+assert d["posts"][0]["item"] == pi["id"], d["posts"][0]   # AI-security met checks wint
+assert not nieuws_ai.post_van_de_dag(d, nu, aanroep=nep_ai)   # één per dag
+nw.bewaar(d)
+assert "AI-samenvatting" in c.get("/nieuws").get_data(as_text=True)
+pv = c.get("/nieuws/post-van-de-dag").get_data(as_text=True)
+assert "Een post over" in pv and "linkedin.com/feed/?shareActive=true" in pv and 'name="robots" content="noindex' in pv
+d2 = nw.laad(); d2.pop("posts")
+assert nieuws_ai.post_van_de_dag(d2, nu) and d2["posts"][0]["door"] == "sjabloon" and "Bron:" in d2["posts"][0]["tekst"]
+
+# 11. Nieuwsbrief: voorbeeld, aanmelden zonder Brevo, honingpot, ongeldig adres
+import nieuwsbrief as nb  # noqa: E402
+v = c.get("/nieuwsbrief/voorbeeld")
+vt = v.get_data(as_text=True)
+assert v.status_code == 200 and "AI en security deze week" in vt and "Albert Heijn" in vt and "{{ unsubscribe }}" not in vt
+assert "unsafe-inline" in v.headers["Content-Security-Policy"].split("style-src")[1].split(";")[0]
+assert "{{ unsubscribe }}" in nb.html(nw.laad())
+assert c.post("/nieuwsbrief/aanmelden", data={"email": "a@b.nl"}).headers["Location"].endswith("staat=uit#aanmelden")
+assert c.post("/nieuwsbrief/aanmelden", data={"email": "geen-adres"}).headers["Location"].endswith("staat=ongeldig#aanmelden")
+assert c.post("/nieuwsbrief/aanmelden", data={"email": "a@b.nl", "website": "spam"}).headers["Location"].endswith("staat=ok#aanmelden")
+assert "start binnenkort" in c.get("/nieuwsbrief?staat=uit").get_data(as_text=True)
+assert nb.concept(nw.laad()).startswith("Brevo is nog niet ingesteld")
+os.environ.update({"BREVO_API_KEY": "x", "BREVO_LIJST": "3", "BREVO_DOI_TEMPLATE": "7"})
+assert nb.actief() and 'action="/nieuwsbrief/aanmelden"' in c.get("/nieuws").get_data(as_text=True)
+for p in ("/nieuws", "/nieuwsbrief", "/nieuwsbrief/bevestigd", "/nieuws/post-van-de-dag"):
+    h = c.get(p).get_data(as_text=True)
+    assert 'style="' not in h and "<script>" not in h, p
 print(f"ok: nieuws, {n} berichten in {len(set(i['tab'] for i in d['items']))} tabbladen")

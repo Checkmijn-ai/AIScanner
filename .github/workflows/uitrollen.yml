@@ -5,6 +5,10 @@
 #   UITROL_HOST       het IP-adres van de server
 #   UITROL_SLEUTEL    de privésleutel voor SSH (de publieke sleutel staat op de server bij root)
 #   UITROL_HOSTKEY    (aanbevolen) de regel uit `ssh-keyscan -t ed25519 <ip>`; zonder dit vertrouwen we de server bij elke run opnieuw
+# Optioneel (gaan naar /etc/checkmijn/geheimen.env op de server, alleen leesbaar voor root):
+#   ANTHROPIC_API_KEY   Nederlandse samenvattingen en de LinkedIn-post van de dag (secret)
+#   BREVO_API_KEY       nieuwsbrief (secret)
+#   BREVO_LIJST, BREVO_DOI_TEMPLATE, NIEUWSBRIEF_AFZENDER   nieuwsbrief (variables, geen geheimen)
 name: Uitrollen
 on:
   push:
@@ -71,6 +75,26 @@ jobs:
             echo "::error::UITROL_SLEUTEL is geen geldige privésleutel: $(cat /tmp/kg.txt)"
             exit 1
           fi
+      - name: Geheimen naar de server
+        if: steps.klaar.outputs.ok == 'true'
+        env:
+          HOST: ${{ secrets.UITROL_HOST }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          BREVO_LIJST: ${{ vars.BREVO_LIJST }}
+          BREVO_DOI_TEMPLATE: ${{ vars.BREVO_DOI_TEMPLATE }}
+          NIEUWSBRIEF_AFZENDER: ${{ vars.NIEUWSBRIEF_AFZENDER }}
+        run: |
+          # Alleen namen met een waarde; regeleinden eruit, zodat niemand via een secret extra regels kan toevoegen.
+          {
+            for n in ANTHROPIC_API_KEY BREVO_API_KEY BREVO_LIJST BREVO_DOI_TEMPLATE NIEUWSBRIEF_AFZENDER; do
+              v=$(printf '%s' "${!n}" | tr -d '\r\n')
+              [ -n "$v" ] && printf '%s=%s\n' "$n" "$v"
+            done
+            true
+          } | ssh -i ~/.ssh/uitrol -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=20 "root@$HOST" \
+              'install -d -m 700 /etc/checkmijn && umask 077 && cat > /etc/checkmijn/geheimen.env.nieuw && mv /etc/checkmijn/geheimen.env.nieuw /etc/checkmijn/geheimen.env'
+          echo "Ingesteld: $(for n in ANTHROPIC_API_KEY BREVO_API_KEY BREVO_LIJST BREVO_DOI_TEMPLATE NIEUWSBRIEF_AFZENDER; do [ -n "${!n}" ] && printf '%s ' "$n"; done)"
       - name: Uitrollen
         if: steps.klaar.outputs.ok == 'true'
         env:

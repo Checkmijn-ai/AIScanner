@@ -42,3 +42,18 @@
 {%- else %}<circle cx="12" cy="12" r="8"/>{% endif -%}
 </svg></span>
 {%- endmacro %}
+
+{% macro nieuwsbrief_form(soort="", actief=True) -%}
+{% if not actief %}
+<div class="nieuwsbriefform {{ soort }}"><p class="nb-titel">Nieuwsbrief</p><p class="zacht klein">Binnenkort: elke maandag het belangrijkste nieuws over AI-security, in vijf minuten. <a href="/nieuwsbrief">Meer weten</a></p></div>
+{% else %}
+<form class="nieuwsbriefform {{ soort }}" method="post" action="/nieuwsbrief/aanmelden">
+  <p class="nb-titel">Nieuwsbrief</p>
+  <p class="zacht klein">Elke week het belangrijkste nieuws over AI-security, in vijf minuten. Gratis, afmelden met één klik.</p>
+  <label for="nb-email-{{ soort }}" class="sr">E-mailadres</label>
+  <div class="nb-rij"><input id="nb-email-{{ soort }}" name="email" type="email" required autocomplete="email" placeholder="jij@bedrijf.nl"><button class="knop" type="submit">Aanmelden</button></div>
+  <div class="nb-pot" aria-hidden="true"><label>Website <input name="website" tabindex="-1" autocomplete="off"></label></div>
+  <p class="zacht klein nb-klein">Je krijgt eerst een mail om te bevestigen. We bewaren alleen je e-mailadres, bij Brevo (EU). <a href="/nieuwsbrief">Meer over de nieuwsbrief</a></p>
+</form>
+{% endif %}
+{%- endmacro %}

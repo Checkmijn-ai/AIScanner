@@ -429,7 +429,7 @@ def headers(resp):
     resp.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=(), interest-cohort=()"
     if request.path.startswith(("/api/", "/score/")):
         resp.headers["Content-Security-Policy"] = CSP_API
-    elif request.path.startswith(("/rapport/", "/voorbeeldrapport")):
+    elif request.path.startswith(("/rapport/", "/voorbeeldrapport", "/nieuwsbrief/voorbeeld")):
         resp.headers["Content-Security-Policy"] = CSP_RAPPORT
     else:
         resp.headers["Content-Security-Policy"] = CSP_SITE

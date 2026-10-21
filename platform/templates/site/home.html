@@ -3,6 +3,7 @@
 {% block inhoud %}
 <section class="held"><div class="wrap rooster">
   <div>
+    {% if nieuws_kort %}<a class="nieuwschip" href="/nieuws"><span class="nieuwschip-label">Nieuws</span><span class="nieuwschip-tekst">{{ nieuws_kort[0].titel }}</span><span aria-hidden="true">→</span></a>{% endif %}
     <p class="oog">Onafhankelijke controle van software die met AI gebouwd is</p>
     <h1>Check je AI-software voor je ze lanceert, koopt of oplevert.</h1>
     <p class="lead">Een meetlat, geen mening: vaste regels, Europese normen en een score van A tot G. Je code verlaat je bedrijf nooit, en de scanner is open source.</p>
@@ -21,6 +22,27 @@
     </div>
   </div>
 </div></section>
+
+{% if nieuws_kort %}
+<section class="nieuwsband" aria-labelledby="nieuwsband-titel"><div class="wrap">
+  <div class="nieuwsband-kop">
+    <h2 id="nieuwsband-titel" class="mt0"><span class="live" aria-hidden="true"></span>Vandaag in AI en security</h2>
+    <a class="meer" href="/nieuws">Al het nieuws, twee keer per dag bijgewerkt →</a>
+  </div>
+  <div class="nieuwsband-rooster">
+    <div class="nieuwsband-items">
+      {% for i in nieuws_kort %}
+      <a class="nieuwsitem" href="/nieuws#{{ i.tab }}">
+        <span class="meta"><span class="tabje t-{{ i.tab }}">{{ {'ai-security': 'AI-security', 'cyber': 'Cyber', 'ai': 'AI'}[i.tab] }}</span>{% if i.dichtbij %}<span class="nlbe">NL/BE</span>{% endif %}<span>{{ i.bron }} · {{ dagkop(i.datum) }}</span></span>
+        <b>{{ i.titel }}</b>
+        {% set s = i.samenvatting_nl or i.samenvatting %}{% if s %}<span class="zacht">{{ s|truncate(150) }}</span>{% endif %}
+      </a>
+      {% endfor %}
+    </div>
+    {{ m.nieuwsbrief_form("band", NB_ACTIEF) }}
+  </div>
+</div></section>
+{% endif %}
 
 <section class="cijferband"><div class="wrap sectie cijfers">
   <div><b>292</b><span class="zacht">checks, <a href="/wat-we-controleren">allemaal uitgeschreven</a></span></div>
@@ -67,15 +89,6 @@
     <a class="knop licht" href="/hoe-het-werkt">Bekijk hoe het werkt</a>
   </div>
 </section>
-
-{% if nieuws_kort %}
-<section class="wrap sectie">
-  <div class="kopmetlink"><h2 class="mt0">Uit het nieuws</h2><a class="meer" href="/nieuws">Al het nieuws →</a></div>
-  <div class="rooster-3">
-    {% for i in nieuws_kort %}<a class="kaart nieuwskaart" href="/nieuws#{{ i.tab }}"><span class="meta"><span class="bron">{{ i.bron }}</span><span class="taal">{{ i.taal|upper }}</span><span>{{ dagkop(i.datum) }}</span></span><h3>{{ i.titel }}</h3></a>{% endfor %}
-  </div>
-</section>
-{% endif %}
 
 <section class="wrap sectie">
   <h2 class="mt0">Voor wie</h2>

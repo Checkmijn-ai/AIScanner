@@ -1,0 +1,33 @@
+{% extends "site/basis.html" %}
+{% import "site/macros.html" as m %}
+{% block inhoud %}
+{% if staat == 'bevestigd' %}
+{% call m.kop("Nieuwsbrief", "Je bent aangemeld", "Dank je. Elke maandag krijg je het belangrijkste nieuws over AI-security, cyberincidenten en AI. Afmelden kan met één klik onderaan elke mail.") %}
+<div class="knoppenrij"><a class="knop" href="/nieuws">Naar het nieuws van vandaag</a><a class="knop licht" href="/hoe-het-werkt">Check mijn app</a></div>
+{% endcall %}
+{% else %}
+{% call m.kop("Nieuwsbrief", "AI en security, elke maandag in je mailbox", "Het belangrijkste nieuws van de week, ontdubbeld en kort samengevat in het Nederlands. Met bij elk bericht de check die over hetzelfde risico gaat.") %}{% endcall %}
+<section class="wrap sectie">
+  <div class="rooster-2">
+    <div id="aanmelden">
+      {% if staat == 'ok' %}<div class="melding ok" role="status"><b>Bijna klaar.</b> We hebben je een mail gestuurd. Klik op de link in die mail om je aanmelding te bevestigen. Niets gekregen? Kijk in je spam.</div>
+      {% elif staat == 'ongeldig' %}<div class="melding fout" role="alert">Dat e-mailadres lijkt niet te kloppen. Probeer het opnieuw.</div>
+      {% elif staat == 'te-vaak' %}<div class="melding fout" role="alert">Te veel aanmeldingen vanaf dit adres. Probeer het over een uur opnieuw.</div>
+      {% elif staat == 'fout' %}<div class="melding fout" role="alert">Er ging iets mis bij het aanmelden. Probeer het later opnieuw, of mail <a href="mailto:{{ CONTACT }}">{{ CONTACT }}</a>.</div>
+      {% elif staat == 'uit' or not actief %}<div class="melding" role="status">De nieuwsbrief start binnenkort. Aanmelden kan nog niet; kom over een paar dagen terug.</div>{% endif %}
+      {% if actief %}{{ m.nieuwsbrief_form("pagina", NB_ACTIEF) }}{% endif %}
+    </div>
+    <div class="kaart">
+      <h2 class="mt0">Wat je krijgt</h2>
+      <ul class="zacht">
+        <li>Elke maandagochtend één mail, te lezen in vijf minuten.</li>
+        <li>De vijf belangrijkste berichten over AI-security, de drie belangrijkste cyberincidenten en twee keer ander AI-nieuws.</li>
+        <li>Engelse berichten kort samengevat in het Nederlands, en bij elk bericht de check die erover gaat.</li>
+        <li>Geen reclame van anderen. We verkopen of delen je adres nooit.</li>
+      </ul>
+      <p class="zacht klein">Je e-mailadres staat bij Brevo (Frankrijk, EU), dat de mails voor ons verstuurt. Afmelden kan met één klik onderaan elke mail; dan wissen we je adres. <a href="/nieuwsbrief/voorbeeld">Bekijk een voorbeeld</a>.</p>
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

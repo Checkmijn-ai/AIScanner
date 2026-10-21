@@ -69,6 +69,8 @@ cat > /etc/cron.d/checkmijn-nieuws <<'CRON'
 SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 10 5,15 * * * root cd /opt/checkmijn/server && timeout 600 docker compose exec -T live python /app/platform/nieuws.py >> /var/log/checkmijn-nieuws.log 2>&1
+# Nieuwsbrief: elke maandag een concept in Brevo (versturen doe je zelf in Brevo)
+30 5 * * 1 root cd /opt/checkmijn/server && timeout 300 docker compose exec -T live python /app/platform/nieuwsbrief.py concept >> /var/log/checkmijn-nieuws.log 2>&1
 14 5,15 * * * root cd /opt/checkmijn/server && docker compose --profile test ps --status running test 2>/dev/null | grep -q test && timeout 600 docker compose --profile test exec -T test python /app/platform/nieuws.py >> /var/log/checkmijn-nieuws-test.log 2>&1
 CRON
 chmod 644 /etc/cron.d/checkmijn-nieuws

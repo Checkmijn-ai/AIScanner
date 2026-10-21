@@ -11,6 +11,10 @@ x-app: &app
   security_opt:
     - no-new-privileges:true
   cap_drop: [ALL]
+  # Geheimen (API-sleutels van Claude en Brevo). Komen uit de GitHub-secrets, via de workflow Uitrollen.
+  env_file:
+    - path: /etc/checkmijn/geheimen.env
+      required: false
 services:
   live:
     <<: *app

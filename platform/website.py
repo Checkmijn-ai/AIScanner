@@ -162,7 +162,8 @@ def workflow() -> str:
 @site.app_context_processor
 def _algemeen():
     return {"NAV": NAV, "DISCLAIMER": DISCLAIMER, "CONTACT": CONTACT, "SITE_URL": SITE_URL, "TEST": TEST,
-            "pad": request.path, "BRONCODE": BRONCODE, "HOSTING": HOSTING, "dagkop": dagkop}
+            "pad": request.path, "BRONCODE": BRONCODE, "HOSTING": HOSTING, "dagkop": dagkop,
+            "nieuws_vers": nieuws_vandaag(), "NB_ACTIEF": _nb_actief()}
 
 
 def pagina(sjabloon: str, titel: str, beschrijving: str, **kw):
@@ -417,9 +418,84 @@ def nieuws_rss():
 
 
 def laatste_nieuws(n: int = 3) -> list[dict]:
+    """Voor de homepage: het belangrijkste van de laatste twee dagen (AI-security en NL/BE eerst)."""
+    import nieuws_ai
+    from datetime import datetime, timedelta, timezone
     items = nieuws_data().get("items", [])
-    eerst = [i for i in items if i["tab"] == "ai-security"][:n]
-    return eerst if len(eerst) == n else items[:n]
+    grens = datetime.now(timezone.utc) - timedelta(hours=48)
+    recent = [i for i in items if datetime.fromisoformat(i["datum"]) >= grens] or items[:20]
+    gekozen = sorted(recent, key=lambda i: (nieuws_ai.score(i), i["datum"]), reverse=True)[:n]
+    return sorted(gekozen, key=lambda i: i["datum"], reverse=True)
+
+
+def nieuws_vandaag() -> bool:
+    from datetime import datetime
+    items = nieuws_data().get("items", [])
+    return bool(items) and _lokaal(items[0]["datum"]).date() == datetime.now(NL_TZ).date()
+
+
+def _nb_actief() -> bool:
+    import nieuwsbrief as nb
+    return nb.actief()
+
+
+# --- nieuwsbrief -------------------------------------------------------------------------------------------
+_AANMELD: dict = {}
+
+
+def _aanmeld_limiet(ip: str, max_per_uur: int = 5) -> bool:
+    import time
+    t = time.time()
+    q = [x for x in _AANMELD.get(ip, []) if x > t - 3600]
+    if len(q) >= max_per_uur:
+        _AANMELD[ip] = q
+        return False
+    _AANMELD[ip] = q + [t]
+    return True
+
+
+@site.get("/nieuwsbrief")
+def nieuwsbrief():
+    import nieuwsbrief as nb
+    staat = request.args.get("staat", "")
+    if staat not in ("ok", "ongeldig", "uit", "fout", "te-vaak"):
+        staat = ""
+    return pagina("nieuwsbrief.html", "Nieuwsbrief",
+                  "Elke week het belangrijkste nieuws over AI-security, cyberincidenten en AI, in vijf minuten. Gratis, "
+                  "afmelden met één klik.", staat=staat, actief=nb.actief())
+
+
+@site.post("/nieuwsbrief/aanmelden")
+def nieuwsbrief_aanmelden():
+    import nieuwsbrief as nb
+    from flask import redirect
+    ip = (request.headers.get("CF-Connecting-IP")
+          or request.headers.get("X-Forwarded-For", request.remote_addr or "?").split(",")[0]).strip()
+    if request.form.get("website"):  # honingpot: mensen zien dit veld niet
+        return redirect("/nieuwsbrief?staat=ok#aanmelden", 303)
+    if not _aanmeld_limiet(ip):
+        return redirect("/nieuwsbrief?staat=te-vaak#aanmelden", 303)
+    staat = nb.aanmelden(request.form.get("email", ""))
+    return redirect(f"/nieuwsbrief?staat={staat}#aanmelden", 303)
+
+
+@site.get("/nieuwsbrief/bevestigd")
+def nieuwsbrief_bevestigd():
+    return pagina("nieuwsbrief.html", "Aangemeld", "Je bent aangemeld voor de nieuwsbrief.", staat="bevestigd", actief=True)
+
+
+@site.get("/nieuwsbrief/voorbeeld")
+def nieuwsbrief_voorbeeld():
+    import nieuwsbrief as nb
+    return Response(nb.html(nieuws_data(), voorbeeld=True), mimetype="text/html")
+
+
+@site.get("/nieuws/post-van-de-dag")
+def post_van_de_dag():
+    from urllib.parse import quote
+    posts = nieuws_data().get("posts", [])
+    return pagina("posts.html", "Post van de dag", "", posts=posts, noindex=True,
+                  deel=lambda t: "https://www.linkedin.com/feed/?shareActive=true&text=" + quote(t))
 
 
 @site.get("/robots.txt")
@@ -427,14 +503,14 @@ def robots():
     if TEST:
         # Testomgeving: niet indexeren (elke pagina heeft ook noindex). /nieuws mag gelezen worden om de feeds te controleren.
         return Response("User-agent: *\nAllow: /nieuws\nDisallow: /\n", mimetype="text/plain")
-    return Response(f"User-agent: *\nDisallow: /rapport/\nDisallow: /api/\nSitemap: {SITE_URL}/sitemap.xml\n",
+    return Response(f"User-agent: *\nDisallow: /rapport/\nDisallow: /api/\nDisallow: /nieuws/post-van-de-dag\nDisallow: /nieuwsbrief/\nSitemap: {SITE_URL}/sitemap.xml\n",
                     mimetype="text/plain")
 
 
 @site.get("/sitemap.xml")
 def sitemap():
     paden = ["/", "/hoe-het-werkt", "/niveaus", "/wat-we-controleren", "/wat-je-krijgt", "/open-source", "/score-uitleg", "/waarom", "/bureaus",
-             "/opdrachtgevers", "/vertrouwen", "/framework", "/vragen", "/contact", "/scan", "/nieuws"]
+             "/opdrachtgevers", "/vertrouwen", "/framework", "/vragen", "/contact", "/scan", "/nieuws", "/nieuwsbrief"]
     xml = ('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
            + "".join(f"  <url><loc>{SITE_URL}{p}</loc></url>\n" for p in paden)
            + "".join(f"  <url><loc>{SITE_URL}/check/{c['id']}</loc></url>\n" for c in norm()["checks"]) + "</urlset>\n")

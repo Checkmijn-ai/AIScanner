@@ -108,6 +108,19 @@ CHECK_REGELS = [
 ]
 
 
+# Nieuws uit Nederland of België: krijgt het label "NL/BE".
+_DICHTBIJ = re.compile(
+    r"\b(Nederland\w*|Netherlands|Dutch|Holland|Amsterdam|Rotterdam|Den Haag|The Hague|Utrecht|Eindhoven|Groningen|"
+    r"gemeenten?|Rijksoverheid|ministerie|kabinet|Tweede Kamer|politie|Belastingdienst|DigiD|UWV|GGD|NCSC|"
+    r"Autoriteit Persoonsgegevens|Albert Heijn|Ahold|KPN|Odido|VodafoneZiggo|Rabobank|ABN Amro|ING-?bank|PostNL|"
+    r"bol\.com|Schiphol|ASML|Philips|Booking\.com|Belgi\w*|Brussel|Brussels|Antwerpen|Antwerp|Gent|Ghent|"
+    r"Vlaanderen|Vlaams\w*|Flanders|Flemish|Walloni\w*|Proximus|Telenet|KBC|Belfius|bpost|Delhaize|Colruyt|CCB)\b")
+
+
+def dichtbij(titel: str, tekst: str = "") -> bool:
+    return bool(_DICHTBIJ.search(titel) or _DICHTBIJ.search(tekst[:300]))
+
+
 CHECK_NAMEN = {
     "H-01": "prompt injection", "H-04": "lekken via AI", "H-21": "tools en MCP", "B-04": "rechten van codeeragents", "E-05": "geheimen in code",
     "B-06": "verzonnen pakketten", "F-01": "bekende lekken", "K-18": "herstel na ransomware",
@@ -467,13 +480,14 @@ def voeg_toe(d: dict, bron: dict, ruw: list[dict], nu: datetime) -> int:
             "tab": tab,
             "checks": checks_bij(r["titel"], r["tekst"]),
             "ook": [],
+            "dichtbij": dichtbij(r["titel"], r["tekst"]),
         })
         bekend.add(nette_url(url))
         nieuw += 1
     return nieuw
 
 
-def ophalen(pad: Path = PAD, bronnen: list[dict] = BRONNEN, haler=haal) -> dict:
+def ophalen(pad: Path = PAD, bronnen: list[dict] = BRONNEN, haler=haal, met_ai: bool = True) -> dict:
     nu = datetime.now(timezone.utc)
     d = laad(pad)
     d.setdefault("bronnen", {})
@@ -491,6 +505,7 @@ def ophalen(pad: Path = PAD, bronnen: list[dict] = BRONNEN, haler=haal) -> dict:
             continue
         if not any(o["bron"] in per_naam and VOORRANG[tab] > VOORRANG[it["tab"]] for o in it.get("ook", [])):
             it["tab"] = tab
+        it["dichtbij"] = it.get("dichtbij") or dichtbij(it["titel"], it.get("samenvatting", ""))
         bewaard.append(it)
     d["items"] = bewaard
     with ThreadPoolExecutor(max_workers=8) as pool:
@@ -503,7 +518,14 @@ def ophalen(pad: Path = PAD, bronnen: list[dict] = BRONNEN, haler=haal) -> dict:
     d["bronnen"] = {k: v for k, v in d["bronnen"].items() if k in namen_nu}
     d["items"].sort(key=lambda it: it["datum"], reverse=True)
     d["bijgewerkt"] = nu.isoformat(timespec="seconds")
-    bewaar(d, pad)
+    bewaar(d, pad)  # eerst bewaren: de AI-stap mag het ophalen nooit tegenhouden
+    if met_ai:
+        try:
+            import nieuws_ai
+            if nieuws_ai.werk_bij(d, nu):
+                bewaar(d, pad)
+        except Exception as e:  # pragma: no cover
+            print(f"AI-stap overgeslagen: {type(e).__name__}: {e}", file=sys.stderr)
     return d
 
 

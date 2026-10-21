@@ -1,0 +1,16 @@
+{% extends "site/basis.html" %}
+{% import "site/macros.html" as m %}
+{% block inhoud %}
+{% call m.kop("Intern", "Post van de dag", "Elke ochtend een concept voor LinkedIn, over het belangrijkste bericht van de afgelopen dag. Lees het na, pas aan waar nodig, en plaats het zelf. Deze pagina wordt niet geïndexeerd.") %}{% endcall %}
+<section class="wrap sectie">
+  {% for p in posts %}
+  <div class="kaart postkaart">
+    <p class="zacht klein mt0">{{ dagkop(p.gemaakt) }} · over <a href="{{ p.url }}" rel="noopener">{{ p.titel }}</a> ({{ p.bron }}) · {{ 'geschreven met AI, nalezen' if p.door == 'AI' else 'uit het sjabloon' }}</p>
+    {{ m.code("post-" ~ loop.index, p.tekst, "Tekst voor LinkedIn") }}
+    <div class="knoppenrij"><a class="knop klein" href="{{ deel(p.tekst) }}" rel="noopener">Openen in LinkedIn</a></div>
+  </div>
+  {% else %}
+  <p class="leeg">Nog geen post. De eerste komt bij de volgende ophaalronde (rond 07:10).</p>
+  {% endfor %}
+</section>
+{% endblock %}
