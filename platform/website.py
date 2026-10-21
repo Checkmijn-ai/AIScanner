@@ -392,7 +392,7 @@ def nieuws():
     return pagina("nieuws.html", "Nieuws over AI en security",
                   "Dagelijks het belangrijkste nieuws over AI-security, cyberincidenten en AI, uit Nederlandse, Vlaamse "
                   "en Engelstalige bronnen. Twee keer per dag bijgewerkt, zonder dubbele berichten.",
-                  tabs=per_tab, bijgewerkt=tijdstip(d.get("bijgewerkt")), bronnen=bronnen,
+                  tabs=per_tab, bijgewerkt=tijdstip(d.get("bijgewerkt")), bronnen=bronnen, ai_status=d.get("ai_status", {}),
                   tijd=lambda iso: f"{_lokaal(iso):%H:%M}", check_namen=nw.CHECK_NAMEN)
 
 

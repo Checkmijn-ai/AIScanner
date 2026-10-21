@@ -75,7 +75,11 @@ def samenvatten(d: dict, aanroep=None) -> int:
         try:
             uit = _json_uit(vraag(SYSTEEM_SAMENVATTING, invoer, aanroep=aanroep)) or {}
         except Exception as e:
-            print(f"samenvatten mislukt: {type(e).__name__}: {str(e)[:200]}")
+            fout = f"{type(e).__name__}: {str(e)[:200]}"
+            if getattr(e, "response", None) is not None:
+                fout += " " + e.response.text[:200]
+            d["ai_status"] = {"ok": False, "fout": fout}
+            print(f"samenvatten mislukt: {fout}")
             break
         for i in blok:
             s = schoon(uit.get(i["id"], ""), 320)
@@ -159,6 +163,8 @@ def post_van_de_dag(d: dict, nu: datetime, aanroep=None) -> bool:
 
 
 def werk_bij(d: dict, nu: datetime, aanroep=None) -> bool:
+    d["ai_status"] = {"ok": bool(sleutel() or aanroep), "fout": "" if (sleutel() or aanroep) else "geen sleutel",
+                      "model": MODEL, "tijd": nu.isoformat(timespec="seconds")}
     n = samenvatten(d, aanroep) if (sleutel() or aanroep) else 0
     p = post_van_de_dag(d, nu, aanroep)
     if n:

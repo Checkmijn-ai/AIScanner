@@ -42,7 +42,9 @@ jobs:
           # Verlopen of ontbrekende Claude-sleutel: dan komen er geen Nederlandse samenvattingen meer bij.
           en = len(re.findall(r'class="taal" title="Engels">EN</span>', s))
           ai = s.count('class="ai-label"')
-          notice("AI-samenvattingen", [f"{ai} van {en} Engelse berichten hebben een Nederlandse samenvatting"])
+          aifout = re.findall(r'data-ai-fout="([^"]*)"', s)
+          notice("AI-samenvattingen", [f"{ai} van {en} Engelse berichten hebben een Nederlandse samenvatting",
+                                        "Laatste AI-melding: " + (html.unescape(aifout[0]) if aifout and aifout[0] else "geen")])
           if en >= 10 and ai == 0 and "${{ inputs.omgeving || 'live' }}" == "live":
               print("::error::Geen enkele AI-samenvatting: is de ANTHROPIC_API_KEY verlopen of niet ingesteld?")
               raise SystemExit(1)
