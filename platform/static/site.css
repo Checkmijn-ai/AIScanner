@@ -423,3 +423,53 @@ h1.check-titel { font-size: clamp(1.5rem, 3.2vw, 2.3rem); max-width: 34em; }
 .route p { flex: 1; margin: 0 0 8px; }
 .route:hover { box-shadow: 0 8px 24px rgba(2,37,79,.08); }
 .cta.mt0 { margin-top: 0; }
+
+/* ---------- resultaten ---------- */
+.tellers { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.tellers > div { border: 1px solid var(--lijn); border-radius: 12px; padding: 20px; background: #fff; }
+.tellers b { display: block; font: 700 2.2rem/1.1 var(--kop); color: var(--navy); }
+.tellers span { color: var(--zacht); font-size: .9rem; }
+@media (max-width: 900px) { .tellers { grid-template-columns: 1fr 1fr; } }
+.chip.klein { width: 30px; height: 30px; font-size: 1rem; border-radius: 5px; }
+.overgangen, .verdeling { list-style: none; padding: 0; margin: 16px 0; display: grid; gap: 10px; max-width: 760px; }
+.overgangen li, .verdeling li { display: grid; grid-template-columns: auto 1fr 110px; gap: 14px; align-items: center; }
+.paar { display: inline-flex; align-items: center; gap: 8px; }
+.pijltje { color: var(--a); font-weight: 700; }
+.pijltje.slechter { color: var(--g); }
+.staafje { height: 14px; background: var(--vlak); border-radius: 7px; overflow: hidden; }
+.staafje .vul { display: block; height: 100%; background: var(--a); border-radius: 7px; }
+.staafje .vul.slechter { background: var(--g); }
+.aantal { font-size: .9rem; color: var(--zacht); }
+.matrix th, .matrix td { text-align: center; width: 54px; }
+.matrix td.beter { background: #e3f3e8; color: #14532d; font-weight: 700; }
+.matrix td.slechter { background: #fde8e8; color: #8a1114; font-weight: 700; }
+.matrix td.gelijk { background: var(--vlak); font-weight: 700; }
+.matrix td.leegvak { color: var(--lijn); }
+.verdeling .vul.v-A { background: var(--a); }
+.verdeling .vul.v-B { background: var(--b); }
+.verdeling .vul.v-C { background: var(--c); }
+.verdeling .vul.v-D { background: var(--d); }
+.verdeling .vul.v-E { background: var(--e); }
+.verdeling .vul.v-F { background: var(--f); }
+.verdeling .vul.v-G { background: var(--g); }
+.b0 { width: 0%; }
+.b5 { width: 5%; }
+.b10 { width: 10%; }
+.b15 { width: 15%; }
+.b20 { width: 20%; }
+.b25 { width: 25%; }
+.b30 { width: 30%; }
+.b35 { width: 35%; }
+.b40 { width: 40%; }
+.b45 { width: 45%; }
+.b50 { width: 50%; }
+.b55 { width: 55%; }
+.b60 { width: 60%; }
+.b65 { width: 65%; }
+.b70 { width: 70%; }
+.b75 { width: 75%; }
+.b80 { width: 80%; }
+.b85 { width: 85%; }
+.b90 { width: 90%; }
+.b95 { width: 95%; }
+.b100 { width: 100%; }

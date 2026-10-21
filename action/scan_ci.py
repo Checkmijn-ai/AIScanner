@@ -66,6 +66,43 @@ def controleer_handtekening(m: dict) -> str:
 RAPPORT_IN_REPO = os.environ.get("CM_RAPPORT_IN_REPO", "false").lower()  # false | auto | true
 PRIVE = os.environ.get("CM_PRIVE", "").lower() == "true"
 RAPPORT_LINK = os.environ.get("CM_RAPPORT_LINK", "false").lower() == "true"
+MEETELLEN = os.environ.get("CM_MEETELLEN", "false").lower() == "true"
+
+
+def oidc_token() -> str | None:
+    """Een OIDC-token van GitHub voor checkmijn.ai: bewijst uit welke repository de run komt."""
+    import urllib.request
+    url, tok = os.environ.get("ACTIONS_ID_TOKEN_REQUEST_URL"), os.environ.get("ACTIONS_ID_TOKEN_REQUEST_TOKEN")
+    if not url or not tok:
+        return None
+    req = urllib.request.Request(url + ("&" if "?" in url else "?") + "audience=checkmijn.ai",
+                                 headers={"Authorization": f"Bearer {tok}"})
+    with urllib.request.urlopen(req, timeout=20) as r:
+        return json.loads(r.read())["value"]
+
+
+def meetellen(m: dict, letter: str) -> str:
+    """Stuurt alleen de scoreletter naar checkmijn.ai voor de openbare statistiek. Geeft een melding terug."""
+    import urllib.error
+    import urllib.request
+    if os.environ.get("GITHUB_EVENT_NAME", "").startswith("pull_request"):
+        return "Bij een pull request tellen we niet mee."
+    if letter not in "ABCDEFG" or len(letter) != 1:
+        return "Geen score, dus niets meegeteld."
+    try:
+        tok = oidc_token()
+        if not tok:
+            return "Niet meegeteld: zet `id-token: write` bij `permissions` in de workflow."
+        req = urllib.request.Request(m["api"].rstrip("/") + "/api/v1/telling", method="POST",
+                                     data=json.dumps({"letter": letter}).encode(),
+                                     headers={"Authorization": f"Bearer {tok}", "Content-Type": "application/json"})
+        with urllib.request.urlopen(req, timeout=20) as r:
+            d = json.loads(r.read())
+        return d.get("melding", "Meegeteld.")
+    except urllib.error.HTTPError as e:
+        return f"Niet meegeteld (de API gaf {e.code})."
+    except Exception as e:  # noqa: BLE001  meetellen mag de scan nooit laten mislukken
+        return f"Niet meegeteld ({e.__class__.__name__})."
 RAPPORT_MAP = ".checkmijn"
 
 
@@ -89,15 +126,11 @@ def maak_rapport_link(m: dict):
 
     if os.environ.get("GITHUB_EVENT_NAME", "").startswith("pull_request"):
         return None, "Bij een pull request wordt geen rapportlink gemaakt."
-    url, tok = os.environ.get("ACTIONS_ID_TOKEN_REQUEST_URL"), os.environ.get("ACTIONS_ID_TOKEN_REQUEST_TOKEN")
-    if not url or not tok:
+    if not (os.environ.get("ACTIONS_ID_TOKEN_REQUEST_URL") and os.environ.get("ACTIONS_ID_TOKEN_REQUEST_TOKEN")):
         return None, "Geen rapportlink: zet `id-token: write` bij `permissions` in de workflow."
     b64 = lambda b: base64.urlsafe_b64encode(b).decode().rstrip("=")  # noqa: E731
     try:
-        req = urllib.request.Request(url + ("&" if "?" in url else "?") + "audience=checkmijn.ai",
-                                     headers={"Authorization": f"Bearer {tok}"})
-        with urllib.request.urlopen(req, timeout=20) as r:
-            oidc = json.loads(r.read())["value"]
+        oidc = oidc_token()
         sleutel = AESGCM.generate_key(bit_length=256)
         iv = os.urandom(12)
         inhoud = gzip.compress((OUT / "rapport.html").read_bytes(), mtime=0)
@@ -339,6 +372,10 @@ def main() -> int:
         else:
             regels += [melding, ""]
     regels += ["", "Het volledige rapport (met bestand en regel per bevinding) staat ook bij de artefacten van deze run.", ""]
+    if MEETELLEN:
+        melding = meetellen(m, letter)
+        log(melding)
+        regels += [f"*{melding} Alleen de letter, voor de statistiek op checkmijn.ai/resultaten.*", ""]
 
     if nonce:
         r = subprocess.run([sys.executable, str(pyz), "inleveren", str(OUT / "bewijs.json"), m["api"]],

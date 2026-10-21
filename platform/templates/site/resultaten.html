@@ -1,0 +1,71 @@
+{% extends "site/basis.html" %}
+{% import "site/macros.html" as m %}
+{% block inhoud %}
+{% call m.kop("Resultaten", "Werkt het? Dit zeggen de scans.", "Hoeveel scans er gedaan zijn, en van welke score naar welke score projecten gingen nadat ze de bevindingen herstelden. Alleen echte scans, alleen de letter, en alleen als de eigenaar ervoor koos om mee te tellen.") %}{% endcall %}
+
+<section class="wrap sectie">
+  {% if st and st.scans %}
+  <div class="tellers">
+    <div><b>{{ "{:,}".format(st.scans).replace(",", ".") }}</b><span>scans gedaan</span></div>
+    <div><b>{{ "{:,}".format(st.projecten).replace(",", ".") }}</b><span>projecten gemeten</span></div>
+    <div><b>{% if st.herhaald %}{{ (100 * st.beter / st.herhaald)|round|int }}%{% else %}–{% endif %}</b><span>{% if st.herhaald %}scoort beter na herstel ({{ st.beter }} van {{ st.herhaald }} projecten die opnieuw gescand zijn){% else %}nog geen project twee keer gescand{% endif %}</span></div>
+    <div><b>{% if st.beter %}+{{ st.gem_stappen }}{% else %}–{% endif %}</b><span>letters beter, gemiddeld, bij wie vooruitging</span></div>
+  </div>
+
+  <h2>Van welk label naar welk label</h2>
+  <p class="zacht">Per project de eerste score en de laatste score. Alleen projecten die minstens twee keer gescand zijn.</p>
+  {% if st.overgangen %}
+  {% set hoogste = st.overgangen[0][2] %}
+  <ul class="overgangen">
+    {% for a, b, n in st.overgangen[:12] %}
+    <li><span class="paar"><span class="chip klein l-{{ a }}">{{ a }}</span><span class="pijltje{{ ' slechter' if letters.index(b) > letters.index(a) }}" aria-hidden="true">→</span><span class="chip klein l-{{ b }}">{{ b }}</span><span class="sr">van {{ a }} naar {{ b }}</span></span>
+      <span class="staafje"><span class="vul b{{ breedte(n, hoogste) }}{{ ' slechter' if letters.index(b) > letters.index(a) }}"></span></span>
+      <span class="aantal">{{ n }} {{ 'project' if n == 1 else 'projecten' }}</span></li>
+    {% endfor %}
+  </ul>
+  {% else %}<p class="leeg">Nog geen project met een andere eerste en laatste score.</p>{% endif %}
+
+  <h2>Alle combinaties</h2>
+  <div class="scroll"><table class="tabel matrix">
+    <caption class="sr">Aantal projecten per eerste score (rijen) en laatste score (kolommen)</caption>
+    <thead><tr><th scope="col">Eerste ↓ · laatste →</th>{% for b in letters %}<th scope="col"><span class="chip klein l-{{ b }}">{{ b }}</span></th>{% endfor %}</tr></thead>
+    <tbody>
+    {% for a in letters %}<tr><th scope="row"><span class="chip klein l-{{ a }}">{{ a }}</span></th>
+      {% for b in letters %}{% set n = st.matrix.get((a, b), 0) %}<td class="{{ 'leegvak' if not n else ('beter' if letters.index(b) < letters.index(a) else ('slechter' if letters.index(b) > letters.index(a) else 'gelijk')) }}">{{ n or '' }}</td>{% endfor %}</tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+  <p class="zacht klein">Groen: beter dan de eerste scan. Rood: slechter. Grijs: gelijk.</p>
+
+  <h2>Eerste scores</h2>
+  <p class="zacht">Zo begint een project gemiddeld, bij de allereerste scan.</p>
+  {% set max_eerste = st.eerste.values()|max if st.eerste else 0 %}
+  <ul class="verdeling">
+    {% for a in letters %}{% set n = st.eerste.get(a, 0) %}<li><span class="chip klein l-{{ a }}">{{ a }}</span><span class="staafje"><span class="vul b{{ breedte(n, max_eerste) }} v-{{ a }}"></span></span><span class="aantal">{{ n }}</span></li>{% endfor %}
+  </ul>
+  <p class="zacht klein">We tellen sinds {{ st.sinds }}. De cijfers worden bij elke scan bijgewerkt; ook als <a href="/api/v1/statistiek">JSON</a>.</p>
+  {% else %}
+  <div class="leeg"><b>We zijn net begonnen met tellen.</b> Zodra er scans meetellen, zie je hier hoeveel scans er gedaan zijn en van welke score naar welke score projecten gaan na herstel.</div>
+  {% endif %}
+
+  <div class="rooster-2 mt2">
+    <div class="kaart">
+      <h2 class="mt0">Hoe we tellen</h2>
+      <ul class="zacht">
+        <li>We tellen alleen scans die via GitHub draaien. GitHub bewijst met een ondertekend token dat de scan echt uit een repository komt, dus niemand kan de cijfers opblazen.</li>
+        <li>Alleen als de eigenaar <code>meetellen: "true"</code> laat staan. In ons voorbeeldbestand staat het aan; zet het op <code>"false"</code> en je telt niet mee.</li>
+        <li>We ontvangen alleen de letter. Geen code, geen bevindingen, geen naam van de repository. Per project bewaren we een onomkeerbare code, zodat we de eerste en de laatste score kunnen vergelijken.</li>
+        <li>Hoogstens {{ 10 }} scans per project per dag tellen mee. Pull requests tellen niet mee.</li>
+        <li>Op niveau 1 is B de hoogste score. Een A kan pas na een keuring.</li>
+      </ul>
+    </div>
+    <div class="kaart">
+      <h2 class="mt0">Tel mee</h2>
+      <p class="zacht">Scan je via GitHub (ook vanuit Lovable, Bolt of v0)? Gebruik dan ons voorbeeldbestand: daarin staat meetellen al aan. Zo help je anderen zien wat de scan oplevert.</p>
+      <div class="knoppenrij"><a class="knop" href="/hoe-het-werkt#bouwtools">Scan via GitHub</a><a class="knop licht" href="/open-source">Wat er naar buiten gaat</a></div>
+      <p class="zacht klein">Scan je met je AI-agent op je eigen computer? Die scans tellen (nog) niet mee: daar kunnen we niet bewijzen dat ze echt zijn.</p>
+    </div>
+  </div>
+  {{ m.let_op(DISCLAIMER) }}
+</section>
+{% endblock %}

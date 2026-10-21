@@ -46,7 +46,8 @@
 
 <section class="cijferband"><div class="wrap sectie cijfers">
   <div><b>292</b><span class="zacht">checks, <a href="/wat-we-controleren">allemaal uitgeschreven</a></span></div>
-  <div><b>Dagelijks</b><span class="zacht">een nieuwe, ondertekende scanner</span></div>
+  {% if teller %}<div><b>{{ "{:,}".format(teller.scans).replace(",", ".") }}</b><span class="zacht">scans gedaan{% if teller.herhaald %}; {{ (100 * teller.beter / teller.herhaald)|round|int }}% van de projecten scoort <a href="/resultaten">beter na herstel</a>{% else %}, <a href="/resultaten">bekijk de resultaten</a>{% endif %}</span></div>
+  {% else %}<div><b>Dagelijks</b><span class="zacht">een nieuwe, ondertekende scanner</span></div>{% endif %}
   <div><b>6</b><span class="zacht">wetten en normen: CRA, AVG, AI Act, NIS2, OWASP en ISO</span></div>
   <div><b>Helsinki</b><span class="zacht">gehost in de EU, open source (EUPL-1.2)</span></div>
 </div></section>

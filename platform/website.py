@@ -174,7 +174,8 @@ def pagina(sjabloon: str, titel: str, beschrijving: str, **kw):
 def home():
     return pagina("home.html", "Onafhankelijke controle van software die met AI gebouwd is",
                   "Check je AI-software voor je ze lanceert, koopt of oplevert. Een meetlat, geen mening: 45 vaste "
-                  "checks, Europese normen en een score van A tot G.", nieuws_kort=laatste_nieuws())
+                  "checks, Europese normen en een score van A tot G.", nieuws_kort=laatste_nieuws(),
+                  teller=(lambda st: st if st.get("scans", 0) >= TOON_TELLER_VANAF else None)(statistiek()))
 
 
 @site.get("/hoe-het-werkt")
@@ -318,6 +319,32 @@ def security_txt():
     tekst = ("Contact: mailto:security@checkmijn.ai\nExpires: 2027-10-20T00:00:00.000Z\nPreferred-Languages: nl, en\n"
              f"Canonical: {SITE_URL}/.well-known/security.txt\nPolicy: {SITE_URL}/vertrouwen\n")
     return Response(tekst, mimetype="text/plain")
+
+
+# --- resultaten (openbare statistiek) -----------------------------------------------------------------------
+TOON_TELLER_VANAF = int(os.environ.get("CHECKMIJN_TOON_TELLER_VANAF", "100"))
+
+
+def statistiek() -> dict:
+    import sys as _sys
+    api = _sys.modules.get("api")
+    try:
+        return api.statistiek() if api else {}
+    except Exception:
+        return {}
+
+
+def _breedte(n: int, maximum: int) -> int:
+    """Breedte in stappen van 5% (CSS-klassen b0..b100), want inline stijlen mogen niet (CSP)."""
+    return 0 if not maximum else max(5 if n else 0, round(n / maximum * 20) * 5)
+
+
+@site.get("/resultaten")
+def resultaten():
+    st = statistiek()
+    return pagina("resultaten.html", "Resultaten",
+                  "Werkt het? Hoeveel scans er gedaan zijn, en van welke score naar welke score projecten gingen na herstel.",
+                  st=st, breedte=_breedte, letters="ABCDEFG")
 
 
 # --- nieuws ------------------------------------------------------------------------------------------------
@@ -510,7 +537,7 @@ def robots():
 @site.get("/sitemap.xml")
 def sitemap():
     paden = ["/", "/hoe-het-werkt", "/niveaus", "/wat-we-controleren", "/wat-je-krijgt", "/open-source", "/score-uitleg", "/waarom", "/bureaus",
-             "/opdrachtgevers", "/vertrouwen", "/framework", "/vragen", "/contact", "/scan", "/nieuws", "/nieuwsbrief"]
+             "/opdrachtgevers", "/vertrouwen", "/framework", "/vragen", "/contact", "/scan", "/nieuws", "/nieuwsbrief", "/resultaten"]
     xml = ('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
            + "".join(f"  <url><loc>{SITE_URL}{p}</loc></url>\n" for p in paden)
            + "".join(f"  <url><loc>{SITE_URL}/check/{c['id']}</loc></url>\n" for c in norm()["checks"]) + "</urlset>\n")

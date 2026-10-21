@@ -89,6 +89,9 @@ def db():
             CREATE TABLE IF NOT EXISTS rapporten (id TEXT PRIMARY KEY, aangemaakt TEXT, verloopt TEXT,
                 repo_id TEXT, iv TEXT, data TEXT, grootte INTEGER, account TEXT);
             CREATE INDEX IF NOT EXISTS rapporten_repo ON rapporten (repo_id, aangemaakt);
+            CREATE TABLE IF NOT EXISTS tel_projecten (project TEXT PRIMARY KEY, eerste TEXT, eerste_op TEXT,
+                laatste TEXT, laatste_op TEXT, scans INTEGER DEFAULT 0, dag TEXT, dag_scans INTEGER DEFAULT 0);
+            CREATE TABLE IF NOT EXISTS tel_dagen (dag TEXT PRIMARY KEY, scans INTEGER DEFAULT 0);
         """)
     return g.db
 
@@ -401,6 +404,92 @@ def rapport_inleveren():
                  (rid, nu().isoformat(), verloopt.isoformat(), repo_id, iv, data, len(data)))
     db().commit()
     return jsonify({"id": rid, "pagina": f"{SITE_ORIGIN}/rapport/{rid}", "verloopt": verloopt.date().isoformat()}), 201
+
+
+# ------------------------------------------------------------------ openbare statistiek (checkmijn.ai/resultaten)
+# Alleen scans die via GitHub Actions komen (ondertekend OIDC-token) en waarvan de eigenaar `meetellen: true` zette.
+# We bewaren per project een onomkeerbare code (HMAC van het repository-id met een geheime zout), de eerste en de
+# laatste letter, en het aantal scans. Geen naam, geen code, geen bevindingen.
+LETTERS = "ABCDEFG"
+TEL_PER_DAG = 10  # meer scans per project per dag tellen niet mee (geen opblazen van de teller)
+
+
+def _zout() -> bytes:
+    z = os.environ.get("CHECKMIJN_TELLING_ZOUT", "").encode()
+    if z:
+        return z
+    p = DB.parent / "telling-zout"
+    if not p.exists():
+        p.write_bytes(secrets.token_bytes(32))
+        p.chmod(0o600)
+    return p.read_bytes()
+
+
+def project_code(repo_id: str) -> str:
+    import hashlib
+    import hmac
+    return hmac.new(_zout(), f"github:{repo_id}".encode(), hashlib.sha256).hexdigest()[:32]
+
+
+@app.post("/api/v1/telling")
+def telling():
+    limiet()
+    auth = request.headers.get("Authorization", "")
+    if not auth.startswith("Bearer "):
+        return fout("Alleen vanuit GitHub Actions, met een OIDC-token (permissions: id-token: write).", 401)
+    try:
+        claims = oidc_claims(auth[7:].strip())
+    except Exception as e:  # noqa: BLE001
+        return fout(f"Token geweigerd: {e}.", 401)
+    if str(claims.get("event_name", "")).startswith("pull_request"):
+        return jsonify({"geteld": False, "melding": "Pull requests tellen niet mee."}), 200
+    letter = str((request.get_json(silent=True) or {}).get("letter", ""))
+    if len(letter) != 1 or letter not in LETTERS:
+        return fout("Verwacht: {letter: A–G}.")
+    project, t = project_code(str(claims["repository_id"])), nu()
+    dag = t.date().isoformat()
+    r = db().execute("SELECT dag, dag_scans FROM tel_projecten WHERE project = ?", (project,)).fetchone()
+    if r and r["dag"] == dag and r["dag_scans"] >= TEL_PER_DAG:
+        return jsonify({"geteld": False, "melding": f"Vandaag al {TEL_PER_DAG} scans van dit project meegeteld."}), 200
+    if r is None:
+        db().execute("INSERT INTO tel_projecten (project, eerste, eerste_op, laatste, laatste_op, scans, dag, dag_scans) "
+                     "VALUES (?,?,?,?,?,1,?,1)", (project, letter, t.isoformat(), letter, t.isoformat(), dag))
+    else:
+        db().execute("UPDATE tel_projecten SET laatste = ?, laatste_op = ?, scans = scans + 1, "
+                     "dag_scans = CASE WHEN dag = ? THEN dag_scans + 1 ELSE 1 END, dag = ? WHERE project = ?",
+                     (letter, t.isoformat(), dag, dag, project))
+    db().execute("INSERT INTO tel_dagen (dag, scans) VALUES (?, 1) ON CONFLICT(dag) DO UPDATE SET scans = scans + 1", (dag,))
+    db().commit()
+    return jsonify({"geteld": True, "melding": f"Meegeteld: score {letter}."}), 201
+
+
+def statistiek() -> dict:
+    """Voor checkmijn.ai/resultaten en de homepage."""
+    c = db()
+    scans = c.execute("SELECT COALESCE(SUM(scans), 0) FROM tel_dagen").fetchone()[0]
+    projecten = c.execute("SELECT COUNT(*) FROM tel_projecten").fetchone()[0]
+    sinds = c.execute("SELECT MIN(dag) FROM tel_dagen").fetchone()[0]
+    rijen = c.execute("SELECT eerste, laatste, COUNT(*) n FROM tel_projecten WHERE scans >= 2 GROUP BY eerste, laatste").fetchall()
+    matrix = {(r["eerste"], r["laatste"]): r["n"] for r in rijen}
+    herhaald = sum(matrix.values())
+    beter = sum(n for (a, b), n in matrix.items() if LETTERS.index(b) < LETTERS.index(a))
+    slechter = sum(n for (a, b), n in matrix.items() if LETTERS.index(b) > LETTERS.index(a))
+    stappen = sum(n * (LETTERS.index(a) - LETTERS.index(b)) for (a, b), n in matrix.items() if LETTERS.index(b) < LETTERS.index(a))
+    overgangen = sorted(((a, b, n) for (a, b), n in matrix.items() if a != b), key=lambda x: (-x[2], x[0], x[1]))
+    eerste = {r["eerste"]: r["n"] for r in c.execute("SELECT eerste, COUNT(*) n FROM tel_projecten GROUP BY eerste")}
+    laatste = {r["laatste"]: r["n"] for r in c.execute("SELECT laatste, COUNT(*) n FROM tel_projecten WHERE scans >= 2 GROUP BY laatste")}
+    return {"scans": scans, "projecten": projecten, "sinds": sinds, "herhaald": herhaald, "beter": beter,
+            "slechter": slechter, "gelijk": herhaald - beter - slechter, "matrix": matrix, "overgangen": overgangen,
+            "gem_stappen": round(stappen / beter, 1) if beter else 0, "eerste": eerste, "laatste": laatste,
+            "letters": LETTERS}
+
+
+@app.get("/api/v1/statistiek")
+def statistiek_api():
+    s = statistiek()
+    s["matrix"] = [{"van": a, "naar": b, "projecten": n} for (a, b), n in sorted(s["matrix"].items())]
+    s["overgangen"] = [{"van": a, "naar": b, "projecten": n} for a, b, n in s["overgangen"]]
+    return jsonify(s)
 
 
 @app.get("/api/v1/rapport/<rid>")
