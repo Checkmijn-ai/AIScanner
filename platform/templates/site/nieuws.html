@@ -54,7 +54,7 @@
     </div>
     <div class="kaart">
       <h2 class="mt0">Bronnen</h2>
-      <ul class="bronlijst">{% for b in bronnen %}<li><span class="stip{{ '' if b.ok else ' uit' }}" title="{{ 'Werkt' if b.ok else 'Nu niet bereikbaar' }}" aria-hidden="true"></span><a href="https://{{ b.site }}" rel="noopener">{{ b.naam }}</a> <span class="taal">{{ b.taal|upper }}</span></li>{% endfor %}</ul>
+      <ul class="bronlijst">{% for b in bronnen %}<li><span class="stip{{ '' if b.ok else ' uit' }}" title="{{ 'Werkt' if b.ok else 'Nu niet bereikbaar' }}" data-fout="{{ b.fout }}" aria-hidden="true"></span><a href="https://{{ b.site }}" rel="noopener">{{ b.naam }}</a> <span class="taal">{{ b.taal|upper }}</span></li>{% endfor %}</ul>
       <p class="zacht klein">Een bron missen? Mail <a href="mailto:{{ CONTACT }}">{{ CONTACT }}</a>.</p>
     </div>
   </div>

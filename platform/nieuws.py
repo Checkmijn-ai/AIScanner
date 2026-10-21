@@ -48,8 +48,7 @@ VOORRANG = {"ai-security": 0, "cyber": 1, "ai": 2}
 BRONNEN = [
     # Cybersecurity
     {"naam": "Security.nl", "url": "https://www.security.nl/rss/headlines.xml", "taal": "nl", "soort": "cyber"},
-    {"naam": "NCSC", "url": "https://www.ncsc.nl/actueel/nieuws/rss", "taal": "nl", "soort": "cyber"},
-    {"naam": "CCB België", "url": "https://ccb.belgium.be/nl/rss.xml", "taal": "nl", "soort": "cyber"},
+    {"naam": "NCSC", "url": "https://feeds.ncsc.nl/nieuws.rss", "taal": "nl", "soort": "cyber"},
     {"naam": "BleepingComputer", "url": "https://www.bleepingcomputer.com/feed/", "taal": "en", "soort": "cyber"},
     {"naam": "The Hacker News", "url": "https://feeds.feedburner.com/TheHackersNews", "taal": "en", "soort": "cyber"},
     {"naam": "Krebs on Security", "url": "https://krebsonsecurity.com/feed/", "taal": "en", "soort": "cyber"},
@@ -58,8 +57,7 @@ BRONNEN = [
     # Algemene tech (alleen AI of beveiliging)
     {"naam": "Tweakers", "url": "https://tweakers.net/feeds/nieuws.xml", "taal": "nl", "soort": "tech"},
     {"naam": "NOS Tech", "url": "https://feeds.nos.nl/nosnieuwstech", "taal": "nl", "soort": "tech"},
-    {"naam": "Computable", "url": "https://www.computable.nl/rss.xml", "taal": "nl", "soort": "tech"},
-    {"naam": "AG Connect", "url": "https://www.agconnect.nl/rss.xml", "taal": "nl", "soort": "tech"},
+    {"naam": "Techzine", "url": "https://www.techzine.nl/feed/", "taal": "nl", "soort": "tech"},
     {"naam": "Data News", "url": "https://datanews.knack.be/feed/", "taal": "nl", "soort": "tech"},
     # AI
     {"naam": "The Verge", "url": "https://www.theverge.com/rss/ai-artificial-intelligence/index.xml", "taal": "en", "soort": "ai"},
@@ -73,8 +71,7 @@ BRONNEN = [
     {"naam": "SecurityWeek AI", "url": "https://www.securityweek.com/category/artificial-intelligence/feed/", "taal": "en", "soort": "ai-security"},
     {"naam": "Embrace The Red", "url": "https://embracethered.com/blog/index.xml", "taal": "en", "soort": "ai-security"},
     {"naam": "Simon Willison", "url": "https://simonwillison.net/atom/everything/", "taal": "en", "soort": "ai-security", "filter": "sec"},
-    {"naam": "OWASP GenAI", "url": "https://genai.owasp.org/feed/", "taal": "en", "soort": "ai-security"},
-    {"naam": "AI Incident Database", "url": "https://incidentdatabase.ai/rss.xml", "taal": "en", "soort": "ai-security"},
+    {"naam": "AI Incident Database", "url": "https://incidentdatabase.ai/rss.xml", "taal": "en", "soort": "ai-security", "max": 3},
 ]
 
 # --- trefwoorden ---------------------------------------------------------------------------------------------
@@ -88,6 +85,11 @@ _SEC = re.compile(
     r"breach|aanval|attack|jailbreak|prompt[- ]?inje|backdoor|zero[- ]day|spyware|gestolen|stolen|leak|gelekt|"
     r"misbruik|abuse|fraud|oplicht|scam|cyber|incident|poison|exfiltr|rogue|deleted|wiped|gewist|verwijderd|"
     r"unsafe|safety|veiligheid|misalign|sabota|credential|wachtwoord|password|surveillance|privacy)", re.I)
+# Voor AI-bronnen: alleen echte beveiligingswoorden in de titel (niet "attacking Nvidia" of "safety bill").
+_SEC_AI = re.compile(
+    r"(hack(ed|er|ers|ing|s)?\b|datalek|kwetsba|vulnerab|exploit|cve-\d|malware|ransomware|phishing|breach|"
+    r"cyber|zero[- ]day|spyware|backdoor|lek\b|lekken|gelekt|leak|attackers?\b|aanvaller|prompt[- ]?inje|jailbreak|"
+    r"exfiltr|rogue|stolen|gestolen|credentials|security flaw|beveiligingslek|data poisoning)", re.I)
 _SEC_STERK = re.compile(
     r"(hack|datalek|kwetsba|vulnerab|exploit|cve-\d|malware|ransomware|phishing|breach|cyber|zero[- ]day|"
     r"spyware|backdoor|ddos|lek\b|lekken|gelekt|leak|aanval|attack|beveilig|security)", re.I)
@@ -244,15 +246,25 @@ def indeling(bron: dict, titel: str, tekst: str) -> str | None:
     if soort == "cyber":
         return "ai-security" if (_AI_HOOFD.search(titel) or _AI.search(titel)) else "cyber"
     if soort == "ai":
-        return "ai-security" if (sterk or (is_sec and _SEC.search(titel))) else "ai"
-    # tech
-    if is_ai and (sterk or _SEC.search(titel)):
+        return "ai-security" if _SEC_AI.search(titel) else "ai"
+    # tech: alleen wat in de titel over AI of beveiliging gaat
+    ai_titel = bool(_AI_HOOFD.search(titel) or _AI.search(titel))
+    if ai_titel and _SEC_AI.search(titel):
         return "ai-security"
-    if is_ai:
+    if ai_titel:
         return "ai"
-    if sterk:
+    if _SEC_AI.search(titel):
         return "cyber"
     return None
+
+
+# Berichten in een andere taal dan Nederlands of Engels (sommige feeds zijn gemengd) slaan we over.
+_ANDERE_TAAL = re.compile(r"\b(pour|après|dans|avec|cette|une|les|des|sur|não|uma|para|com|em|por|após|sobre|und|nicht|"
+                          r"für|mit|der|die|das|del|los|las|el|con|contra|nova|ação|pública|vaga|família)\b", re.I)
+
+
+def andere_taal(titel: str) -> bool:
+    return len(_ANDERE_TAAL.findall(titel)) >= 1 and not re.search(r"\b(the|and|of|het|een|van|voor|met)\b", titel, re.I)
 
 
 def checks_bij(titel: str, tekst: str) -> list[str]:
@@ -381,6 +393,10 @@ def voeg_toe(d: dict, bron: dict, ruw: list[dict], nu: datetime) -> int:
     nieuw = 0
     grens = nu - timedelta(days=NIEUW_MAX_DAGEN)
     for r in ruw:
+        if bron.get("max") and nieuw >= bron["max"]:
+            break
+        if andere_taal(r["titel"]):
+            continue
         url = schone_link(r["url"])
         if not url or nette_url(url) in bekend:
             continue
@@ -428,6 +444,20 @@ def ophalen(pad: Path = PAD, bronnen: list[dict] = BRONNEN, haler=haal) -> dict:
     d.setdefault("bronnen", {})
     grens = nu - timedelta(days=BEWAAR_DAGEN)
     d["items"] = [it for it in d.get("items", []) if datetime.fromisoformat(it["datum"]) >= grens]
+    # Regels kunnen veranderen: bestaande berichten opnieuw indelen (en weglaten wat er niet meer bij hoort).
+    per_naam = {b["naam"]: b for b in bronnen}
+    bewaard = []
+    for it in d["items"]:
+        b = per_naam.get(it["bron"])
+        if b is None or andere_taal(it["titel"]):
+            continue
+        tab = indeling(b, it["titel"], it.get("samenvatting", ""))
+        if tab is None:
+            continue
+        if not any(o["bron"] in per_naam and VOORRANG[tab] > VOORRANG[it["tab"]] for o in it.get("ook", [])):
+            it["tab"] = tab
+        bewaard.append(it)
+    d["items"] = bewaard
     with ThreadPoolExecutor(max_workers=8) as pool:
         resultaten = list(pool.map(lambda b: haler(b, d["bronnen"]), bronnen))
     # Vaste volgorde (de lijst hierboven), zodat dezelfde feeds altijd hetzelfde resultaat geven.

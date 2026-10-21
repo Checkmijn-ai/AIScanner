@@ -386,7 +386,8 @@ def nieuws():
             groepen[-1][1].append(i)
         per_tab[t] = {"naam": nw.TABS[t], "aantal": len(items), "groepen": groepen}
     bronnen = [{"naam": b["naam"], "taal": b["taal"], "soort": b["soort"], "site": domein_van(b["url"]),
-                "ok": d.get("bronnen", {}).get(b["naam"], {}).get("ok")} for b in nw.BRONNEN]
+                "ok": d.get("bronnen", {}).get(b["naam"], {}).get("ok"),
+                "fout": d.get("bronnen", {}).get(b["naam"], {}).get("fout", "")} for b in nw.BRONNEN]
     return pagina("nieuws.html", "Nieuws over AI en security",
                   "Dagelijks het belangrijkste nieuws over AI-security, cyberincidenten en AI, uit Nederlandse, Vlaamse "
                   "en Engelstalige bronnen. Twee keer per dag bijgewerkt, zonder dubbele berichten.",
