@@ -37,8 +37,8 @@ jobs:
                   ook = re.findall(r'<a href="[^"]*" rel="noopener">([^<]*)</a>', rest.split('class="ook"')[1]) if 'class="ook"' in rest else []
                   regels.append(f"{bron} | {html.unescape(titel)}" + (f"  [ook: {', '.join(ook)}]" if ook else ""))
               notice(f"Tabblad {pid} ({len(items)})", regels or ["leeg"])
-          uit = re.findall(r'class="stip uit"[^>]*></span><a[^>]*>([^<]*)', s)
-          notice("Bronnen die niet werken", uit or ["geen"])
+          uit = re.findall(r'class="stip uit"[^>]*data-fout="([^"]*)"[^>]*></span><a[^>]*>([^<]*)', s)
+          notice("Bronnen die niet werken", [f"{n}: {html.unescape(f)}" for f, n in uit] or ["geen"])
           if len(uit) > 8:
               print(f"::error::{len(uit)} bronnen werken niet")
               raise SystemExit(1)
