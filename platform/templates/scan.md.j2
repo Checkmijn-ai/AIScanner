@@ -129,9 +129,13 @@ Doe niets zonder een duidelijk "ja".
 
 **B4. Zeg tegen de gebruiker:**
 
-> "Het bestand staat erin. Na de volgende synchronisatie met GitHub draait de scan, dat duurt een paar minuten. Is je repository privé, dan verschijnt daarna het rapport in `.checkmijn/RAPPORT.md`. Vraag me dan: 'Lees .checkmijn/RAPPORT.md en herstel de bevindingen.' De uitslag staat ook in GitHub, bij Actions → checkmijn.ai."
+> "Het bestand staat erin. Zodra het project met GitHub gesynchroniseerd is, draait de scan daar; dat duurt 2 à 3 minuten. Typ daarna **verder**, dan toon ik je de uitslag."
 
-**B5. Wanneer `.checkmijn/RAPPORT.md` er is: toon eerst de uitslag, en verander nog niets.** Lees het bestand en toon de gebruiker, zoals de scanner ze geeft:
+**B5. Typt de gebruiker "verder" (of vraagt hij naar de uitslag)?** Kijk of `.checkmijn/RAPPORT.md` er is en of het nieuw is: de bovenste regel van de tabel *Verloop van de scans* moet van ná je laatste wijziging zijn.
+- Nog geen (nieuw) rapport? Zeg: "De scan is nog bezig, of het project is nog niet gesynchroniseerd. Typ over een minuut opnieuw **verder**." Verander niets.
+- Staat het workflowbestand er al (een eerdere keer), sla dan B2 en B3 over en ga meteen naar deze stap.
+
+Is het rapport er: **toon eerst de uitslag, en verander nog niets.** Lees het bestand en toon de gebruiker, zoals de scanner ze geeft:
 - de **scanscore** en, als die er is, de vorige score uit de tabel *Verloop van de scans* (bv. "G → C");
 - het aantal bevindingen per ernst;
 - een lijst van de bevindingen Kritiek en Hoog, met de check en het bestand;
@@ -143,7 +147,7 @@ Vraag daarna letterlijk:
 
 **Wacht op het antwoord.** Pas bij "ja" herstel je, eerst **Kritiek**, dan **Hoog**, daarna **Middel**. Een bevinding met *(nakijken)* is niet zeker: kijk eerst of ze klopt. Wijzig `.checkmijn/` en het workflowbestand nooit zelf, en schrijf zelf geen score.
 
-**B6. Na het herstel:** zeg dat GitHub na de synchronisatie opnieuw scant, dat het een paar minuten duurt, en dat de gebruiker daarna kan vragen: "Toon de nieuwe score uit .checkmijn/RAPPORT.md." Toon dan de nieuwe score naast de vorige, met wat hersteld is en wat nog openstaat.
+**B6. Na het herstel:** zeg: "Klaar. GitHub scant nu opnieuw; typ over 2 à 3 minuten **verder** voor je nieuwe score." Typt de gebruiker dan "verder", toon de nieuwe score naast de vorige (bv. "C → B"), met wat hersteld is en wat nog openstaat.
 
 **Repository openbaar?** Dan komt er geen rapport in het project, want dan zou iedereen de bevindingen lezen. De gebruiker ziet de uitslag in GitHub, bij Actions → checkmijn.ai → de laatste run. Raad aan de repository privé te maken.
 

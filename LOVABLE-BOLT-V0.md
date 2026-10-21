@@ -12,25 +12,21 @@ Deze tools hebben geen terminal, dus de scanner kan er niet in draaien. Daarom d
 - Lovable: de GitHub-knop, of de projectinstellingen → GitHub → Connect.
 - Bolt en v0: de GitHub-koppeling in het menu.
 
-**2. Plak dit in de chat van je bouwtool:**
+**2. Plak dit één keer in de chat van je bouwtool:**
 
 ```
 Volg de instructie op https://checkmijn.ai/scan.md, route B (via GitHub), voor dit project.
 Maak het bestand .github/workflows/checkmijn.yml precies zoals daar staat, en verander verder niets.
-Geef zelf geen score: de scan gebeurt in GitHub.
+De scan draait daarna in GitHub. Typ ik "verder", lees dan .checkmijn/RAPPORT.md en toon mij de score
+en de bevindingen Kritiek en Hoog, zonder iets te veranderen. Herstel pas als ik "ja" zeg.
+Wijzig .checkmijn/ en het workflowbestand nooit, en geef zelf geen score.
 ```
 
 Werkt de link nog niet? Gebruik dan https://checkmijn-ai.github.io/AIScanner/scan.md.
 
-**3. Wacht een paar minuten**, en plak dan:
+**3. Typ na 2 à 3 minuten: `verder`.** Zo lang duurt de scan in GitHub. Je bouwtool toont de score en de bevindingen en vraagt of hij mag herstellen. Zeg `ja`, en typ na het herstel weer `verder` voor de nieuwe score. Is de scan nog niet klaar, dan zegt je bouwtool dat; typ dan een minuut later opnieuw `verder`.
 
-```
-Lees .checkmijn/RAPPORT.md. Toon mij eerst de scanscore, de vorige score en de bevindingen
-Kritiek en Hoog, en verander nog niets. Herstel pas als ik "ja" zeg: eerst Kritiek, dan Hoog, dan Middel.
-Wijzig .checkmijn/ en .github/workflows/checkmijn.yml niet, en geef zelf geen score.
-```
-
-Na elke wijziging scant GitHub opnieuw en wordt het rapport bijgewerkt. In het rapport staat een tabel met alle scans, zodat je het verloop ziet (bv. G → C → B). Herhaal stap 3 tot de bevindingen weg zijn.
+Na elke wijziging scant GitHub opnieuw en wordt het rapport bijgewerkt. In het rapport staat een tabel met alle scans, zodat je het verloop ziet (bv. G → C → B).
 
 **Het volledige rapport (HTML)** vind je via de link bovenaan `RAPPORT.md`: de run in GitHub, onder *Artifacts*.
 

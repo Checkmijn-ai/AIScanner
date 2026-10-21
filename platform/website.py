@@ -24,10 +24,10 @@ TEST = os.environ.get("CHECKMIJN_OMGEVING", "") == "test"
 AGENT_ZIN = "Volg de instructie op checkmijn.ai/scan.md voor dit project."
 BOUWTOOL_1 = ("Volg de instructie op https://checkmijn.ai/scan.md, route B (via GitHub), voor dit project.\n"
               "Maak het bestand .github/workflows/checkmijn.yml precies zoals daar staat, en verander verder niets.\n"
-              "Geef zelf geen score: de scan gebeurt in GitHub.")
-BOUWTOOL_2 = ("Lees .checkmijn/RAPPORT.md. Toon mij eerst de scanscore, de vorige score en de bevindingen\n"
-              "Kritiek en Hoog, en verander nog niets. Herstel pas als ik \"ja\" zeg: eerst Kritiek, dan Hoog, dan Middel.\n"
-              "Wijzig .checkmijn/ en .github/workflows/checkmijn.yml niet, en geef zelf geen score.")
+              "De scan draait daarna in GitHub. Typ ik \"verder\", lees dan .checkmijn/RAPPORT.md en toon mij de score\n"
+              "en de bevindingen Kritiek en Hoog, zonder iets te veranderen. Herstel pas als ik \"ja\" zeg.\n"
+              "Wijzig .checkmijn/ en het workflowbestand nooit, en geef zelf geen score.")
+BOUWTOOL_2 = "verder"
 BRON: dict = {}  # api.py zet hier "tekst": functie die een bestand van de dagversie als bytes geeft
 
 DISCLAIMER = ("De scanscore is een uitslag van de scan op een bepaald moment. Ze is geen keurmerk, certificaat of "
