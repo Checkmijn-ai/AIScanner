@@ -1,0 +1,45 @@
+name: Nieuws controleren
+# Kijkt na het ophalen (05:10 en 15:10 UTC) of /nieuws gevuld is en welke bronnen niet werken.
+on:
+  schedule:
+    - cron: "40 5 * * *"
+  workflow_dispatch:
+    inputs:
+      omgeving:
+        description: "live of test"
+        default: "live"
+permissions:
+  contents: read
+jobs:
+  controle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Pagina lezen
+        env:
+          OMGEVING: ${{ inputs.omgeving || 'live' }}
+        run: |
+          host=checkmijn.ai; [ "$OMGEVING" = "test" ] && host=test.checkmijn.ai
+          curl -fsS "https://$host/nieuws" -o nieuws.html
+          python3 - <<'PY'
+          import html, re
+          s = open("nieuws.html", encoding="utf-8").read()
+          def notice(titel, regels):
+              tekst = "%0A".join(r.replace("%", "%25").replace("\n", " ") for r in regels)
+              print(f"::notice title={titel}::{tekst}")
+          stand = re.findall(r"Bijgewerkt[^<]*", s)
+          tabs = re.findall(r'role="tab"[^>]*>([^<]*)<span class="aantal">(\d+)', s)
+          notice("Stand", stand + [f"{n.strip()}: {a}" for n, a in tabs])
+          for pid, inhoud in re.findall(r'<section class="tabpaneel" id="([^"]+)"(.*?)</section>', s, re.S):
+              items = re.findall(r'<span class="bron">([^<]*)</span>.*?<h3><a href="[^"]*" rel="noopener">([^<]*)</a></h3>(.*?)</article>', inhoud, re.S)
+              regels = []
+              for bron, titel, rest in items[:40]:
+                  ook = re.findall(r'<a href="[^"]*" rel="noopener">([^<]*)</a>', rest.split('class="ook"')[1]) if 'class="ook"' in rest else []
+                  regels.append(f"{bron} | {html.unescape(titel)}" + (f"  [ook: {', '.join(ook)}]" if ook else ""))
+              notice(f"Tabblad {pid} ({len(items)})", regels or ["leeg"])
+          uit = re.findall(r'class="stip uit"[^>]*></span><a[^>]*>([^<]*)', s)
+          notice("Bronnen die niet werken", uit or ["geen"])
+          if len(uit) > 8:
+              print(f"::error::{len(uit)} bronnen werken niet")
+              raise SystemExit(1)
+          PY
