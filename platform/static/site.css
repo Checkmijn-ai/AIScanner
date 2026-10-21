@@ -394,3 +394,32 @@ h1.check-titel { font-size: clamp(1.5rem, 3.2vw, 2.3rem); max-width: 34em; }
 .postkaart pre { white-space: pre-wrap; }
 @media (max-width: 900px) { .bronlijst { columns: 2; } }
 .bericht .origineel { font-size: .8rem; color: var(--zacht); font-style: italic; margin: -2px 0 6px; }
+
+/* ---------- hoe het werkt ---------- */
+.held-sub { padding: 64px 0 72px; }
+.held-sub h1 { font-size: clamp(2rem, 4.2vw, 2.9rem); }
+.verloop-vb { background: #fff; color: var(--navy); border-radius: 12px; padding: 24px; box-shadow: 0 20px 50px rgba(0,0,0,.25); max-width: 400px; margin-left: auto; }
+.verloop-stap { display: flex; align-items: center; gap: 14px; }
+.verloop-stap .chip { width: 56px; height: 56px; font-size: 1.8rem; border-radius: 8px; }
+.verloop-stap b { display: block; font: 700 1.05rem var(--kop); }
+.verloop-stap span:not(.chip) { font-size: .88rem; color: var(--zacht); }
+.verloop-pijl { margin: 10px 0 10px 27px; padding: 10px 0 10px 24px; border-left: 2px dashed var(--turq-d); font-size: .85rem; color: var(--turq-d); font-weight: 600; }
+.verloop-voet { margin: 16px 0 0; padding-top: 12px; border-top: 1px solid var(--lijn); font-size: .8rem; color: var(--zacht); }
+@media (max-width: 860px) { .verloop-vb { margin: 12px 0 0; } }
+.drie-stappen { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; counter-reset: st; }
+.drie-stappen > div { padding: 8px 28px 8px 0; position: relative; }
+.drie-stappen > div + div { padding-left: 28px; border-left: 1px solid var(--lijn); }
+@media (max-width: 760px) { .drie-stappen { grid-template-columns: 1fr; } .drie-stappen > div + div { border-left: 0; padding-left: 0; border-top: 1px solid var(--lijn); padding-top: 20px; margin-top: 12px; } }
+.stapnr { display: inline-grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--navy); color: #fff; font: 700 1rem var(--kop); margin-bottom: 12px; }
+.beloften-klein > div { display: flex; gap: 12px; align-items: flex-start; }
+.beloften-klein .icoon { flex: none; margin: 0; }
+.beloften-klein p { margin: 0; font-size: .95rem; }
+.routes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+@media (max-width: 1000px) { .routes { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .routes { grid-template-columns: 1fr; } }
+.route { display: flex; flex-direction: column; gap: 6px; }
+.route .label { align-self: flex-start; }
+.route h3 { margin: 6px 0 0; }
+.route p { flex: 1; margin: 0 0 8px; }
+.route:hover { box-shadow: 0 8px 24px rgba(2,37,79,.08); }
+.cta.mt0 { margin-top: 0; }
