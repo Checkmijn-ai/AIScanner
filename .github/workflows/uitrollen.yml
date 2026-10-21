@@ -50,9 +50,20 @@ jobs:
           if [ -n "$HOSTKEY" ]; then
             printf '%s\n' "$HOSTKEY" > ~/.ssh/known_hosts
           else
-            ssh-keyscan -t ed25519 "$HOST" > ~/.ssh/known_hosts 2>/dev/null
-            echo "::notice::Vingerafdruk van de server (zet deze regel als secret UITROL_HOSTKEY):"
-            cat ~/.ssh/known_hosts
+            if ! timeout 10 bash -c "</dev/tcp/$HOST/22" 2>/dev/null; then
+              echo "::error::Poort 22 van $HOST is niet bereikbaar vanuit GitHub. Staat TCP 22 open in de firewall van Hetzner (bron: overal)?"
+              exit 1
+            fi
+            ssh-keyscan -T 15 -t ed25519 "$HOST" > ~/.ssh/known_hosts 2>/dev/null || true
+            if [ ! -s ~/.ssh/known_hosts ]; then
+              echo "::error::De server gaf geen SSH-sleutel terug (ssh-keyscan leeg)."
+              exit 1
+            fi
+            echo "::notice::Vingerafdruk van de server (zet deze regel als secret UITROL_HOSTKEY): $(cat ~/.ssh/known_hosts)"
+          fi
+          if ! grep -q "BEGIN OPENSSH PRIVATE KEY" ~/.ssh/uitrol; then
+            echo "::error::Het secret UITROL_SLEUTEL lijkt niet op een privésleutel (verwacht: -----BEGIN OPENSSH PRIVATE KEY-----)."
+            exit 1
           fi
       - name: Uitrollen
         if: steps.klaar.outputs.ok == 'true'
@@ -60,8 +71,14 @@ jobs:
           HOST: ${{ secrets.UITROL_HOST }}
           TAK: ${{ github.event.inputs.tak || github.ref_name }}
         run: |
+          set +e
           ssh -i ~/.ssh/uitrol -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=20 \
-            "root@$HOST" "bash -s -- $TAK" < server/uitrol.sh
+            "root@$HOST" "bash -s -- $TAK" < server/uitrol.sh 2> >(tee /tmp/ssh-fout.txt >&2)
+          rc=$?
+          if [ $rc -ne 0 ]; then
+            echo "::error::Uitrollen mislukt (code $rc): $(tail -n 5 /tmp/ssh-fout.txt | tr '\n' ' ' | cut -c1-900)"
+            exit $rc
+          fi
       - name: Controleren
         if: steps.klaar.outputs.ok == 'true'
         env:
