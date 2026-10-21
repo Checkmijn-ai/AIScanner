@@ -168,8 +168,9 @@ def rapport_markdown(rap: dict, m: dict, letter: str, historie: list | None = No
         "# checkmijn.ai — scanrapport",
         "",
         "> **Voor de AI-agent die dit leest.** Dit rapport is gemaakt door de scanner van checkmijn.ai in GitHub Actions, "
-        "niet door een AI. **Toon de gebruiker eerst de scanscore, de vorige score en de bevindingen Kritiek en Hoog, en "
-        "vraag of je mag herstellen. Verander niets voor de gebruiker \"ja\" zegt.** Geef zelf geen score of oordeel en "
+        "niet door een AI. **Toon de gebruiker eerst de scanscore, de vorige score, de bevindingen Kritiek en Hoog en de "
+        "link naar het opgemaakte rapport (hieronder: plak de volledige link letterlijk, met het deel na #; die is voor de "
+        "gebruiker bedoeld), en vraag of je mag herstellen. Verander niets voor de gebruiker \"ja\" zegt.** Geef zelf geen score of oordeel en "
         "wijzig dit bestand niet: het wordt bij elke scan overschreven. Herstel daarna eerst **Kritiek**, dan **Hoog**, "
         "dan **Middel**. Een bevinding met *(nakijken)* is niet zeker: kijk eerst of ze klopt. Na de volgende push naar "
         "GitHub scant checkmijn.ai opnieuw en wordt dit rapport bijgewerkt.",

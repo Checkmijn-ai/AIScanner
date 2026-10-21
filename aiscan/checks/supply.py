@@ -444,7 +444,16 @@ PY_TOOLS = {"gunicorn", "uvicorn", "wheel", "setuptools", "pip", "pytest", "blac
 JS_IMPLICIT = re.compile(r"^(@types/|@angular/|@nestjs/|@cyclonedx/|zone\.js$|tslib$|core-js|regenerator-runtime|@babel/runtime|"
                          r"eslint|prettier|typescript$|ts-node|nodemon|husky|lint-staged|jest|vitest|mocha|"
                          r"babel|@babel/|webpack|vite|rollup|esbuild|postcss|autoprefixer|tailwindcss|sass$|less$|"
-                         r"@vitejs/|@angular/cli|@angular-devkit|cross-env|concurrently|rimraf|pm2|serve$|http-server)")
+                         r"@vitejs/|@angular/cli|@angular-devkit|cross-env|concurrently|rimraf|pm2|serve$|http-server|"
+                         r"wrangler$|react-email$|lovable-tagger$)")
+# Pakketten die een ander pakket (een "preset") zelf laadt: niet ongebruikt, ook al importeert de code ze niet.
+JS_PRESETS = {
+    "@lovable.dev/vite-tanstack-config": ("@tanstack/react-start", "@tanstack/router-plugin", "@vitejs/plugin-react",
+                                          "@tailwindcss/vite", "vite-tsconfig-paths", "@cloudflare/vite-plugin", "nitro",
+                                          "lovable-tagger"),
+    "react": ("react-dom",),
+    "next": ("react-dom",),
+}
 
 
 @check("C-19")
@@ -454,7 +463,8 @@ def unused(proj, meta):
     if not ms:
         r.status, r.reden = "Niet van toepassing", "Geen afhankelijkheden gevonden."
         return r
-    js_src = "\n".join(proj.text(p) for p in proj.source_files({".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs", ".vue", ".svelte", ".html", ".json"})
+    js_src = "\n".join(proj.text(p) for p in proj.source_files({".js", ".jsx", ".ts", ".tsx", ".mjs", ".cjs", ".vue", ".svelte", ".html", ".json",
+                                                               ".css", ".scss", ".sass", ".less", ".jsonc", ".toml"})
                        if p.name not in ("package.json", "package-lock.json", "npm-shrinkwrap.json"))
     py_src = "\n".join(proj.text(p) for p in proj.source_files({".py", ".cfg", ".ini", ".toml", ".txt", ".yml", ".yaml"}
                                                                ) if not p.name.startswith("requirements"))
@@ -462,8 +472,10 @@ def unused(proj, meta):
         if m.ecosystem == "npm":
             pkg = proj.json(m.path) or {}
             scripts = " ".join((pkg.get("scripts") or {}).values())
+            alle = set(m.direct) | set(pkg.get("dependencies") or {}) | set(pkg.get("devDependencies") or {})
+            geladen = {d for preset, deps in JS_PRESETS.items() if preset in alle for d in deps}
             for n in m.direct:
-                if JS_IMPLICIT.match(n):
+                if JS_IMPLICIT.match(n) or n in geladen:
                     continue
                 pat = re.compile(r"""(['"`]|node_modules/|~)""" + re.escape(n) + r"""([/:@][^'"`]*)?['"`]""")
                 if not pat.search(js_src) and n not in scripts:

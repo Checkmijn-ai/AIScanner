@@ -473,3 +473,4 @@ h1.check-titel { font-size: clamp(1.5rem, 3.2vw, 2.3rem); max-width: 34em; }
 .b90 { width: 90%; }
 .b95 { width: 95%; }
 .b100 { width: 100%; }
+.route-herstel { font-size: .85rem; font-weight: 600; color: var(--turq-d); margin: 0 0 8px; }

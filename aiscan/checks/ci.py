@@ -8,7 +8,8 @@ from ..core import Finding, Result, snippet
 
 CI_FILES = (".github/workflows/*.yml", ".github/workflows/*.yaml", ".gitlab-ci.yml", "azure-pipelines.yml",
             "bitbucket-pipelines.yml", "Jenkinsfile", ".circleci/config.yml", ".drone.yml", "buildkite.yml")
-TEST = re.compile(r"\b(npm (run )?test|yarn (run )?test|pnpm (run )?test|npx (jest|vitest|mocha|playwright test|cypress run)|"
+TEST = re.compile(r"\b((npm|yarn|pnpm|bun) (run )?test\b|bun test|deno test|turbo (run )?test|nx (run-many -t )?test|"
+                  r"npx (jest|vitest|mocha|playwright test|cypress run)|"
                   r"\bjest\b|\bvitest\b|\bmocha\b|pytest|python -m (pytest|unittest)|\btox\b|go test|mvn (-B )?(verify|test)|"
                   r"gradlew? test|rspec|phpunit|dotnet test|cargo test|nox\b)")
 SAST = re.compile(r"(codeql|semgrep|opengrep|sonar(cloud|qube|-scanner)?|snyk code|\bbandit\b|njsscan|gosec|"
