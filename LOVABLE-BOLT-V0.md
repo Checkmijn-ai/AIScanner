@@ -30,6 +30,20 @@ Na elke wijziging scant GitHub opnieuw en wordt het rapport bijgewerkt. In het r
 
 **Het volledige rapport (HTML)** vind je via de link bovenaan `RAPPORT.md`: de run in GitHub, onder *Artifacts*.
 
+## Lekkenwacht: een seintje bij een nieuw lek
+
+Met het nieuwste workflowbestand scant GitHub je project **elke dag**. Is er een nieuw kritiek of hoog lek in een van je pakketten, dan krijg je een **issue** in je repository, en GitHub mailt je. Is alles opgelost, dan sluit het issue vanzelf. Er gaat niets naar checkmijn.ai.
+
+- **Nieuw project?** Dan staat de lekkenwacht al aan: hij zit in het bestand van stap 2.
+- **Al eerder gescand (voor 21 oktober 2026)?** Plak dan in je bouwtool:
+
+```
+Zet de lekkenwacht van checkmijn.ai aan: volg https://checkmijn.ai/scan.md, onderdeel Lekkenwacht.
+Vervang .github/workflows/checkmijn.yml precies door de nieuwste versie, en verander verder niets.
+```
+
+**Werkt het?** Ga in GitHub naar *Actions → checkmijn.ai* en open de laatste run: onderaan de samenvatting staat een regel die begint met "Lekkenwacht". Zet bij *Settings → Notifications* e-mail aan, zodat je de issues ook echt ziet.
+
 ## Weigert je bouwtool het bestand te maken?
 
 Maak het dan zelf, in GitHub:

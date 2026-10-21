@@ -28,6 +28,11 @@ BOUWTOOL_1 = ("Volg de instructie op https://checkmijn.ai/scan.md, route B (via 
               "en de bevindingen Kritiek en Hoog, zonder iets te veranderen. Herstel pas als ik \"ja\" zeg.\n"
               "Wijzig .checkmijn/ en het workflowbestand nooit, en geef zelf geen score.")
 BOUWTOOL_2 = "verder"
+LEKKENWACHT_BOUWTOOL = ("Zet de lekkenwacht van checkmijn.ai aan: volg https://checkmijn.ai/scan.md, onderdeel Lekkenwacht.\n"
+                        "Vervang .github/workflows/checkmijn.yml precies door de nieuwste versie, en verander verder niets.")
+LEKKENWACHT_PIPELINE = ("# 1. elke dag scannen\non:\n  schedule:\n    - cron: \"30 4 * * *\"\n\n"
+                        "# 2. bij permissions\n  issues: write\n\n"
+                        "# 3. bij de stap van checkmijn\n  with:\n    waarschuwen: auto")
 BRON: dict = {}  # api.py zet hier "tekst": functie die een bestand van de dagversie als bytes geeft
 
 DISCLAIMER = ("De scanscore is een uitslag van de scan op een bepaald moment. Ze is geen keurmerk, certificaat of "
@@ -182,7 +187,8 @@ def home():
 def hoe_het_werkt():
     return pagina("hoe-het-werkt.html", "Hoe het werkt",
                   "Scan met je AI-agent, via GitHub (ook voor Lovable, Bolt en v0) of laat keuren vanaf niveau 2.",
-                  agent_zin=AGENT_ZIN, workflow=workflow(), bouwtool_1=BOUWTOOL_1, bouwtool_2=BOUWTOOL_2)
+                  agent_zin=AGENT_ZIN, workflow=workflow(), bouwtool_1=BOUWTOOL_1, bouwtool_2=BOUWTOOL_2,
+                  lw_bouwtool=LEKKENWACHT_BOUWTOOL, lw_pipeline=LEKKENWACHT_PIPELINE)
 
 
 @site.get("/niveaus")

@@ -15,6 +15,7 @@ De scan wordt gedaan door **de scanner van checkmijn.ai**, niet door jou. Geef z
 **Welke route?**
 - **Route A** (hieronder, stap 0 tot 11): je hebt een terminal en Python 3.11+. Bv. Claude Code, Cursor, Copilot, Windsurf, Replit.
 - **Route B** (onderaan): je hebt geen terminal, maar het project is gekoppeld aan GitHub. Bv. Lovable, Bolt, v0.
+- **Lekkenwacht** (helemaal onderaan): de gebruiker vraagt om de lekkenwacht aan te zetten of het workflowbestand bij te werken.
 
 # Route A — met een terminal
 
@@ -150,6 +151,24 @@ Vraag daarna letterlijk:
 **B6. Na het herstel:** zeg: "Klaar. GitHub scant nu opnieuw; typ over 2 à 3 minuten **verder** voor je nieuwe score." Typt de gebruiker dan "verder", toon de nieuwe score naast de vorige (bv. "C → B"), met wat hersteld is, wat nog openstaat, en de nieuwe link naar het opgemaakte rapport (volledig, letterlijk).
 
 **Repository openbaar?** Dan komt er geen rapport in het project, want dan zou iedereen de bevindingen lezen. De gebruiker ziet de uitslag in GitHub, bij Actions → checkmijn.ai → de laatste run. Raad aan de repository privé te maken.
+
+# Lekkenwacht — aanzetten of bijwerken
+
+De lekkenwacht scant het project elke dag in GitHub. Vindt hij een nieuw kritiek of hoog lek in een component, dan opent hij een issue in de repository (GitHub mailt de gebruiker); als alles opgelost is, sluit het issue vanzelf. Er gaat niets naar checkmijn.ai. Hij zit in het workflowbestand van route B.
+
+Volg dit **alleen als de gebruiker erom vraagt** ("zet de lekkenwacht aan", "werk het checkmijn-bestand bij").
+
+**L1. Is het project gekoppeld aan GitHub?** Zo niet: zie B1. Zonder GitHub werkt de lekkenwacht niet.
+
+**L2. Leg uit en vraag toestemming.** Zeg:
+
+> "Ik zet het nieuwste bestand `.github/workflows/checkmijn.yml` van checkmijn.ai in je project. Daarmee scant GitHub je project elke dag. Vindt het een nieuw kritiek of hoog lek in een van je pakketten, dan krijg je een issue in GitHub, en GitHub stuurt je daarover een mail. Je code en je lijst van pakketten blijven in GitHub. Mag ik dat doen? (ja/nee)"
+
+**L3. Bij "ja":** maak of vervang `.github/workflows/checkmijn.yml` met **exact** de inhoud van route B, stap B3 (ook te vinden op {{ m.instructie.rsplit('/', 1)[0] }}/checkmijn.yml). Verander verder niets. Dit is de enige keer dat je het workflowbestand mag wijzigen: omdat de gebruiker erom vroeg, en alleen met deze exacte inhoud.
+
+**L4. Zeg tegen de gebruiker:**
+
+> "De lekkenwacht staat aan. Na de synchronisatie met GitHub draait de eerste scan. Zo controleer je of hij werkt: ga in GitHub naar **Actions → checkmijn.ai**; onderaan de samenvatting van de run staat een regel die begint met 'Lekkenwacht'. Wil je zeker een mail krijgen bij een nieuw issue? Kijk dan in GitHub bij je **Settings → Notifications** of e-mail aan staat, en bij de repository bij **Watch** of je meldingen krijgt."
 
 ## De scanscore
 

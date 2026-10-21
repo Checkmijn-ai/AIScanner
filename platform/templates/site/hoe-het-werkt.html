@@ -170,8 +170,24 @@
         <li>In een openbare repository maken we geen issue (dan leest iedereen mee); daar mislukt de run, en ook dan mailt GitHub je.</li>
         <li>De lekkenwacht ziet de pakketten in je project. Lekken in PHP zelf, je server of WordPress-plugins ziet hij niet; daarvoor komt de betaalde Lekkenwacht Plus, met een waarschuwing per mail.</li>
       </ul>
-      <p class="zacht klein">Aan- of uitzetten: <code>waarschuwen: auto</code> of <code>"nee"</code> in het workflowbestand.</p>
+      <p class="zacht klein">Uitzetten: zet <code>waarschuwen: "nee"</code> in het workflowbestand.</p>
     </div>
+  </div>
+
+  <h3 class="mt2" id="lekkenwacht-aanzetten">Zo zet je hem aan</h3>
+  <div class="rooster-3 mt1">
+    <div class="kaart"><span class="label">Nieuw project</span><h4>Niets te doen</h4><p class="zacht">Scan je voor het eerst via GitHub (route 2 of 3)? Dan staat de lekkenwacht al aan: hij zit in het bestand dat in je project komt.</p></div>
+    <div class="kaart"><span class="label">Al eerder gescand · Lovable, Bolt, v0 of een AI-agent</span><h4>Plak dit in de chat</h4>{{ m.code("lw-bouwtool", lw_bouwtool, "Lekkenwacht aanzetten") }}<p class="zacht klein">Je project moet aan GitHub gekoppeld zijn. Je bouwtool of agent vraagt eerst toestemming.</p></div>
+    <div class="kaart"><span class="label">Eigen pipeline</span><h4>Drie regels erbij</h4>{{ m.code("lw-pipeline", lw_pipeline, "In .github/workflows/checkmijn.yml") }}<p class="zacht klein">Of neem het hele <a href="/checkmijn.yml">voorbeeldbestand</a> over.</p></div>
+  </div>
+  <div class="kaart mt2">
+    <h4 class="mt0">Werkt het?</h4>
+    <ol class="zacht">
+      <li>Ga in GitHub naar <b>Actions → checkmijn.ai</b> en klik op <b>Run workflow</b> (of wacht tot morgenochtend).</li>
+      <li>Open de run: onderaan de samenvatting staat een regel die begint met <b>"Lekkenwacht"</b>, bijvoorbeeld "geen kritieke of hoge lekken in componenten".</li>
+      <li>Wil je de mail zeker krijgen? Zet in GitHub bij <b>Settings → Notifications</b> e-mail aan, en kies bij je repository <b>Watch</b>.</li>
+    </ol>
+    <p class="zacht klein">In een openbare repository zet GitHub geplande scans uit na 60 dagen zonder activiteit. Een privé-repository heeft daar geen last van.</p>
   </div>
 </section>
 
