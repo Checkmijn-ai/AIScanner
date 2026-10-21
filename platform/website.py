@@ -60,11 +60,11 @@ LEVELS = [
     {"n": 3, "naam": "Gekeurd Plus", "status": "In voorbereiding (pilots)",
      "voor": "Aanbestedingen, veel persoonsgegevens, klanten onder NIS2", "wie": "Keurder + pentester",
      "checks": "Alles van niveau 2 + verplichte uitbreidingen", "werkt": "Ja, dieper, met een steekproef in de code",
-     "aanval": "Handmatige pentest (vanaf 4 dagen) + hertest", "hoogste": "A", "geldig": "12 maanden"},
+     "aanval": "Handmatige pentest (vanaf 4 dagen) + hertest, door een CCV-gecertificeerd pentestbedrijf", "hoogste": "A", "geldig": "12 maanden"},
     {"n": 4, "naam": "Kritiek", "status": "Vanaf juli 2028",
      "voor": "Zorg, overheid, financiële sector (DORA), hoog-risico-AI", "wie": "Keurder + pentester, doorlopend",
      "checks": "Alles, met de strengste drempels", "werkt": "Ja: volledige review van de kritieke code",
-     "aanval": "Pentest op aanvalsscenario's (vanaf 8 dagen)", "hoogste": "A", "geldig": "12 maanden, doorlopend toezicht"},
+     "aanval": "Pentest op aanvalsscenario's (vanaf 8 dagen), door een CCV-gecertificeerd pentestbedrijf", "hoogste": "A", "geldig": "12 maanden, doorlopend toezicht"},
 ]
 
 FAQ = [
@@ -88,6 +88,9 @@ FAQ = [
      "meegekeken."),
     ("Testen jullie ook of mijn app werkt?", "Vanaf niveau 2, samen met gerichte aanvalstests. Een volledige pentest zit "
      "in niveau 3."),
+    ("Wie voert de pentest uit?", "Op niveau 3 en 4 voert een pentestbedrijf met het CCV Keurmerk Pentesten de handmatige "
+     "pentest uit. Dat is het Nederlandse kwaliteitskeurmerk voor pentestbedrijven. De pentest volgt onze norm, zodat "
+     "uitslagen vergelijkbaar zijn. De aanvalstests van niveau 2 zijn geautomatiseerd en voor iedereen dezelfde."),
     ("Welke programmeertalen?", "JavaScript/TypeScript en Python, met de populaire webframeworks. Meer volgt."),
     ("Hoe lang is een score geldig?", "Een scorepagina van niveau 1 blijft 30 dagen actueel; daarna wordt de badge "
      "grijs. Een scan bij elke wijziging houdt hem vanzelf actueel. Een keuring is 12 maanden geldig."),
