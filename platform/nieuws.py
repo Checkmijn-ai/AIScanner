@@ -71,7 +71,6 @@ BRONNEN = [
     {"naam": "SecurityWeek AI", "url": "https://www.securityweek.com/category/artificial-intelligence/feed/", "taal": "en", "soort": "ai-security"},
     {"naam": "Embrace The Red", "url": "https://embracethered.com/blog/index.xml", "taal": "en", "soort": "ai-security"},
     {"naam": "Simon Willison", "url": "https://simonwillison.net/atom/everything/", "taal": "en", "soort": "ai-security", "filter": "sec"},
-    {"naam": "AI Incident Database", "url": "https://incidentdatabase.ai/rss.xml", "taal": "en", "soort": "ai-security", "max": 3},
 ]
 
 # --- trefwoorden ---------------------------------------------------------------------------------------------
@@ -150,6 +149,12 @@ def platte_tekst(s: str | None) -> str:
         t = re.sub(r"<[^>]+>", " ", s)
     t = html.unescape(t)
     return re.sub(r"\s+", " ", t).strip()
+
+
+def titeltekst(s: str) -> str:
+    """Titels: alleen opmaaktags weghalen; iets als "<router>" in een titel blijft staan."""
+    s = re.sub(r"</?(b|i|em|strong|span|a|code|sup|sub)\b[^>]*>", "", s or "", flags=re.I)
+    return re.sub(r"\s+", " ", html.unescape(s)).strip()
 
 
 def kort(t: str, n: int = SAMENVATTING_MAX) -> str:
@@ -264,6 +269,9 @@ _ANDERE_TAAL = re.compile(r"\b(pour|après|dans|avec|cette|une|les|des|sur|não|
 
 
 def andere_taal(titel: str) -> bool:
+    letters = [c for c in titel if c.isalpha()]
+    if letters and sum(1 for c in letters if ord(c) > 0x24F) / len(letters) > 0.3:  # ander schrift (Cyrillisch e.d.)
+        return True
     return len(_ANDERE_TAAL.findall(titel)) >= 1 and not re.search(r"\b(the|and|of|het|een|van|voor|met)\b", titel, re.I)
 
 
@@ -312,11 +320,14 @@ def lees_feed(data: bytes) -> list[dict]:
     """RSS 2.0, RSS 1.0 (RDF) en Atom. Geeft {titel, url, tekst, datum}."""
     if b"<!ENTITY" in data[:5000]:
         raise ValueError("feed met DTD-entiteiten geweigerd")
-    root = ET.fromstring(data)
+    try:
+        root = ET.fromstring(data)
+    except ET.ParseError:
+        return lees_kapotte_feed(data)
     uit = []
     items = [el for el in root.iter() if el.tag.split("}")[-1] in ("item", "entry")]
     for it in items:
-        titel = platte_tekst(_tekst(it, "title"))
+        titel = titeltekst(_tekst(it, "title"))
         link = ""
         for l in _kind(it, "link"):
             href = l.get("href")
@@ -334,6 +345,30 @@ def lees_feed(data: bytes) -> list[dict]:
         datum = _datum(_tekst(it, "pubDate", "published", "updated", "date", "issued"))
         if titel and link:
             uit.append({"titel": titel, "url": link, "tekst": tekst, "datum": datum})
+    return uit
+
+
+def lees_kapotte_feed(data: bytes) -> list[dict]:
+    """Noodweg voor een RSS-feed met een XML-fout (bv. een losse tag in één bericht): per <item> met regexen."""
+    t = data.decode("utf-8", "replace")
+
+    def veld(blok, naam):
+        m = re.search(rf"<{naam}[^>]*>(.*?)</{naam}>", blok, re.S | re.I)
+        if not m:
+            return ""
+        v = m.group(1).strip()
+        c = re.match(r"<!\[CDATA\[(.*)\]\]>$", v, re.S)
+        return c.group(1) if c else v
+
+    uit = []
+    for blok in re.findall(r"<item[\s>](.*?)</item>", t, re.S | re.I):
+        titel = titeltekst(html.unescape(veld(blok, "title")) if "CDATA" not in blok.split("</title>")[0] else veld(blok, "title"))
+        link = html.unescape(veld(blok, "link") or veld(blok, "guid")).strip()
+        if titel and link.startswith("http"):
+            uit.append({"titel": titel, "url": link, "tekst": platte_tekst(veld(blok, "description")),
+                        "datum": _datum(platte_tekst(veld(blok, "pubDate")))})
+    if not uit:
+        raise ValueError("feed niet leesbaar")
     return uit
 
 

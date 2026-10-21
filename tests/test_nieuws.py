@@ -101,6 +101,14 @@ try:
 except ValueError:
     pass
 
+# 7b. Kapotte XML (zoals soms bij Security.nl): toch de berichten
+kapot = f"""<?xml version="1.0"?><rss><channel><title>x</title><p>
+<item><title>Lek in &lt;router&gt; actief misbruikt</title><link>https://example.nl/1</link><pubDate>{uur(1)}</pubDate>
+<description><![CDATA[<b>Patch</b> nu]]></description></item></channel></rss>""".encode()
+k = nw.lees_feed(kapot)
+assert k[0]["titel"] == "Lek in <router> actief misbruikt" and k[0]["tekst"] == "Patch nu" and k[0]["datum"], k
+assert nw.andere_taal("Девушка жалуется на затягивание дела") and not nw.andere_taal("Ahold Delhaize hit by cyberattack")
+
 # 8. De pagina, de RSS-feed en de teaser op de homepage
 import api  # noqa: E402
 
