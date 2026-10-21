@@ -136,7 +136,8 @@ gevraagd = []
 def nep_ai(systeem, tekst):
     gevraagd.append(systeem[:30])
     if "samenvattingen" in systeem:
-        return _json.dumps({x["id"]: f"NL: {x['titel'][:20]} <script>" for x in _json.loads(tekst)})
+        return _json.dumps({x["id"]: {"titel": f"Vertaald: {x['titel'][:15]}", "samenvatting": f"NL: {x['titel'][:20]} <script>"}
+                            for x in _json.loads(tekst)})
     return "Een post over " + _json.loads(tekst)["titel"]
 d = nw.laad()
 assert d["posts"][0]["door"] == "sjabloon"   # het ophalen hierboven maakte al een post uit het sjabloon (geen sleutel)
@@ -144,12 +145,14 @@ d.pop("posts")
 assert nieuws_ai.werk_bij(d, nu, aanroep=nep_ai)
 en = [i for i in d["items"] if i["taal"] == "en"]
 assert en and all(i["samenvatting_nl"].startswith("NL: ") and "<" not in i["samenvatting_nl"] for i in en)
-assert not any(i.get("samenvatting_nl") for i in d["items"] if i["taal"] == "nl")
+assert all(i["titel_nl"].startswith("Vertaald: ") for i in en)
+assert not any(i.get("samenvatting_nl") or i.get("titel_nl") for i in d["items"] if i["taal"] == "nl")
 assert len(d["posts"]) == 1 and d["posts"][0]["door"] == "AI"
 assert d["posts"][0]["item"] == pi["id"], d["posts"][0]   # AI-security met checks wint
 assert not nieuws_ai.post_van_de_dag(d, nu, aanroep=nep_ai)   # één per dag
 nw.bewaar(d)
-assert "AI-samenvatting" in c.get("/nieuws").get_data(as_text=True)
+nh = c.get("/nieuws").get_data(as_text=True)
+assert "AI-vertaling" in nh and "Vertaald: " in nh and 'class="origineel" lang="en"' in nh
 pv = c.get("/nieuws/post-van-de-dag").get_data(as_text=True)
 assert "Een post over" in pv and "linkedin.com/feed/?shareActive=true" in pv and 'name="robots" content="noindex' in pv
 d2 = nw.laad(); d2.pop("posts")

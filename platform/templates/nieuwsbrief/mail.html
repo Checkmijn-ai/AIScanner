@@ -25,7 +25,7 @@
   {% for i in items %}
   <tr><td style="padding:14px 32px;border-bottom:1px solid #d8e2ea;">
     <div style="font:12px Arial,Helvetica,sans-serif;color:#3d5a76;">{{ i.bron }} · {{ i.taal|upper }}{% if i.dichtbij %} · <b style="color:#00857e;">NL/BE</b>{% endif %}</div>
-    <a href="{{ i.url }}" style="display:block;font:700 16px/1.35 Arial,Helvetica,sans-serif;color:#02254f;text-decoration:none;margin-top:4px;">{{ i.titel }}</a>
+    <a href="{{ i.url }}" style="display:block;font:700 16px/1.35 Arial,Helvetica,sans-serif;color:#02254f;text-decoration:none;margin-top:4px;">{{ i.titel_nl or i.titel }}</a>
     {% set s = i.samenvatting_nl or i.samenvatting %}{% if s %}<div style="font:14px/1.55 Arial,Helvetica,sans-serif;color:#3d5a76;margin-top:6px;">{{ s }}</div>{% endif %}
     {% if i.checks %}<div style="margin-top:8px;">{% for c in i.checks %}<a href="{{ site }}/check/{{ c }}" style="display:inline-block;font:12px Arial,Helvetica,sans-serif;background:#e6f7f6;color:#065f59;border-radius:12px;padding:3px 10px;margin:0 6px 4px 0;text-decoration:none;">{{ c }} · {{ check_namen.get(c, '') }}</a>{% endfor %}</div>{% endif %}
   </td></tr>

@@ -108,7 +108,7 @@ def concept(d: dict, nu: datetime | None = None) -> str:
     i = instellingen()
     c = inhoud(d, nu)
     eerste = next((s[2][0] for s in c["secties"] if s[2]), None)
-    onderwerp = f"AI en security deze week: {eerste['titel'][:70]}" if eerste else "AI en security deze week"
+    onderwerp = f"AI en security deze week: {(eerste.get('titel_nl') or eerste['titel'])[:70]}" if eerste else "AI en security deze week"
     r = _brevo("POST", "/emailCampaigns", {
         "name": f"Nieuwsbrief {c['periode']}", "subject": onderwerp,
         "previewText": "Het belangrijkste nieuws over AI-security, cyberincidenten en AI, in vijf minuten.",

@@ -393,3 +393,4 @@ h1.check-titel { font-size: clamp(1.5rem, 3.2vw, 2.3rem); max-width: 34em; }
 .postkaart { margin-bottom: 20px; }
 .postkaart pre { white-space: pre-wrap; }
 @media (max-width: 900px) { .bronlijst { columns: 2; } }
+.bericht .origineel { font-size: .8rem; color: var(--zacht); font-style: italic; margin: -2px 0 6px; }

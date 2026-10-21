@@ -4,8 +4,9 @@
 {% macro bericht(i) -%}
 <article class="bericht" data-taal="{{ i.taal }}" data-dichtbij="{{ '1' if i.dichtbij else '0' }}">
   <div class="meta"><span class="bron">{{ i.bron }}</span><span><span class="taal" title="{{ 'Nederlands' if i.taal == 'nl' else 'Engels' }}">{{ i.taal|upper }}</span>{% if i.dichtbij %} <span class="nlbe" title="Nieuws uit Nederland of België">NL/BE</span>{% endif %}</span><time datetime="{{ i.datum }}">{{ tijd(i.datum) }}</time></div>
-  <h3><a href="{{ i.url }}" rel="noopener">{{ i.titel }}</a></h3>
-  {% if i.samenvatting_nl %}<p class="zacht">{{ i.samenvatting_nl }} <span class="ai-label" title="Nederlandse samenvatting gemaakt met AI, op basis van de titel en de inleiding">AI-samenvatting</span></p>
+  <h3><a href="{{ i.url }}" rel="noopener"{% if not i.titel_nl %} lang="{{ i.taal }}"{% endif %}>{{ i.titel_nl or i.titel }}</a></h3>
+  {% if i.titel_nl %}<p class="origineel" lang="en">{{ i.titel }}</p>{% endif %}
+  {% if i.samenvatting_nl %}<p class="zacht">{{ i.samenvatting_nl }} <span class="ai-label" title="Titel vertaald en samenvatting gemaakt met AI, op basis van de titel en de inleiding">AI-vertaling</span></p>
   {% elif i.samenvatting %}<p class="zacht">{{ i.samenvatting }}</p>{% endif %}
   {% if i.ook %}<p class="ook">Ook bij: {% for o in i.ook %}<a href="{{ o.url }}" rel="noopener">{{ o.bron }}</a>{% if o.taal != i.taal %} <span class="taal">{{ o.taal|upper }}</span>{% endif %}{{ ", " if not loop.last }}{% endfor %}</p>{% endif %}
   {% if i.checks %}<p class="raakt">Raakt aan: {% for c in i.checks %}<a class="checkchip" href="/check/{{ c }}">{{ c }} · {{ check_namen.get(c, '') }}</a>{% endfor %}</p>{% endif %}
