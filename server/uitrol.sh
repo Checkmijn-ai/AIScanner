@@ -92,11 +92,9 @@ for i in $(seq 1 30); do
 done
 docker compose ps
 
-# Nog geen nieuws (eerste uitrol)? Dan nu meteen ophalen, zodat /nieuws niet leeg is.
+# Nieuws meteen bijwerken met de nieuwe code (dubbels worden overgeslagen, dus dit kan altijd).
 DIENST=live; [ "$TAK" = "test" ] && DIENST=test
-if ! docker compose --profile test exec -T "$DIENST" test -s /data/nieuws.json 2>/dev/null; then
-  log "Eerste keer nieuws ophalen ($DIENST)"
-  timeout 300 docker compose --profile test exec -T "$DIENST" python /app/platform/nieuws.py || true
-fi
+log "Nieuws ophalen ($DIENST)"
+timeout 300 docker compose --profile test exec -T "$DIENST" python /app/platform/nieuws.py || true
 }
 main "$@" </dev/null
