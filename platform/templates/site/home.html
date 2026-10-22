@@ -5,9 +5,9 @@
   <div>
     {% if nieuws_kort %}<a class="nieuwschip" href="/nieuws"><span class="nieuwschip-label">Nieuws</span><span class="nieuwschip-tekst">{{ nieuws_kort[0].titel_nl or nieuws_kort[0].titel }}</span><span aria-hidden="true">→</span></a>{% endif %}
     <p class="oog">Onafhankelijke controle van software die met AI gebouwd is</p>
-    <h1>Check je AI-software voor je ze lanceert, koopt of oplevert.</h1>
-    <p class="lead">Je scant je app zelf, gratis. Je code blijft bij jou. Je krijgt een score van A tot G en een lijst met wat je moet oplossen.</p>
-    {{ m.cta() }}
+    <h1>Is je AI-software veilig? Wij meten het.</h1>
+    <p class="lead">Met AI bouw je in een middag een app. Of die veilig is, weet bijna niemand. Daarom hebben we CheckMijn.AI gemaakt: een vaste meetlat voor software die met AI gebouwd is, met een score van A tot G.</p>
+    <div class="knoppenrij"><a class="knop" href="/hoe-het-werkt">Gratis scan</a><a class="knop licht" href="/wat-je-krijgt">Keuringen en prijzen</a></div>
     <p class="klein-onder"><a href="/voorbeeldrapport">Bekijk een echt rapport</a></p>
   </div>
   <div>
@@ -18,11 +18,30 @@
         <div class="balk{% if L == 'C' %} actief{% endif %}{% if L in 'AB' %} keuring{% endif %}"><span class="staaf l-{{ L }} w-{{ L }}">{{ L }}</span><span class="grens">{{ g }}</span>{% if L == 'C' %}<span class="pijl zelf"><span class="omlijnd">C</span>ZELFSCAN</span>{% endif %}</div>
         {% endfor %}
       </div>
-      <div class="voet"><span><b>Zelfscan: tot C. Keuring: tot A.</b></span><span>46 van de 292 checks · 22-10-2026</span></div>
+      <div class="voet"><span><b>Zelfscan: tot C. Keuring: tot A.</b></span><span>46 van de {{ n_norm }} checks · 22-10-2026</span></div>
     </div>
   </div>
 </div></section>
 
+
+<section class="wrap sectie">
+  <div class="smal">
+    <div>
+      <h2 class="mt0">Waarom we dit maakten</h2>
+      <p>Tools als Lovable, Cursor en Claude schrijven in een paar uur code waar een team vroeger weken over deed. Daar zitten vaak dezelfde fouten in: wachtwoorden in de code, verouderde pakketten met bekende lekken, een databank die voor iedereen openstaat.</p>
+      <p>Een pentest is voor de meeste makers te duur, en een losse tool zegt niet wat de uitslag betekent. Daarom hebben we een vaste lijst met checks gemaakt, gebaseerd op Europese wetten en normen. Iedereen kan hem nalezen, en iedereen kan zijn app er gratis mee scannen.</p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap sectie">
+  <h2 class="mt0">Wat we doen</h2>
+  <div class="rooster-3">
+    <div class="kaart"><h3>Gratis basisscan</h3><p class="zacht">Je scant je app zelf, met je AI of in GitHub. Je code blijft bij jou. Je krijgt een rapport en een score tot C.</p><a class="meer" href="/hoe-het-werkt">Zo werkt het →</a></div>
+    <div class="kaart"><h3>Keuring</h3><p class="zacht">Moet je het kunnen bewijzen aan een klant, inkoper of auditor? Dan kijkt een keurder mee en kun je een A halen. Vanaf €5.700 per app.</p><a class="meer" href="/niveaus">De niveaus →</a></div>
+    <div class="kaart"><h3>Hulp en bewaking</h3><p class="zacht">Lukt het herstellen niet zelf, dan helpen we. En we houden in de gaten of er nieuwe lekken bijkomen in wat je gebruikt.</p><a class="meer" href="/wat-je-krijgt">Prijzen →</a></div>
+  </div>
+</section>
 
 <section class="wrap sectie praktijk">
   <div class="praktijk-kaart">
@@ -37,15 +56,6 @@
       <div class="praktijk-pijl" aria-hidden="true">10 minuten · Lovable herstelt na "ja"</div>
       <div><span class="chip zelf l-C">C</span><span><b>Tweede scan</b><span class="zacht">0 kritiek · 2 hoog om na te kijken · 1 middel</span></span></div>
     </div>
-  </div>
-</section>
-
-<section class="wrap sectie">
-  <h2 class="mt0">Wat je eraan hebt</h2>
-  <div class="rooster-3">
-    <div class="kaart"><span class="nummer">01</span><h3>Je ziet de lekken eerst</h3><p class="zacht">Verouderde pakketten, wachtwoorden in de code, een databank die openstaat. Jij ziet het voor een klant of een hacker het ziet.</p></div>
-    <div class="kaart"><span class="nummer">02</span><h3>Je AI lost het op</h3><p class="zacht">Lovable, Cursor of Claude leest het rapport en past de code aan. Jij zegt eerst "ja".</p></div>
-    <div class="kaart"><span class="nummer">03</span><h3>Je kunt het laten zien</h3><p class="zacht">Een score met datum en een pagina die je naar je klant of inkoper stuurt.</p></div>
   </div>
 </section>
 
@@ -85,7 +95,7 @@
 <section class="cijferband"><div class="wrap sectie cijfers">
   {% if teller %}<div class="teller"><b>{{ getal(teller.scans) }}</b><span class="zacht">scans sinds {{ datum_nl(teller.sinds) }}{% if teller.herhaald %}; <a href="/resultaten">{{ (100 * teller.beter / teller.herhaald)|round|int }}% scoort beter na herstel</a>{% else %}; <a href="/resultaten">bekijk de resultaten</a>{% endif %}</span></div>{% endif %}
   {% if lekken.aantal %}<div><b>{{ getal(lekken.aantal) }}</b><span class="zacht">bekende lekken: daar vergelijkt elke scan je componenten mee, vandaag bijgewerkt</span></div>{% endif %}
-  <div><b>292</b><span class="zacht">checks, <a href="/wat-we-controleren">allemaal uitgeschreven</a>, gekoppeld aan de <a href="/cra">CRA</a>, AVG, AI Act en NIS2</span></div>
+  <div><b>{{ n_norm }}</b><span class="zacht">checks, <a href="/wat-we-controleren">allemaal uitgeschreven</a>, gekoppeld aan de <a href="/cra">CRA</a>, AVG, AI Act en NIS2</span></div>
   {% if not teller %}<div><b>Elke nacht</b><span class="zacht">een nieuwe, ondertekende scanner</span></div>{% endif %}
   <div><b>Helsinki</b><span class="zacht">gehost in de EU, open source (EUPL-1.2)</span></div>
 </div></section>

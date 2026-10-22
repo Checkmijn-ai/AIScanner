@@ -209,7 +209,7 @@ def home():
                   "Check je AI-software voor je ze lanceert, koopt of oplevert. Een meetlat, geen mening: 46 vaste "
                   f"checks in de gratis zelfscan, {len(norm()['checks'])} in de volledige norm, Europese normen en een score van A tot G.", nieuws_kort=laatste_nieuws(),
                   teller=(lambda st: st if st.get("scans", 0) >= TOON_TELLER_VANAF else None)(statistiek()),
-                  lekken=lekkendatabank())
+                  lekken=lekkendatabank(), n_norm=len(norm()["checks"]))
 
 
 @site.get("/hoe-het-werkt")
@@ -270,7 +270,7 @@ def dagbestand(naam: str):
 @site.get("/wat-je-krijgt")
 def prijzen():
     return pagina("prijzen.html", "Wat je krijgt", "Per niveau precies wat je krijgt en wat het ongeveer kost.",
-                  levels=LEVELS)
+                  levels=LEVELS, n_norm=len(norm()["checks"]))
 
 
 @site.get("/score-uitleg")
