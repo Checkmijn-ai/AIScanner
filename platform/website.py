@@ -24,9 +24,9 @@ TEST = os.environ.get("CHECKMIJN_OMGEVING", "") == "test"
 # Bedrijfsgegevens (E-commercerichtlijn art. 5; onze eigen check O-01). Leeg = de pagina en de link verschijnen nog niet.
 BEDRIJF = {
     "naam": os.environ.get("BEDRIJF_NAAM", "Silbador Commv"),        # statutaire naam, bv. "CheckMijn.AI B.V."
-    "adres": os.environ.get("BEDRIJF_ADRES", ""),      # vestigingsadres (geen postbus)
-    "kvk": os.environ.get("BEDRIJF_KVK", ""),          # KvK-nummer (of KBO-nummer in België)
-    "btw": os.environ.get("BEDRIJF_BTW", ""),          # btw-identificatienummer
+    "adres": os.environ.get("BEDRIJF_ADRES", "Haasdonksesteenweg 36, 9140 Temse, België"),      # vestigingsadres (geen postbus)
+    "kvk": os.environ.get("BEDRIJF_KVK", "0746.489.432"),          # KvK-nummer (of KBO-nummer in België)
+    "btw": os.environ.get("BEDRIJF_BTW", "BE0746.489.432"),          # btw-identificatienummer
     "email": CONTACT,
 }
 BEDRIJF_KLAAR = all(BEDRIJF[k] for k in ("naam", "adres", "kvk", "btw"))
@@ -322,7 +322,7 @@ def voorwaarden():
 def bedrijfsgegevens():
     if not BEDRIJF_KLAAR:
         abort(404)
-    return pagina("bedrijfsgegevens.html", "Bedrijfsgegevens", "Wie achter CheckMijn.AI zit: naam, adres, KvK- en btw-nummer.")
+    return pagina("bedrijfsgegevens.html", "Bedrijfsgegevens", "Wie achter CheckMijn.AI zit: naam, adres, ondernemingsnummer en btw-nummer.")
 
 
 @site.get("/contact")
