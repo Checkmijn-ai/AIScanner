@@ -6,9 +6,9 @@
     {% if nieuws_kort %}<a class="nieuwschip" href="/nieuws"><span class="nieuwschip-label">Nieuws</span><span class="nieuwschip-tekst">{{ nieuws_kort[0].titel_nl or nieuws_kort[0].titel }}</span><span aria-hidden="true">→</span></a>{% endif %}
     <p class="oog">Onafhankelijke controle van software die met AI gebouwd is</p>
     <h1>Check je AI-software voor je ze lanceert, koopt of oplevert.</h1>
-    <p class="lead">Een meetlat, geen mening: vaste regels, Europese normen en een score van A tot G. Je code verlaat je bedrijf nooit, en de scanner is open source.</p>
+    <p class="lead">Je scant je app zelf, gratis. Je code blijft bij jou. Je krijgt een score van A tot G en een lijst met wat je moet oplossen.</p>
     {{ m.cta() }}
-    <p class="klein-onder">Gratis voor niveau 1 · <a href="/voorbeeldrapport">Bekijk een voorbeeldrapport</a></p>
+    <p class="klein-onder"><a href="/voorbeeldrapport">Bekijk een echt rapport</a></p>
   </div>
   <div>
     <div class="label-vb" role="img" aria-label="Voorbeeld van een scanscore: C, zelfscan. Een zelfscan gaat tot C, een keuring tot A.">
@@ -29,8 +29,8 @@
     <div>
       <p class="oog mt0">Uit de praktijk</p>
       <h2 class="mt0">Een webwinkel gebouwd met Lovable: van D naar C in tien minuten</h2>
-      <p class="zacht">Eerste scan: 22 hoge bevindingen, vooral pakketten met bekende lekken en HTML die onveilig in de pagina kwam. Lovable las het rapport, vroeg toestemming en herstelde: 13 pakketten bijgewerkt, een HTML-filter op 9 plekken, tests in de pipeline. De tweede scan: geen kritieke bevindingen en geen zekere hoge meer; alleen nog 2 om na te kijken.</p>
-      <p class="zacht klein">Gescand op 21 oktober 2026 via GitHub (route 2). Echte cijfers uit het rapport, op de schaal van een zelfscan (hoogstens C).</p>
+      <p class="zacht">De eerste scan vond 22 hoge bevindingen, vooral verouderde pakketten. Lovable las het rapport en loste ze op nadat de eigenaar "ja" zei. Bij de tweede scan bleven er twee over om na te kijken.</p>
+      <p class="zacht klein">Echte scan van 21 oktober 2026.</p>
     </div>
     <div class="praktijk-cijfers" role="img" aria-label="Van score D met 22 hoge bevindingen naar score C, met nog 2 hoge bevindingen om na te kijken">
       <div><span class="chip zelf l-D">D</span><span><b>Eerste scan</b><span class="zacht">0 kritiek · 22 hoog · 19 middel</span></span></div>
@@ -41,11 +41,11 @@
 </section>
 
 <section class="wrap sectie">
-  <h2 class="mt0">Wat het je oplevert</h2>
+  <h2 class="mt0">Wat je eraan hebt</h2>
   <div class="rooster-3">
-    <div class="kaart"><span class="nummer">01</span><h3>Weten wat je lanceert, koopt of oplevert</h3><p class="zacht">Lekken in je pakketten, geheimen in je code, open deuren in je app: je ziet ze vóór een klant of een aanvaller ze ziet.</p></div>
-    <div class="kaart"><span class="nummer">02</span><h3>Herstellen zonder specialist</h3><p class="zacht">Je AI-agent of bouwtool leest het rapport en herstelt de bevindingen, pas na jouw "ja". Daarna scan je opnieuw en zie je het verschil.</p></div>
-    <div class="kaart"><span class="nummer">03</span><h3>Een uitslag die je kunt tonen</h3><p class="zacht">Een score met datum en een scorepagina voor je klant, inkoper of auditor, en bouwstenen voor je <a href="/cra">CRA-dossier</a>.</p></div>
+    <div class="kaart"><span class="nummer">01</span><h3>Je ziet de lekken eerst</h3><p class="zacht">Verouderde pakketten, wachtwoorden in de code, een databank die openstaat. Jij ziet het voor een klant of een hacker het ziet.</p></div>
+    <div class="kaart"><span class="nummer">02</span><h3>Je AI lost het op</h3><p class="zacht">Lovable, Cursor of Claude leest het rapport en past de code aan. Jij zegt eerst "ja".</p></div>
+    <div class="kaart"><span class="nummer">03</span><h3>Je kunt het laten zien</h3><p class="zacht">Een score met datum en een pagina die je naar je klant of inkoper stuurt.</p></div>
   </div>
 </section>
 
@@ -53,11 +53,11 @@
   <div class="kaart vlak">
     <h2 class="mt0">Zo begin je</h2>
     <ol class="beginstappen">
-      <li><b>Kies je route.</b> <span class="zacht">Eén zin aan je AI-agent (Claude Code, Cursor, Copilot), of één bestand in GitHub als je bouwt in Lovable, Bolt of v0.</span></li>
-      <li><b>Scan, in tien minuten.</b> <span class="zacht">Gratis en zonder installatie. Je code verlaat je bedrijf nooit.</span></li>
-      <li><b>Herstel en scan opnieuw.</b> <span class="zacht">Van een G naar een C, het hoogste wat een zelfscan geeft, vaak in één middag. Elke dag kijkt de lekkenwacht of er nieuwe lekken zijn.</span></li>
+      <li><b>Kopieer één zin naar je AI</b> <span class="zacht">of zet één bestand in GitHub als je met Lovable, Bolt of v0 bouwt.</span></li>
+      <li><b>Wacht tien minuten.</b> <span class="zacht">Er gaat geen code naar ons.</span></li>
+      <li><b>Laat het oplossen en scan opnieuw.</b> <span class="zacht">Daarna houden we elke dag in de gaten of er nieuwe lekken bijkomen.</span></li>
     </ol>
-    <div class="knoppenrij"><a class="knop" href="/hoe-het-werkt#routes">Check mijn app</a><a class="knop licht" href="/hoe-het-werkt">Bekijk hoe het werkt</a></div>
+    <div class="knoppenrij"><a class="knop" href="/hoe-het-werkt#routes">Check mijn app</a><a class="knop licht" href="/hoe-het-werkt">Hoe het werkt</a></div>
   </div>
 </section>
 
@@ -93,36 +93,33 @@
 <section class="wrap sectie">
   <h2 class="mt0">Waarom je ons kunt vertrouwen</h2>
   <div class="rooster-3">
-    <div>{{ m.icoon('slot') }}<h3>Je code verlaat je bedrijf nooit</h3><p class="zacht">De scan draait in je eigen omgeving: je GitHub of je AI-agent. Wij krijgen hoogstens een bewijsbestand zonder code, en een rapport dat we zelf niet kunnen lezen.</p></div>
-    <div>{{ m.icoon('meetlat') }}<h3>Een meetlat, geen mening</h3><p class="zacht">In de meting zit geen AI. Dezelfde code geeft altijd dezelfde uitkomst. De scanner is open source: <a href="/open-source">kijk zelf na wat hij doet</a>.</p></div>
-    <div>{{ m.icoon('weegschaal') }}<h3>Gekoppeld aan Europese normen en wetten</h3><p class="zacht">Elke check verwijst naar de norm of wet waar hij uit komt. Een goede score betekent niet dat je aan die wet voldoet: <a href="/cra">zo zit dat</a>.</p></div>
-    <div>{{ m.icoon('oog') }}<h3>Een score die je directie begrijpt</h3><p class="zacht">Van A tot G, zoals het energielabel, met vaste en publieke grenzen.</p></div>
-    <div>{{ m.icoon('schild') }}<h3>Eerlijk over wat we niet weten</h3><p class="zacht">Elk rapport zegt wat gecontroleerd is, wat niet, en wat nog bevestigd moet worden.</p></div>
+    <div>{{ m.icoon('slot') }}<h3>Je code blijft bij jou</h3><p class="zacht">De scan draait op je eigen computer of in je eigen GitHub. Wij zien je code nooit.</p></div>
+    <div>{{ m.icoon('meetlat') }}<h3>Altijd dezelfde uitslag</h3><p class="zacht">Er zit geen AI in de meting. De scanner is open source, dus <a href="/open-source">je kunt zelf nakijken</a> wat hij doet.</p></div>
+    <div>{{ m.icoon('weegschaal') }}<h3>Europese regels</h3><p class="zacht">Elke check hoort bij een wet of norm, zoals de <a href="/cra">Cyber Resilience Act</a>, de AVG of NIS2.</p></div>
   </div>
 </section>
 
 <section class="wrap sectie">
   <h2 class="mt0">Meer dan een tool, goedkoper dan een pentest</h2>
-  <p class="lead">Kopers vergelijken een automatische tool met een pentest. CheckMijn.AI zit ertussen, met een score die je kunt tonen.</p>
   <div class="vergelijk mt2">
-    <div><h3>Automatische tool</h3><p class="prijsje">€350 tot €1.000 per maand</p><p class="zacht klein">Basisversie gratis</p><ul><li>Vindt lekken in pakketten en code</li><li>Geen oordeel, geen score voor je klant</li><li>Je weet niet wat niet gecontroleerd is</li></ul></div>
-    <div class="wij"><h3>CheckMijn.AI</h3><p class="prijsje">Scan: gratis</p><p class="klein">Keuring: vanaf €5.700 per app</p><ul><li>292 publieke checks, gekoppeld aan CRA, AVG, AI Act, NIS2</li><li>Score A–G die je klant begrijpt, met niveau en datum</li><li>Vanaf niveau 2 een erkende keurder en aanvalstests</li><li>Open source: iedereen kan nakijken hoe gemeten wordt</li></ul></div>
-    <div><h3>Losse pentest</h3><p class="prijsje">€3.500 tot €14.000 per test</p><p class="zacht klein">Per app, per keer</p><ul><li>Diepe, handmatige aanval op één moment</li><li>Geen vaste meetlat: elke pentest is anders</li><li>Zit bij ons in niveau 3 en 4, door een CCV-gecertificeerd pentestbedrijf</li></ul></div>
+    <div><h3>Automatische tool</h3><p class="prijsje">€350 tot €1.000 per maand</p><p class="zacht klein">Basisversie gratis</p><ul><li>Vindt lekken</li><li>Geen score die je kunt tonen</li></ul></div>
+    <div class="wij"><h3>CheckMijn.AI</h3><p class="prijsje">Scan: gratis</p><p class="klein">Keuring: vanaf €5.700 per app</p><ul><li>Vaste, publieke checks</li><li>Een score van A tot G</li><li>Vanaf niveau 2 kijkt een keurder mee</li></ul></div>
+    <div><h3>Losse pentest</h3><p class="prijsje">€3.500 tot €14.000 per test</p><p class="zacht klein">Per app, per keer</p><ul><li>Grondig, maar eenmalig</li><li>Bij ons inbegrepen vanaf niveau 3</li></ul></div>
   </div>
-  <p class="zacht klein mt1">Marktprijzen: indicatief, oktober 2026. <a href="/wat-je-krijgt">Bekijk wat je bij ons per niveau krijgt</a>.</p>
+  <p class="zacht klein mt1">Marktprijzen, oktober 2026. <a href="/wat-je-krijgt">Wat je per niveau krijgt</a>.</p>
 </section>
 
 <section class="wrap sectie">
   <h2 class="mt0">Voor wie</h2>
   <div class="rooster-3">
-    <a class="kaart" href="/bureaus">{{ m.icoon('gebouw') }}<h3>Bureaus</h3><p class="zacht">Lever bij elke oplevering een score en rapport mee, gemeten met vaste, publieke checks.</p><span class="meer">Lees meer →</span></a>
-    <a class="kaart" href="/opdrachtgevers">{{ m.icoon('klembord') }}<h3>Opdrachtgevers en inkopers</h3><p class="zacht">Een rapport dat je zonder IT-kennis begrijpt, met de normen en wetten erbij.</p><span class="meer">Lees meer →</span></a>
-    <a class="kaart" href="/contact">{{ m.icoon('bank') }}<h3>Kopers en investeerders</h3><p class="zacht">Een snelle, herhaalbare meting voor overnames en due diligence.</p><span class="meer">Neem contact op →</span></a>
+    <a class="kaart" href="/bureaus">{{ m.icoon('gebouw') }}<h3>Bureaus</h3><p class="zacht">Lever elke app op met een score erbij.</p><span class="meer">Lees meer →</span></a>
+    <a class="kaart" href="/opdrachtgevers">{{ m.icoon('klembord') }}<h3>Opdrachtgevers en inkopers</h3><p class="zacht">Weet wat je koopt, ook zonder IT-kennis.</p><span class="meer">Lees meer →</span></a>
+    <a class="kaart" href="/contact">{{ m.icoon('bank') }}<h3>Kopers en investeerders</h3><p class="zacht">Een snelle check bij een overname.</p><span class="meer">Neem contact op →</span></a>
   </div>
 
   <div class="cta">
-    <h2>Check mijn app, gratis.</h2>
-    <p>Eén zin aan je AI-agent, of één bestand in je GitHub-repository. Binnen tien minuten weet je waar je staat.</p>
+    <h2>Check je app, gratis.</h2>
+    <p>Binnen tien minuten weet je waar je staat.</p>
     <div class="knoppenrij"><a class="knop" href="/hoe-het-werkt">Check mijn app</a><a class="knop licht" href="/contact">Plan een gesprek</a></div>
   </div>
   {{ m.let_op(DISCLAIMER) }}
