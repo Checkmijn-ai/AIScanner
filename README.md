@@ -10,7 +10,7 @@ elke check gekoppeld aan de norm of wet waar hij uit komt (CRA, AVG, AI Act, NIS
 **In je GitHub-repository (aanbevolen).** Zet [voorbeelden/checkmijn.yml](voorbeelden/checkmijn.yml) in je project als `.github/workflows/checkmijn.yml`. De kern:
 
 ```yaml
-      - uses: Checkmijn-ai/AIScanner@main
+      - uses: Checkmijn-ai/AIScanner@v1   # vrijgegeven versie; of de volledige commit voor de strengste controle
         with:
           rapport-in-repo: auto   # privé-repository: rapport in .checkmijn/RAPPORT.md
           insturen: "false"       # "true" = bewijsbestand (zonder code) inleveren voor een scorepagina

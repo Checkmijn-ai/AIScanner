@@ -16,6 +16,10 @@ on:
   workflow_dispatch: {}
   schedule:
     - cron: "30 4 * * *"   # elke dag: nieuwe lekken in je componenten
+# Rechten: alleen wat nodig is. Wil je er minder geven?
+#   - geen rapport in je project: zet contents op read en rapport-in-repo op "false";
+#   - niet meetellen en geen rapportlink: haal id-token weg en zet meetellen en rapport-link op "false";
+#   - geen lekkenwacht: haal issues weg en zet waarschuwen op "nee".
 permissions:
   contents: write   # nodig om .checkmijn/RAPPORT.md terug te zetten
   id-token: write   # bewijst aan checkmijn.ai dat de scan echt uit deze repository komt (rapportlink en meetellen)
@@ -31,7 +35,8 @@ jobs:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5.0.0
         with:
           fetch-depth: 0   # volledige geschiedenis: ook oude geheimen worden gevonden
-      - uses: Checkmijn-ai/AIScanner@main
+      # v1 = een vrijgegeven versie waarvan de tests geslaagd zijn. Nog strenger: zet hier de volledige commit.
+      - uses: Checkmijn-ai/AIScanner@v1
         with:
           rapport-in-repo: auto
           rapport-link: "true"   # opgemaakt rapport via een persoonlijke link, versleuteld (wij kunnen het niet lezen)
