@@ -1,0 +1,7 @@
+# Website en API (server/Dockerfile) en de workflows. Vastzetten:
+#   uv pip compile requirements-server.in --universal --python-version 3.12 --generate-hashes -o requirements-server.txt
+-r requirements.in
+flask>=3
+gunicorn>=22
+cryptography>=42
+tzdata
