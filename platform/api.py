@@ -106,6 +106,13 @@ def db():
 def _migreer(c):
     """Eenmalig: zelfscans van vóór 22 oktober 2026 naar de nieuwe schaal (hoogstens C) omzetten."""
     c.execute("CREATE TABLE IF NOT EXISTS migraties (naam TEXT PRIMARY KEY, op TEXT)")
+    if not c.execute("SELECT 1 FROM migraties WHERE naam = 'geen-ip'").fetchone():
+        try:
+            c.execute("UPDATE sessies SET ip = NULL")  # IP-adressen van oudere sessiecodes wissen
+        except sqlite3.OperationalError:
+            pass  # nog geen tabel sessies
+        c.execute("INSERT INTO migraties VALUES ('geen-ip', ?)", (nu().isoformat(timespec="seconds"),))
+        c.commit()
     if c.execute("SELECT 1 FROM migraties WHERE naam = 'zelfscan-tot-c'").fetchone():
         return
     zet = " ".join(f"WHEN '{a}' THEN '{b}'" for a, b in OUD_NAAR_NIEUW.items())
@@ -229,9 +236,11 @@ def versie():
 
 @app.post("/api/v1/sessie")
 def sessie():
-    ip = limiet()
+    limiet()
     nonce = secrets.token_urlsafe(18)
-    db().execute("INSERT INTO sessies (nonce, aangemaakt, ip) VALUES (?, ?, ?)", (nonce, nu().isoformat(), ip))
+    # Geen IP-adres bewaren (alleen kort in het geheugen voor de limiet); oude sessiecodes na 7 dagen weg.
+    db().execute("INSERT INTO sessies (nonce, aangemaakt, ip) VALUES (?, ?, NULL)", (nonce, nu().isoformat()))
+    db().execute("DELETE FROM sessies WHERE aangemaakt < ?", ((nu() - dt.timedelta(days=7)).isoformat(),))
     db().commit()
     m = lees("latest.json")
     return jsonify({"nonce": nonce, "geldig_tot": (nu() + NONCE_GELDIG).isoformat(timespec="seconds"),

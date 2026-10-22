@@ -1,0 +1,18 @@
+{% extends "site/basis.html" %}
+{% import "site/macros.html" as m %}
+{% block inhoud %}
+{{ m.kop("Bedrijfsgegevens", "Wie achter CheckMijn.AI zit", "Zo weet je met wie je zaken doet. Dit zijn ook de gegevens die we bij onze eigen check O-01 bij anderen nakijken.") }}
+<section class="wrap sectie">
+  <table class="tabel">
+    <caption class="sr">Bedrijfsgegevens</caption>
+    <tbody>
+      <tr><th scope="row">Naam</th><td>{{ BEDRIJF.naam }}</td></tr>
+      <tr><th scope="row">Adres</th><td>{{ BEDRIJF.adres }}</td></tr>
+      <tr><th scope="row">KvK-nummer</th><td>{{ BEDRIJF.kvk }}</td></tr>
+      <tr><th scope="row">Btw-nummer</th><td>{{ BEDRIJF.btw }}</td></tr>
+      <tr><th scope="row">E-mail</th><td><a href="mailto:{{ BEDRIJF.email }}">{{ BEDRIJF.email }}</a></td></tr>
+      <tr><th scope="row">Kwetsbaarheid melden</th><td><a href="mailto:security@checkmijn.ai">security@checkmijn.ai</a> · <a href="/.well-known/security.txt">security.txt</a></td></tr>
+    </tbody>
+  </table>
+</section>
+{% endblock %}
