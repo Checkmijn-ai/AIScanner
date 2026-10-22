@@ -1,7 +1,11 @@
 # Kijkt van buitenaf en op de server na of de site goed bereikbaar is (HTTPS, certificaat, containers, Caddy).
 name: Site nakijken
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      paden:
+        description: "Extra pagina's om na te kijken, bv. https://test.checkmijn.ai/crosswalk (spatie ertussen)"
+        default: ""
 permissions:
   contents: read
 jobs:
@@ -22,6 +26,15 @@ jobs:
             echo | openssl s_client -connect $h:443 -servername $h 2>/dev/null | openssl x509 -noout -subject -issuer -enddate 2>/dev/null || echo "geen certificaat"
           done | tee uit.txt
           echo "::notice title=Van buitenaf::$(tr '\n' '|' < uit.txt | cut -c1-3000)"
+      - name: Pagina's
+        if: inputs.paden != ''
+        env:
+          PADEN: ${{ inputs.paden }}
+        run: |
+          for u in $PADEN; do
+            echo "$(curl -sS -o body.txt -m 20 -w '%{http_code}' "$u") $(wc -c < body.txt)B $u · $(grep -o '<title>[^<]*' body.txt | head -1 | cut -c8-90)"
+          done | tee paden.txt
+          echo "::notice title=Pagina's::$(tr '\n' '|' < paden.txt | cut -c1-3000)"
       - name: Op de server
         env:
           SLEUTEL: ${{ secrets.UITROL_SLEUTEL }}
