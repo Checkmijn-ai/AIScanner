@@ -11,14 +11,14 @@
     <p class="klein-onder">Gratis voor niveau 1 · <a href="/voorbeeldrapport">Bekijk een voorbeeldrapport</a></p>
   </div>
   <div>
-    <div class="label-vb" role="img" aria-label="Voorbeeld van een scanscore: B, niveau 1, zelfcontrole">
+    <div class="label-vb" role="img" aria-label="Voorbeeld van een scanscore: C, zelfscan. Een zelfscan gaat tot C, een keuring tot A.">
       <div class="kopje"><b>CheckMijn.AI</b><span>Scanscore · voorbeeld</span></div>
       <div class="balken">
-        {% for L, g in [("A","0 kritiek, 0 hoog, ≤ 2 middel"),("B","0 kritiek, 0 hoog"),("C","≤ 2 hoog"),("D","≤ 5 hoog"),("E","≤ 1 kritiek"),("F","≤ 3 kritiek"),("G","4+ kritiek")] %}
-        <div class="balk{% if L == 'B' %} actief{% endif %}"><span class="staaf l-{{ L }} w-{{ L }}">{{ L }}</span><span class="grens">{{ g }}</span>{% if L == 'B' %}<span class="pijl">B</span>{% endif %}</div>
+        {% for L, g in [("A","alleen na een keuring"),("B","alleen na een keuring"),("C","0 kritiek, 0 hoog"),("D","≤ 2 hoog"),("E","≤ 5 hoog"),("F","≤ 1 kritiek"),("G","2+ kritiek")] %}
+        <div class="balk{% if L == 'C' %} actief{% endif %}{% if L in 'AB' %} keuring{% endif %}"><span class="staaf l-{{ L }} w-{{ L }}">{{ L }}</span><span class="grens">{{ g }}</span>{% if L == 'C' %}<span class="pijl zelf"><span class="omlijnd">C</span>ZELFSCAN</span>{% endif %}</div>
         {% endfor %}
       </div>
-      <div class="voet"><span>Niveau 1 · zelfcontrole</span><span>45 checks · 21-10-2026</span></div>
+      <div class="voet"><span><b>Zelfscan: tot C. Keuring: tot A.</b></span><span>45 checks · 22-10-2026</span></div>
     </div>
   </div>
 </div></section>
@@ -56,14 +56,14 @@
   <div class="praktijk-kaart">
     <div>
       <p class="oog mt0">Uit de praktijk</p>
-      <h2 class="mt0">Een webwinkel gebouwd met Lovable: van C naar B in tien minuten</h2>
+      <h2 class="mt0">Een webwinkel gebouwd met Lovable: van D naar C in tien minuten</h2>
       <p class="zacht">Eerste scan: 22 hoge bevindingen, vooral pakketten met bekende lekken en HTML die onveilig in de pagina kwam. Lovable las het rapport, vroeg toestemming en herstelde: 13 pakketten bijgewerkt, een HTML-filter op 9 plekken, tests in de pipeline. De tweede scan: geen kritieke bevindingen en geen zekere hoge meer; alleen nog 2 om na te kijken.</p>
-      <p class="zacht klein">Een project van onze oprichter, gescand op 21 oktober 2026 via GitHub (route 2). Echte cijfers uit het rapport.</p>
+      <p class="zacht klein">Een project van onze oprichter, gescand op 21 oktober 2026 via GitHub (route 2). Echte cijfers uit het rapport, op de schaal van een zelfscan (hoogstens C).</p>
     </div>
-    <div class="praktijk-cijfers" role="img" aria-label="Van score C met 22 hoge bevindingen naar score B, met nog 2 hoge bevindingen om na te kijken">
-      <div><span class="chip l-C">C</span><span><b>Eerste scan</b><span class="zacht">0 kritiek · 22 hoog · 19 middel</span></span></div>
+    <div class="praktijk-cijfers" role="img" aria-label="Van score D met 22 hoge bevindingen naar score C, met nog 2 hoge bevindingen om na te kijken">
+      <div><span class="chip zelf l-D">D</span><span><b>Eerste scan</b><span class="zacht">0 kritiek · 22 hoog · 19 middel</span></span></div>
       <div class="praktijk-pijl" aria-hidden="true">10 minuten · Lovable herstelt na "ja"</div>
-      <div><span class="chip l-B">B</span><span><b>Tweede scan</b><span class="zacht">0 kritiek · 2 hoog om na te kijken · 1 middel</span></span></div>
+      <div><span class="chip zelf l-C">C</span><span><b>Tweede scan</b><span class="zacht">0 kritiek · 2 hoog om na te kijken · 1 middel</span></span></div>
     </div>
   </div>
 </section>
@@ -102,7 +102,7 @@
 <section class="wrap sectie">
   <div class="kaart vlak">
     <h2 class="mt0">Zo werkt het, kort</h2>
-    <p class="lead">Meten → herstellen → opnieuw meten. Van een G naar een B in één middag, met je eigen AI-agent. Ook als je bouwt in Lovable, Bolt of v0.</p>
+    <p class="lead">Meten → herstellen → opnieuw meten. Van een G naar een C, het hoogste wat een zelfscan geeft, in één middag, met je eigen AI-agent. Ook als je bouwt in Lovable, Bolt of v0.</p>
     <a class="knop licht" href="/hoe-het-werkt">Bekijk hoe het werkt</a>
   </div>
 </section>

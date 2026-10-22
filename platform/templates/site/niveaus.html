@@ -9,7 +9,7 @@
       <thead><tr><th scope="col">Kenmerk</th>{% for l in levels %}<th scope="col">Niveau {{ l.n }}<br><span class="zacht">{{ l.naam }}</span></th>{% endfor %}</tr></thead>
       <tbody>
       {% for label, key in [("Voor", "voor"), ("Wie meet", "wie"), ("Checks", "checks"), ("Werkt het echt?", "werkt"), ("Aanvalstests", "aanval"), ("Hoogste letter", "hoogste"), ("Geldig", "geldig"), ("Beschikbaar", "status")] %}
-        <tr><th scope="row">{{ label }}</th>{% for l in levels %}<td>{% if key == "status" %}<span class="label">{{ l[key] }}</span>{% elif key == "hoogste" %}<span class="chip l-{{ l[key] }}">{{ l[key] }}</span>{% else %}{{ l[key] }}{% endif %}</td>{% endfor %}</tr>
+        <tr><th scope="row">{{ label }}</th>{% for l in levels %}<td>{% if key == "status" %}<span class="label">{{ l[key] }}</span>{% elif key == "hoogste" %}<span class="chip{{ ' zelf' if l.n == 1 }} l-{{ l[key] }}">{{ l[key] }}</span>{% else %}{{ l[key] }}{% endif %}</td>{% endfor %}</tr>
       {% endfor %}
       </tbody>
     </table>

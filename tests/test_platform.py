@@ -63,7 +63,7 @@ def test_platform():
             res = run(inl, work)
             assert res.returncode == 0, res.stderr
             r = json.loads(res.stdout)
-            assert r["score"] == "B" and r["soort"] == "Zelfcontrole"
+            assert r["score"] == "C" and r["soort"] == "Zelfscan"
             assert run(inl, work).returncode != 0, "sessiecode mocht geen tweede keer werken"
             b = json.loads((work / "rapport" / "bewijs.json").read_text())
             n2 = run(blocks[3], work).stdout.strip()
@@ -76,10 +76,20 @@ def test_platform():
             res2 = [dict(x) for x in b["resultaten"]]
             res2[0]["status"], res2[0]["zwaarste"], res2[0]["aantal"] = "Bevinding", "Kritiek", 1
             code, d = post(f"http://127.0.0.1:{pa}/api/v1/resultaat", {**b, "nonce": n4, "resultaten": res2})
-            assert code == 422, d   # score B klopt dan niet meer
+            assert code == 422, d   # score C klopt dan niet meer
+            # een bewijs dat zich als keuring (niveau 2) voordoet, krijgt toch de schaal van een zelfscan
+            n5 = run(blocks[3], work).stdout.strip()
+            code, d = post(f"http://127.0.0.1:{pa}/api/v1/resultaat", {**b, "nonce": n5, "niveau": 2, "score": {**b["score"], "letter": "A"}})
+            assert code == 422, d
+            # een scanner van vóór 22 oktober gaf nog een B: aanvaard, maar bewaard als C
+            n6 = run(blocks[3], work).stdout.strip()
+            code, d = post(f"http://127.0.0.1:{pa}/api/v1/resultaat", {**b, "nonce": n6, "score": {**b["score"], "letter": "B"}})
+            assert code == 201 and d["score"] == "C", d
             opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
             assert b"Scanscore" in opener.open(r["badge"]).read()
-            assert b"Zelfcontrole" in opener.open(r["pagina"]).read()
+            svg = opener.open(r["badge"]).read()
+            assert b"ZELFSCAN" in svg and b"stroke-dasharray" in svg
+            assert b"ZELFSCAN" in opener.open(r["pagina"]).read()
         finally:
             web.terminate(); api.terminate()
 

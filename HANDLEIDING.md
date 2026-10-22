@@ -45,7 +45,7 @@ De uitgangscode is 0 als er geen kritieke of hoge bevindingen zijn, anders 2. Zo
 
 **In je AI-agent:** zie [MCP.md](MCP.md). De agent roept de scan zelf aan, zonder netwerk, en herstelt wat hij vindt.
 
-**De scanscore A–G** staat bovenaan het rapport. Per scan telt de zwaarste bevinding; niveau 1 haalt hoogstens een B. De grenzen staan achteraan in het rapport en in MCP.md. Met `--soort "Geverifieerde scan"` vermeldt het rapport dat een erkende uitvoerder de scan deed; standaard is het een zelfcontrole.
+**De scanscore A–G** staat bovenaan het rapport. Per scan telt de zwaarste bevinding. Een zelfscan (niveau 1) haalt hoogstens een C; A en B zijn er alleen na een keuring. De grenzen staan achteraan in het rapport en in MCP.md. Met `--soort "Geverifieerde scan"` vermeldt het rapport dat een erkende uitvoerder de scan deed; standaard is het een zelfscan.
 
 ## 3. Voor elke scan
 
@@ -91,7 +91,7 @@ python tests/test_demo.py
 Dit bouwt de demo-app Factuurhulp, een app met bekende fouten en nepsleutels, en de herstelde versie ervan. Daarna controleert de test:
 - dat de scanner elke verwachte fout vindt;
 - dat er geen geheim in het rapport of in het antwoord aan de agent staat;
-- dat de foute app een G krijgt en de herstelde een B;
+- dat de foute app een G krijgt en de herstelde een C;
 - dat de MCP-server werkt met het netwerk geblokkeerd.
 
 Draai de test na elke wijziging aan de regels.

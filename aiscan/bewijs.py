@@ -61,7 +61,7 @@ def maak(proj, results, summary, nonce: str | None):
         "project": {"naam": summary.get("app"), "commit": proj.git_head(), "boom_sha256": boom_hash(proj),
                     "bestanden": len(proj.files)},
         "niveau": summary.get("niveau", 1),
-        "soort": "Zelfcontrole",
+        "soort": "Zelfscan",
         "resultaten": res,
         "score": {"letter": sc["letter"], "dekking": sc["dekking"]},
         "ernst": summary["ernst"],

@@ -19,6 +19,7 @@ h3{font-size:15px;margin:26px 0 8px}
 .scorebox{display:flex;gap:22px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:16px 18px;margin:0 0 18px;flex-wrap:wrap}
 .scale{display:flex;gap:4px}
 .scale span{width:34px;height:40px;display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;border-radius:4px;opacity:.28;font-size:16px}
+.scale span.dicht{opacity:.1}
 .scale span.on{opacity:1;transform:scale(1.18);box-shadow:0 0 0 2px #fff,0 0 0 4px var(--ink)}
 .l-A{background:#1b7f3b}.l-B{background:#4f9d2a}.l-C{background:#a4b61f}.l-D{background:#e0b400}.l-E{background:#e98a15}.l-F{background:#d9480f}.l-G{background:#b1161a}
 .scoretext{flex:1;min-width:240px}.scoretext .big{font-size:20px;font-weight:650}
@@ -87,7 +88,7 @@ footer{margin-top:50px;color:var(--muted);font-size:12px;border-top:1px solid va
 
 {% set sc = s.score %}
 <div class="scorebox">
-  <div class="scale">{% for L in 'ABCDEFG' %}<span class="l-{{ L }}{% if sc.letter == L %} on{% endif %}">{{ L }}</span>{% endfor %}</div>
+  <div class="scale">{% for L in 'ABCDEFG' %}<span class="l-{{ L }}{% if sc.letter == L %} on{% endif %}{% if sc.zelfscan and L in 'AB' %} dicht{% endif %}"{% if sc.zelfscan and L in 'AB' %} title="Alleen na een keuring"{% endif %}>{{ L }}</span>{% endfor %}</div>
   <div class="scoretext">
     <div class="big">{% if sc.letter %}Scanscore {{ sc.letter }}{% else %}Geen scanscore{% endif %} · {{ s.soort }}</div>
     <div class="note">{{ sc.uitleg }} Grenzen: zie achteraan. Dit is een score van deze scan, geen keurmerk of certificaat.</div>
@@ -182,7 +183,7 @@ footer{margin-top:50px;color:var(--muted);font-size:12px;border-top:1px solid va
 <table><tr><th style="width:60px">Score</th><th>Voorwaarde</th></tr>
 {% for L, t in sc.grenzen %}<tr><td><span class="badge l-{{ L }}" style="color:#fff;border-color:transparent">{{ L }}</span></td><td>{{ t }}</td></tr>{% endfor %}
 </table>
-<p class="note">{% if s.soort == 'Zelfcontrole' %}<b>Zelfcontrole:</b> de bouwer draaide deze scan zelf. Het rapport toont wat de scanner vond, maar is niet onafhankelijk geverifieerd.{% else %}<b>Geverifieerde scan:</b> uitgevoerd door {{ s.uitvoerder }}.{% endif %}</p>
+<p class="note">{% if s.soort in ('Zelfscan', 'Zelfcontrole') %}<b>Zelfscan:</b> de bouwer draaide deze scan zelf. Het rapport toont wat de scanner vond, maar is niet onafhankelijk geverifieerd. Daarom haalt een zelfscan hoogstens een C; A en B zijn er alleen na een keuring.{% else %}<b>Geverifieerde scan:</b> uitgevoerd door {{ s.uitvoerder }}.{% endif %}</p>
 
 <h2>Wat dit rapport is, en wat niet</h2>
 <div class="two">

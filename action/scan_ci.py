@@ -208,7 +208,7 @@ def meetellen(m: dict, letter: str) -> str:
         if not tok:
             return "Niet meegeteld: zet `id-token: write` bij `permissions` in de workflow."
         req = urllib.request.Request(m["api"].rstrip("/") + "/api/v1/telling", method="POST",
-                                     data=json.dumps({"letter": letter}).encode(),
+                                     data=json.dumps({"letter": letter, "schaal": "zelfscan"}).encode(),
                                      headers={"Authorization": f"Bearer {tok}", "Content-Type": "application/json"})
         with urllib.request.urlopen(req, timeout=20) as r:
             d = json.loads(r.read())
@@ -291,8 +291,11 @@ def rapport_markdown(rap: dict, m: dict, letter: str, historie: list | None = No
         "één keer \"onterecht gemeld\" met de reden. Stop als er alleen nog Laag openstaat. Geef zelf geen score of oordeel "
         "en wijzig dit bestand niet: het wordt bij elke scan overschreven.",
         "",
-        f"**Scanscore: {letter}** · niveau {s.get('niveau', 1)} · gescande commit `{(s.get('commit') or '')[:12]}` · "
+        f"**Scanscore: {letter} · ZELFSCAN** · niveau {s.get('niveau', 1)} · gescande commit `{(s.get('commit') or '')[:12]}` · "
         f"dagversie {m['dagversie']}",
+        "",
+        "Een zelfscan haalt hoogstens een C: zonder kritieke of hoge bevindingen sta je op C. A en B zijn er alleen na een "
+        "keuring door een erkende keurder.",
         "",
         f"{sc.get('uitleg', '')}",
         "",
@@ -358,6 +361,18 @@ def ongewijzigd_bij_dagscan(rap: dict) -> bool:
             [vorige.get(k) for k in "khml"] == [s["ernst"][e] for e in ("Kritiek", "Hoog", "Middel", "Laag")])
 
 
+# Scanners van vóór 22 oktober 2026 gaven een zelfscan hoogstens een B. De grenzen schoven één letter op.
+OUD_NAAR_NIEUW = {"A": "C", "B": "C", "C": "D", "D": "E", "E": "F", "F": "G", "G": "G"}
+
+
+def nieuwe_letter(sc: dict) -> str:
+    """De letter op de schaal van een zelfscan (hoogstens C), ook als een oudere scanner hem nog op de oude schaal gaf."""
+    letter = sc.get("letter") or "geen"
+    if letter in OUD_NAAR_NIEUW and "hoogste" not in sc:
+        return OUD_NAAR_NIEUW[letter]
+    return letter
+
+
 def werk_historie_bij(rap: dict, letter: str) -> list:
     """Leest .checkmijn/historie.json en voegt deze scan toe (alleen als het rapport in de repo komt)."""
     doel = PAD / RAPPORT_MAP
@@ -368,8 +383,11 @@ def werk_historie_bij(rap: dict, letter: str) -> list:
         historie = json.loads(hist_pad.read_text()) if hist_pad.exists() else []
     except ValueError:
         historie = []
+    for x in historie:  # oude scores omzetten naar de schaal van een zelfscan, zodat het verloop klopt
+        if isinstance(x, dict) and x.get("schaal") != "zelfscan" and x.get("score") in OUD_NAAR_NIEUW:
+            x["score"], x["schaal"] = OUD_NAAR_NIEUW[x["score"]], "zelfscan"
     import datetime as _dt
-    nieuw = {"datum": f"{s.get('datum', '')} {_dt.datetime.now(_dt.timezone.utc).strftime('%H:%M')} UTC", "commit": s.get("commit") or "", "score": letter,
+    nieuw = {"datum": f"{s.get('datum', '')} {_dt.datetime.now(_dt.timezone.utc).strftime('%H:%M')} UTC", "commit": s.get("commit") or "", "score": letter, "schaal": "zelfscan",
              "k": s["ernst"]["Kritiek"], "h": s["ernst"]["Hoog"], "m": s["ernst"]["Middel"], "l": s["ernst"]["Laag"]}
     if not historie or historie[-1].get("commit") != nieuw["commit"]:
         historie.append(nieuw)
@@ -467,11 +485,11 @@ def main() -> int:
     rap = json.loads((OUT / "rapport.json").read_text())
     s = rap["samenvatting"]
     sc = s.get("score") or {}
-    letter = sc.get("letter") or "geen"
+    letter = nieuwe_letter(sc)
     regels = [
         "## checkmijn.ai — scanscore",
         "",
-        f"**Score: {letter}** · niveau {s.get('niveau', 1)} · dagversie {m['dagversie']} · commit `{(s.get('commit') or '')[:12]}`",
+        f"**Score: {letter} · zelfscan** (hoogstens C; een keuring gaat tot A) · niveau {s.get('niveau', 1)} · dagversie {m['dagversie']} · commit `{(s.get('commit') or '')[:12]}`",
         "",
         f"{sc.get('uitleg', '')}",
         "",

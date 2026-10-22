@@ -21,8 +21,9 @@ def nep_claims(token):
 api.oidc_claims = nep_claims
 c = api.app.test_client()
 
-def tel(repo, letter, event="push"):
-    return c.post("/api/v1/telling", json={"letter": letter}, headers={"Authorization": f"Bearer {repo}:{event}"})
+def tel(repo, letter, event="push", schaal="zelfscan"):
+    d = {"letter": letter, **({"schaal": schaal} if schaal else {})}
+    return c.post("/api/v1/telling", json=d, headers={"Authorization": f"Bearer {repo}:{event}"})
 
 assert c.post("/api/v1/telling", json={"letter": "B"}).status_code == 401
 assert c.post("/api/v1/telling", json={"letter": "B"}, headers={"Authorization": "Bearer fout"}).status_code == 401
@@ -30,14 +31,17 @@ assert tel("1", "Z").status_code == 422 and tel("1", "geen").status_code == 422
 assert tel("1", "B", "pull_request").get_json()["geteld"] is False
 assert tel("1", "B", "schedule").get_json()["geteld"] is False
 
-# project 1: G → E → B; project 2: E → B; project 3: D (één keer); project 4: C → D (slechter)
-for repo, letter in [("1", "G"), ("1", "E"), ("1", "B"), ("2", "E"), ("2", "B"), ("3", "D"), ("4", "C"), ("4", "D")]:
-    assert tel(repo, letter).status_code == 201
+# een zelfscan haalt hoogstens een C
+assert tel("9", "B").status_code == 422 and tel("9", "A").status_code == 422
+# project 1: G → F → C; project 2: F → C (een oudere action stuurt nog de oude B); project 3: D; project 4: D → E (slechter)
+for repo, letter, schaal in [("1", "G", "zelfscan"), ("1", "F", "zelfscan"), ("1", "C", "zelfscan"), ("2", "E", None), ("2", "B", None),
+                             ("3", "D", "zelfscan"), ("4", "D", "zelfscan"), ("4", "E", "zelfscan")]:
+    assert tel(repo, letter, schaal=schaal).status_code == 201
 s = api.app.test_request_context().__enter__() and api.statistiek()
 assert s["scans"] == 8 and s["projecten"] == 4 and s["herhaald"] == 3, s
-assert s["beter"] == 2 and s["slechter"] == 1 and s["gem_stappen"] == 4.0, s   # G→B = 5, E→B = 3
-assert s["overgangen"][0][2] == 1 and ("G", "B", 1) in s["overgangen"] and ("C", "D", 1) in s["overgangen"]
-assert s["eerste"] == {"G": 1, "E": 1, "D": 1, "C": 1}
+assert s["beter"] == 2 and s["slechter"] == 1 and s["gem_stappen"] == 3.5, s   # G→C = 4, F→C = 3
+assert s["overgangen"][0][2] == 1 and ("G", "C", 1) in s["overgangen"] and ("F", "C", 1) in s["overgangen"] and ("D", "E", 1) in s["overgangen"]
+assert s["eerste"] == {"G": 1, "F": 1, "D": 2}
 
 # geen naam van de repository in de databank
 import sqlite3  # noqa: E402
@@ -49,19 +53,31 @@ for _ in range(9):
     tel("5", "F")
 assert tel("5", "F").status_code == 201 and tel("5", "F").get_json()["geteld"] is False
 
-# zelfcontroles (AI-agent): tellen mee met een geldig bewijs, apart vermeld
+# zelfscans (AI-agent): tellen mee met een geldig bewijs, apart vermeld
 echt = api.controleer_bewijs
 api.controleer_bewijs = lambda b, voor_telling=False: (None, "2026-10-21", {"letter": b.get("letter")})
 def zelf(projectcode, letter):
     return c.post("/api/v1/telling/zelf", json={"bewijs": {"nonce": "n", "letter": letter}, "project": projectcode})
 assert zelf("geen-hex", "C").status_code == 422
-assert zelf("a" * 64, "D").status_code == 201 and zelf("a" * 64, "B").status_code == 201
+assert zelf("a" * 64, "D").status_code == 201 and zelf("a" * 64, "C").status_code == 201
 api.controleer_bewijs = echt
 assert c.post("/api/v1/telling/zelf", json={"bewijs": {"formaat": "x"}, "project": "b" * 64}).status_code == 422
 with api.app.test_request_context():
     s2 = api.statistiek()
 assert s2["scans_zelf"] == 2 and s2["scans"] == s2["scans_github"] + 2, s2
-assert s2["matrix"].get(("D", "B")) == 1
+assert s2["matrix"].get(("D", "C")) == 1
+
+# eenmalige omzetting van oude zelfscans (hoogstens B) naar de nieuwe schaal (hoogstens C)
+oud = sqlite3.connect(":memory:")
+oud.executescript("""CREATE TABLE scores (id TEXT, letter TEXT, soort TEXT);
+    CREATE TABLE tel_projecten (project TEXT, eerste TEXT, laatste TEXT);
+    INSERT INTO scores VALUES ('x', 'B', 'Zelfcontrole'), ('y', 'F', 'Zelfcontrole'), ('z', NULL, 'Zelfcontrole');
+    INSERT INTO tel_projecten VALUES ('p', 'G', 'B'), ('q', 'E', 'C');""")
+with api.app.test_request_context():
+    api._migreer(oud)
+    api._migreer(oud)  # tweede keer: niets meer
+assert oud.execute("SELECT letter, soort FROM scores ORDER BY id").fetchall() == [("C", "Zelfscan"), ("G", "Zelfscan"), (None, "Zelfscan")]
+assert oud.execute("SELECT eerste, laatste FROM tel_projecten ORDER BY project").fetchall() == [("G", "C"), ("F", "D")]
 
 # pagina's
 r = c.get("/resultaten").get_data(as_text=True)

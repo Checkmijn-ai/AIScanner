@@ -4,16 +4,20 @@ De letter telt per scan de zwaarste bevinding, niet het aantal bevindingen: tien
 zo niet zwaarder dan tien verschillende problemen. Een bevinding die nog bevestigd moet worden, telt één
 ernstniveau lager tot een analist ze bevestigt.
 
+Er zijn twee schalen. Een zelfscan (niveau 1: de bouwer of zijn AI-agent draait de scanner zelf) haalt
+hoogstens een C; een keuring (vanaf niveau 2, met een erkende keurder) gaat tot A. Zo verwart niemand een
+gratis C met een gekeurde C: de badge van een zelfscan zegt er ook ZELFSCAN bij.
+
 Grenzen (aantal scans met als zwaarste bevinding ...):
-  A  geen kritiek of hoog, hoogstens 2 middel           (alleen vanaf niveau 2)
-  B  geen kritiek of hoog
-  C  geen kritiek, hoogstens 2 hoog
-  D  geen kritiek, hoogstens 5 hoog
-  E  hoogstens 1 kritiek
-  F  hoogstens 3 kritiek
-  G  4 of meer kritiek
-Niveau 1 (basisscan) haalt hoogstens een B. Een score komt er alleen als minstens 70% van de scans
-die van toepassing zijn, ook echt gescand is.
+       zelfscan                         keuring
+  A    -                                geen kritiek of hoog, hoogstens 2 middel
+  B    -                                geen kritiek of hoog
+  C    geen kritiek of hoog             geen kritiek, hoogstens 2 hoog
+  D    geen kritiek, hoogstens 2 hoog   geen kritiek, hoogstens 5 hoog
+  E    geen kritiek, hoogstens 5 hoog   hoogstens 1 kritiek
+  F    hoogstens 1 kritiek              hoogstens 3 kritiek
+  G    2 of meer kritiek                4 of meer kritiek
+Een score komt er alleen als minstens 70% van de scans die van toepassing zijn, ook echt gescand is.
 """
 from __future__ import annotations
 
@@ -21,8 +25,9 @@ ORDE = {"Kritiek": 4, "Hoog": 3, "Middel": 2, "Laag": 1, "Info": 0}
 NAAM = {4: "Kritiek", 3: "Hoog", 2: "Middel", 1: "Laag", 0: "Info"}
 LETTERS = "ABCDEFG"
 MIN_DEKKING = 0.70
-GRENZEN = [
-    ("A", "geen kritieke of hoge bevindingen, hoogstens 2 scans met een middelzware bevinding (alleen vanaf niveau 2)"),
+HOOGSTE_ZELFSCAN = "C"
+GRENZEN_KEURING = [
+    ("A", "geen kritieke of hoge bevindingen, hoogstens 2 scans met een middelzware bevinding"),
     ("B", "geen kritieke of hoge bevindingen"),
     ("C", "geen kritieke bevindingen, hoogstens 2 scans met een hoge bevinding"),
     ("D", "geen kritieke bevindingen, hoogstens 5 scans met een hoge bevinding"),
@@ -30,6 +35,56 @@ GRENZEN = [
     ("F", "hoogstens 3 scans met een kritieke bevinding"),
     ("G", "4 of meer scans met een kritieke bevinding"),
 ]
+GRENZEN_ZELFSCAN = [
+    ("C", "geen kritieke of hoge bevindingen (het hoogste wat een zelfscan geeft)"),
+    ("D", "geen kritieke bevindingen, hoogstens 2 scans met een hoge bevinding"),
+    ("E", "geen kritieke bevindingen, hoogstens 5 scans met een hoge bevinding"),
+    ("F", "hoogstens 1 scan met een kritieke bevinding"),
+    ("G", "2 of meer scans met een kritieke bevinding"),
+]
+GRENZEN = GRENZEN_ZELFSCAN  # de scanner in deze repository doet niveau 1: een zelfscan
+
+
+def zelfscan(niveau: int) -> bool:
+    return int(niveau or 1) < 2
+
+
+def grenzen(niveau: int = 1):
+    return GRENZEN_ZELFSCAN if zelfscan(niveau) else GRENZEN_KEURING
+
+
+def letter_uit(k: int, h: int, m: int, niveau: int = 1) -> str:
+    if zelfscan(niveau):
+        if k == 0 and h == 0:
+            return "C"
+        if k == 0 and h <= 2:
+            return "D"
+        if k == 0 and h <= 5:
+            return "E"
+        return "F" if k <= 1 else "G"
+    if k == 0 and h == 0:
+        return "A" if m <= 2 else "B"
+    if k == 0 and h <= 2:
+        return "C"
+    if k == 0 and h <= 5:
+        return "D"
+    if k <= 1:
+        return "E"
+    return "F" if k <= 3 else "G"
+
+
+def oude_letter(k: int, h: int, m: int) -> str:
+    """De letter van een zelfscan zoals scanners vóór 22 oktober 2026 hem gaven (hoogstens B).
+    Alleen om bewijs van een oudere dagversie nog te aanvaarden; de API bewaart altijd de nieuwe letter."""
+    if k == 0 and h == 0:
+        return "B"
+    if k == 0:
+        return "C" if h <= 2 else "D"
+    return "E" if k <= 1 else ("F" if k <= 3 else "G")
+
+
+# Oude zelfscanletter -> nieuwe: de grenzen schoven precies één letter op (F en G vallen samen in G).
+OUD_NAAR_NIEUW = {"A": "C", "B": "C", "C": "D", "D": "E", "E": "F", "F": "G", "G": "G"}
 
 
 def effectief(f) -> int:
@@ -45,23 +100,9 @@ def bereken(results, niveau: int = 1, deel: bool | None = None):
     k = sum(1 for v in per_scan.values() if v == 4)
     h = sum(1 for v in per_scan.values() if v == 3)
     m = sum(1 for v in per_scan.values() if v == 2)
-    if k == 0 and h == 0 and m <= 2:
-        letter = "A"
-    elif k == 0 and h == 0:
-        letter = "B"
-    elif k == 0 and h <= 2:
-        letter = "C"
-    elif k == 0 and h <= 5:
-        letter = "D"
-    elif k <= 1:
-        letter = "E"
-    elif k <= 3:
-        letter = "F"
-    else:
-        letter = "G"
-    begrensd = False
-    if niveau == 1 and letter == "A":
-        letter, begrensd = "B", True
+    letter = letter_uit(k, h, m, niveau)
+    zelf = zelfscan(niveau)
+    begrensd = zelf and letter == HOOGSTE_ZELFSCAN
     toepasselijk = [r for _, r in results if r.status != "Niet van toepassing"]
     gescand = [r for r in toepasselijk if r.status in ("Geen bevinding", "Bevinding")]
     dekking = len(gescand) / len(toepasselijk) if toepasselijk else 0.0
@@ -76,32 +117,16 @@ def bereken(results, niveau: int = 1, deel: bool | None = None):
         "dekking": round(dekking, 2),
         "voldoende_dekking": voldoende,
         "begrensd_door_niveau": begrensd,
+        "zelfscan": zelf,
+        "hoogste": HOOGSTE_ZELFSCAN if zelf else "A",
         "scans_kritiek": k, "scans_hoog": h, "scans_middel": m,
-        "grenzen": GRENZEN,
+        "grenzen": grenzen(niveau),
         "uitleg": (f"{k} scan(s) met een kritieke, {h} met een hoge en {m} met een middelzware bevinding als zwaarste."
-                   + (" Niveau 1 haalt hoogstens een B." if begrensd else "")
+                   + (" Een zelfscan haalt hoogstens een C; een keuring gaat tot A." if begrensd else "")
                    + (f" Geen score: maar {len(results)} scans gedraaid, niet de volledige set." if deel else "")
                    + ("" if voldoende or deel else f" Geen score: maar {round(dekking * 100)}% van de scans die van toepassing zijn, "
                       f"is gescand (minimum {round(MIN_DEKKING * 100)}%). Scan met --url en --github-token voor een volledige score.")),
     }
-
-
-def letter_uit(k: int, h: int, m: int, niveau: int = 1) -> str:
-    if k == 0 and h == 0 and m <= 2:
-        letter = "A"
-    elif k == 0 and h == 0:
-        letter = "B"
-    elif k == 0 and h <= 2:
-        letter = "C"
-    elif k == 0 and h <= 5:
-        letter = "D"
-    elif k <= 1:
-        letter = "E"
-    elif k <= 3:
-        letter = "F"
-    else:
-        letter = "G"
-    return "B" if niveau == 1 and letter == "A" else letter
 
 
 def uit_bewijs(resultaten: list, niveau: int = 1):
@@ -113,4 +138,5 @@ def uit_bewijs(resultaten: list, niveau: int = 1):
     dekking = len(gescand) / len(toep) if toep else 0.0
     letter = letter_uit(k, h, m, niveau)
     return {"letter": letter if dekking >= MIN_DEKKING else None, "dekking": round(dekking, 2),
-            "scans_kritiek": k, "scans_hoog": h, "scans_middel": m}
+            "oude_letter": (oude_letter(k, h, m) if dekking >= MIN_DEKKING else None) if zelfscan(niveau) else None,
+            "zelfscan": zelfscan(niveau), "scans_kritiek": k, "scans_hoog": h, "scans_middel": m}

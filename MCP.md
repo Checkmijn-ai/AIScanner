@@ -64,20 +64,20 @@ Draai na elke wijziging aiscan_scan en herstel kritieke en hoge bevindingen voor
 
 Per scan telt de zwaarste bevinding. Een bevinding die nog bevestigd moet worden, telt één niveau lager.
 
-| Score | Voorwaarde |
-| --- | --- |
-| A | Geen kritieke of hoge bevindingen, hoogstens 2 scans met een middelzware (alleen vanaf niveau 2) |
-| B | Geen kritieke of hoge bevindingen |
-| C | Geen kritieke, hoogstens 2 scans met een hoge bevinding |
-| D | Geen kritieke, hoogstens 5 scans met een hoge bevinding |
-| E | Hoogstens 1 scan met een kritieke bevinding |
-| F | Hoogstens 3 scans met een kritieke bevinding |
-| G | 4 of meer scans met een kritieke bevinding |
+| Score | Zelfscan (niveau 1, deze scanner) | Keuring (vanaf niveau 2) |
+| --- | --- | --- |
+| A | — | Geen kritieke of hoge bevindingen, hoogstens 2 scans met een middelzware |
+| B | — | Geen kritieke of hoge bevindingen |
+| C | Geen kritieke of hoge bevindingen | Geen kritieke, hoogstens 2 scans met een hoge bevinding |
+| D | Geen kritieke, hoogstens 2 scans met een hoge bevinding | Geen kritieke, hoogstens 5 scans met een hoge bevinding |
+| E | Geen kritieke, hoogstens 5 scans met een hoge bevinding | Hoogstens 1 scan met een kritieke bevinding |
+| F | Hoogstens 1 scan met een kritieke bevinding | Hoogstens 3 scans met een kritieke bevinding |
+| G | 2 of meer scans met een kritieke bevinding | 4 of meer scans met een kritieke bevinding |
 
-Een scan van niveau 1 haalt hoogstens een B. Een score komt er alleen als minstens 70% van de scans die van toepassing zijn, gescand is.
+Een scan van niveau 1 is een zelfscan en haalt hoogstens een C (geen kritieke of hoge bevindingen); A en B zijn er alleen na een keuring. Een score komt er alleen als minstens 70% van de scans die van toepassing zijn, gescand is.
 
-Een scan via MCP is altijd een **zelfcontrole**: de bouwer draaide hem zelf, op zijn eigen machine. Het rapport zegt dat er ook bij. Een **geverifieerde scan** vraagt een uitvoering die de bouwer niet kan beïnvloeden. Die volgt via de GitHub Action of door een analist.
+Een scan via MCP is altijd een **zelfscan**: de bouwer draaide hem zelf, op zijn eigen machine. Het rapport zegt dat er ook bij. Een **geverifieerde scan** vraagt een uitvoering die de bouwer niet kan beïnvloeden. Die volgt via de GitHub Action of door een analist.
 
-## Voorbeeld: van G naar B
+## Voorbeeld: van G naar C
 
-`tests/maak_demo.py` bouwt de demo-app Factuurhulp. Met `--hersteld` bouwt hij dezelfde app nadat een agent alles hersteld heeft. De eerste krijgt een G (6 scans met een kritieke bevinding), de herstelde een B, zonder bevindingen. De rapporten staan bij de voorbeeldrapporten.
+`tests/maak_demo.py` bouwt de demo-app Factuurhulp. Met `--hersteld` bouwt hij dezelfde app nadat een agent alles hersteld heeft. De eerste krijgt een G (6 scans met een kritieke bevinding), de herstelde een C, zonder bevindingen. De rapporten staan bij de voorbeeldrapporten.

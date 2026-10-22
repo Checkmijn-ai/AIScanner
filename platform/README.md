@@ -61,7 +61,7 @@ Bij elk bewijs:
 - precies de checks van die dagversie zitten erin, met kloppende statussen;
 - de score klopt: de API rekent ze zelf opnieuw uit.
 
-Wat de API niet kan uitsluiten: dat iemand op zijn eigen machine knoeit met de scanner of het bewijs. Daarom is elke score via deze route een **Zelfcontrole**, en de scorepagina zegt dat.
+Wat de API niet kan uitsluiten: dat iemand op zijn eigen machine knoeit met de scanner of het bewijs. Daarom is elke score via deze route een **Zelfscan**: hoogstens een C, met ZELFSCAN op de badge en de scorepagina.
 
 **Volgende stap voor een geverifieerde scan:** dezelfde scan in GitHub Actions of GitLab CI, met een attestation van het platform (GitHub: artifact attestations op basis van Sigstore). De API kijkt dan na dat de workflow, de commit en de uitslag bij elkaar horen, en zet de soort op "Geverifieerde scan". Dat is nog te bouwen.
 

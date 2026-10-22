@@ -18,6 +18,10 @@ h1{margin:6px 0 0;font-size:28px;line-height:1.15}
 .scale{display:flex;gap:4px;margin-top:10px}
 .scale span{width:26px;height:30px;border-radius:4px;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;opacity:.3}
 .scale span.on{opacity:1;outline:2px solid var(--ink);outline-offset:2px}
+.scale span.dicht{opacity:.12}
+.big.zelf{background:var(--paper)!important;border:3px dashed currentColor;color:var(--letter)}
+.big.zelf span{color:var(--paper);-webkit-text-stroke:2.5px var(--letter);paint-order:stroke}
+.zelfwoord{font:700 12px/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.12em;border:1.5px dashed var(--ink);border-radius:4px;padding:3px 7px}
 .pill{display:inline-block;border:1px solid var(--accent);color:var(--accent);border-radius:999px;padding:2px 10px;font-size:13px;font-weight:600}
 .pill.warn{border-color:#b1161a;color:#b1161a}
 .meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px 20px;font-size:14px}
@@ -34,15 +38,16 @@ ul{margin:6px 0 0;padding-left:18px}
 </style>
 </head>
 <body><div class="wrap">
+  {% set zelf = r.soort in ('Zelfscan', 'Zelfcontrole') %}{% set kl = '#8a94a6' if verlopen or not r.letter else kleur[r.letter] %}
   <div class="card">
     <span class="eyebrow">Scanscore · niveau {{ b.niveau }}</span>
     <h1>{{ r.project or 'Project' }}</h1>
     <div class="hero" style="margin-top:16px">
-      <div class="big" style="background:{{ '#8a94a6' if verlopen or not r.letter else kleur[r.letter] }}">{{ r.letter or '–' }}</div>
+      {% if zelf %}<div class="big zelf" style="--letter:{{ kl }};color:{{ kl }}"><span>{{ r.letter or '–' }}</span></div>{% else %}<div class="big" style="background:{{ kl }}">{{ r.letter or '–' }}</div>{% endif %}
       <div>
-        <div><span class="pill">{{ r.soort }}</span> {% if verlopen %}<span class="pill warn">Verlopen</span>{% endif %}</div>
-        <div class="scale" aria-label="Scanscore van A tot G">{% for L in 'ABCDEFG' %}<span style="background:{{ kleur[L] }}" class="{{ 'on' if L == r.letter }}">{{ L }}</span>{% endfor %}</div>
-        <p class="note" style="margin:10px 0 0">{% if r.letter == 'B' %}Geen kritieke of hoge bevindingen op de controles van deze scan.{% elif r.letter %}{{ b.ernst.Kritiek }} kritieke en {{ b.ernst.Hoog }} hoge bevindingen op het moment van de scan.{% else %}Geen score: te weinig controles gescand.{% endif %}</p>
+        <div>{% if zelf %}<span class="zelfwoord">ZELFSCAN</span>{% else %}<span class="pill">{{ r.soort }}</span>{% endif %} {% if verlopen %}<span class="pill warn">Verlopen</span>{% endif %}</div>
+        <div class="scale" aria-label="Scanscore van A tot G">{% for L in 'ABCDEFG' %}<span style="background:{{ kleur[L] }}" class="{{ 'on' if L == r.letter }}{{ ' dicht' if zelf and L in 'AB' }}"{% if zelf and L in 'AB' %} title="Alleen na een keuring"{% endif %}>{{ L }}</span>{% endfor %}</div>
+        <p class="note" style="margin:10px 0 0">{% if zelf %}Een zelfscan haalt hoogstens een C; A en B zijn er alleen na een keuring. {% endif %}{% if r.letter == ('C' if zelf else 'B') %}Geen kritieke of hoge bevindingen op de controles van deze scan.{% elif r.letter %}{{ b.ernst.Kritiek }} kritieke en {{ b.ernst.Hoog }} hoge bevindingen op het moment van de scan.{% else %}Geen score: te weinig controles gescand.{% endif %}</p>
       </div>
     </div>
   </div>
@@ -72,7 +77,7 @@ ul{margin:6px 0 0;padding-left:18px}
       <li>De scanner was een gepubliceerde, ondertekende dagversie.</li></ul></div>
     <div><b>Wat ze niet zegt</b>
       <ul><li>Geen keurmerk, certificaat of garantie dat de software veilig is.</li>
-      <li>{% if r.soort == 'Zelfcontrole' %}<b>Zelfcontrole:</b> de eigenaar of zijn AI-agent draaide de scan op een eigen machine. Wij hebben de uitvoering niet zelf gezien.{% else %}Geverifieerde scan.{% endif %}</li>
+      <li>{% if zelf %}<b>Zelfscan:</b> de eigenaar of zijn AI-agent draaide de scan op een eigen machine. Wij hebben de uitvoering niet zelf gezien.{% else %}Geverifieerde scan.{% endif %}</li>
       <li>Geen handmatige pentest en geen oordeel over de organisatie.</li></ul></div>
   </div>
 

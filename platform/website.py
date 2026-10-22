@@ -44,19 +44,20 @@ NAV = [("hoe_het_werkt", "Hoe het werkt"), ("controles", "Alle checks"), ("nivea
 BRONCODE = "https://github.com/Checkmijn-ai/AIScanner"
 HOSTING = "Hetzner, Helsinki (Finland, EU)"
 
+# Letter, zelfscan (niveau 1, hoogstens C), keuring (vanaf niveau 2, tot A). Zie aiscan/score.py.
 GRADES = [
-    ("A", "Geen kritieke of hoge bevindingen, hoogstens 2 middelzware. Alleen vanaf niveau 2."),
-    ("B", "Geen kritieke of hoge bevindingen. Het hoogste wat niveau 1 geeft."),
-    ("C", "Geen kritieke, hoogstens 2 hoge bevindingen."),
-    ("D", "Geen kritieke, hoogstens 5 hoge bevindingen."),
-    ("E", "Hoogstens 1 kritieke bevinding."),
-    ("F", "Hoogstens 3 kritieke bevindingen."),
-    ("G", "4 of meer kritieke bevindingen."),
+    ("A", "—", "Geen kritieke of hoge bevindingen, hoogstens 2 middelzware."),
+    ("B", "—", "Geen kritieke of hoge bevindingen."),
+    ("C", "Geen kritieke of hoge bevindingen. Het hoogste wat een zelfscan geeft.", "Geen kritieke, hoogstens 2 hoge bevindingen."),
+    ("D", "Geen kritieke, hoogstens 2 hoge bevindingen.", "Geen kritieke, hoogstens 5 hoge bevindingen."),
+    ("E", "Geen kritieke, hoogstens 5 hoge bevindingen.", "Hoogstens 1 kritieke bevinding."),
+    ("F", "Hoogstens 1 kritieke bevinding.", "Hoogstens 3 kritieke bevindingen."),
+    ("G", "2 of meer kritieke bevindingen.", "4 of meer kritieke bevindingen."),
 ]
 
 LEVELS = [
     {"n": 1, "naam": "Basisscan", "status": "Nu, gratis", "voor": "Interne tools, kleine apps, een eerste meting",
-     "wie": "Volledig automatisch", "checks": "45", "werkt": "—", "aanval": "—", "hoogste": "B",
+     "wie": "Volledig automatisch", "checks": "45", "werkt": "—", "aanval": "—", "hoogste": "C",
      "geldig": "Zolang de scan actueel is"},
     {"n": 2, "naam": "Gekeurd", "status": "In voorbereiding (pilots)", "voor": "De meeste zakelijke apps",
      "wie": "Automatisch + erkende keurder", "checks": "±100, plus checks die je erbij kiest",
@@ -86,19 +87,21 @@ FAQ = [
     ("Moet ik iets installeren?", "Nee. Je AI-agent of je pipeline draait de scanner uit één bestand en ruimt daarna op."),
     ("Gebruiken jullie AI om te beoordelen?", "Nee. De meting gebruikt vaste regels: dezelfde code geeft altijd "
      "dezelfde uitkomst. AI mag je helpen herstellen, maar telt niet mee in de score."),
-    ("Kan iemand vals spelen bij een zelfcontrole?", "Een zelfcontrole draait op een machine die wij niet controleren. "
-     "Daarom staat ze ook zo op de badge. Wie zekerheid wil, kiest een keuring."),
+    ("Kan iemand vals spelen bij een zelfscan?", "Een zelfscan draait op een machine die wij niet controleren. "
+     "Daarom staat er ZELFSCAN op de badge, met een gestippelde rand, en gaat de score hoogstens tot C. Wie zekerheid "
+     "wil, kiest een keuring."),
     ("Is dit een certificaat?", "Nee, het is een onafhankelijke scanscore. Een officieel keurmerk komt er later, via een "
      "onafhankelijke organisatie, met deze scan als basis."),
-    ("Waarom geeft niveau 1 geen A?", "Een automatische scan ziet niet alles. Voor een A moet een keurder hebben "
-     "meegekeken."),
+    ("Waarom haalt een zelfscan hoogstens een C?", "Een automatische scan ziet niet alles, en een zelfscan draait op een "
+     "machine die wij niet zien. Zo verwart niemand een gratis C met een gekeurde C. Voor een A of B moet een erkende "
+     "keurder hebben meegekeken."),
     ("Testen jullie ook of mijn app werkt?", "Vanaf niveau 2, samen met gerichte aanvalstests. Een volledige pentest zit "
      "in niveau 3."),
     ("Wie voert de pentest uit?", "Op niveau 3 en 4 voert een pentestbedrijf met het CCV Keurmerk Pentesten de handmatige "
      "pentest uit. Dat is het Nederlandse kwaliteitskeurmerk voor pentestbedrijven. De pentest volgt onze norm, zodat "
      "uitslagen vergelijkbaar zijn. De aanvalstests van niveau 2 zijn geautomatiseerd en voor iedereen dezelfde."),
     ("Welke programmeertalen?", "JavaScript/TypeScript en Python, met de populaire webframeworks. Meer volgt."),
-    ("Hoe lang is een score geldig?", "Een scorepagina van niveau 1 blijft 30 dagen actueel; daarna wordt de badge "
+    ("Hoe lang is een score geldig?", "Een scorepagina van een zelfscan blijft 30 dagen actueel; daarna wordt de badge "
      "grijs. Een scan bij elke wijziging houdt hem vanzelf actueel. Een keuring is 12 maanden geldig."),
     ("Controleren jullie of een tekst door AI geschreven is?", "Nee. We controleren software die met AI gebouwd is."),
 ]

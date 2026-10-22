@@ -107,7 +107,7 @@ def tool_scan(args):
     write_sbom(proj, out / "sbom.json", pad.name)
     summary = summarize(proj, results, {"klant": "—", "app": pad.name, "versie": "", "niveau": 1,
                                         "scope": f"broncode in {pad.name}; lokaal, zonder netwerk", "uitvoerder": "aiscan via MCP",
-                                        "soort": "Zelfcontrole"})
+                                        "soort": "Zelfscan"})
     write_json(out / "rapport.json", to_json(summary, results))
     write_html(out / "rapport.html", summary, results)
     if args.get("nonce"):
@@ -122,7 +122,7 @@ def tool_scan(args):
     n = int(args.get("max_bevindingen") or 30)
     lines = [
         f"# aiscan — {pad.name}",
-        f"Scanscore: **{sc['letter'] or 'geen (te weinig gescand)'}** (zelfcontrole, niveau 1; hoogstens B). {sc['uitleg']}",
+        f"Scanscore: **{sc['letter'] or 'geen (te weinig gescand)'}** (zelfscan, niveau 1; hoogstens C, een keuring gaat tot A). {sc['uitleg']}",
         f"Bevindingen: {summary['ernst']['Kritiek']} kritiek, {summary['ernst']['Hoog']} hoog, {summary['ernst']['Middel']} middel, "
         f"{summary['ernst']['Laag']} laag · {summary['status']['Geen bevinding']} scans zonder bevinding, {summary['status']['Bevinding']} met bevinding, "
         f"{summary['status']['Niet gescand']} niet gescand, {summary['status']['Niet van toepassing']} niet van toepassing.",
@@ -148,7 +148,7 @@ def tool_scan(args):
     if open_scans:
         lines += ["", "## Niet gescand", *[f"- {x}" for x in open_scans[:12]]]
     lines += ["", "Werkwijze: herstel de kritieke en hoge bevindingen, en draai aiscan_scan opnieuw om de score te zien stijgen. "
-                  "Deze score is een zelfcontrole, geen keurmerk of certificaat."]
+                  "Deze score is een zelfscan (hoogstens C), geen keurmerk of certificaat."]
     structured = {"score": sc["letter"], "dekking": sc["dekking"], "ernst": summary["ernst"], "status": summary["status"],
                   "rapport_html": str(out / "rapport.html"), "rapport_json": str(out / "rapport.json")}
     return "\n".join(lines), False, structured

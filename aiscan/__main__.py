@@ -33,8 +33,8 @@ def main(argv=None):
     ap.add_argument("--github-token", default=None, help="token met leesrechten voor R-03 en R-13")
     ap.add_argument("--offline", action="store_true", help="geen netwerk: geen register, GitHub-API of live site")
     ap.add_argument("--alleen", default=None, help="komma-gescheiden lijst van scan-ID's")
-    ap.add_argument("--soort", default="Zelfcontrole", choices=["Zelfcontrole", "Geverifieerde scan"],
-                    help="Zelfcontrole (standaard) of Geverifieerde scan (alleen als een erkende uitvoerder de scan deed)")
+    ap.add_argument("--soort", default="Zelfscan", choices=["Zelfscan", "Geverifieerde scan"],
+                    help="Zelfscan (standaard, hoogstens C) of Geverifieerde scan (alleen als een erkende uitvoerder de scan deed)")
     ap.add_argument("--bewijs", action="store_true", help="schrijf ook bewijs.json (zonder code of paden) om in te leveren bij de API")
     ap.add_argument("--nonce", default=None, help="sessiecode van de API; komt in bewijs.json")
     ap.add_argument("--version", action="version", version=f"aiscan {__version__}")

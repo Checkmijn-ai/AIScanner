@@ -45,7 +45,8 @@ def test_hersteld():
         subprocess.run([sys.executable, str(ROOT / "tests" / "maak_demo.py"), str(demo), "--hersteld"], check=True)
         subprocess.run([sys.executable, "-m", "aiscan", str(demo), "--offline", "--out", str(out)], cwd=ROOT, capture_output=True)
         data = json.loads((out / "rapport.json").read_text())
-        assert data["samenvatting"]["score"]["letter"] == "B", data["samenvatting"]["score"]
+        sc = data["samenvatting"]["score"]
+        assert sc["letter"] == "C" and sc["zelfscan"] and sc["hoogste"] == "C", sc  # een zelfscan haalt hoogstens een C
         assert data["samenvatting"]["ernst"]["Kritiek"] == 0 and data["samenvatting"]["ernst"]["Hoog"] == 0
 
 

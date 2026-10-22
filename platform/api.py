@@ -24,7 +24,7 @@ Wat de API controleert bij een bewijs
   - het bewijs bevat precies de checks van die dagversie, met geldige statussen;
   - de score klopt met de resultaten (de API rekent ze zelf opnieuw uit).
 Wat de API niet kan aantonen: dat niemand op zijn eigen machine met de scanner of het bewijs knoeide.
-Daarom is elke score via deze route een "Zelfcontrole". Een geverifieerde scan komt via een attestation van
+Daarom is elke score via deze route een "Zelfscan" (hoogstens C). Een geverifieerde scan komt via een attestation van
 GitHub Actions of GitLab CI (zie README, nog te bouwen).
 
 Starten (ontwikkeling):  AISCAN_PUBLIC=/var/www/aiscan AISCAN_DB=/var/lib/aiscan/aiscan.db flask --app platform/api.py run
@@ -49,7 +49,7 @@ from flask import Flask, Response, abort, g, jsonify, render_template, request
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "platform"))
-from aiscan.score import uit_bewijs  # noqa: E402
+from aiscan.score import OUD_NAAR_NIEUW, uit_bewijs  # noqa: E402
 
 PUBLIC = Path(os.environ.get("AISCAN_PUBLIC", ROOT / "public"))
 # Staat de dagversie elders (bv. GitHub Pages), dan haalt de API latest.json en versies.json daar op.
@@ -99,7 +99,21 @@ def db():
                 g.db.execute(f"ALTER TABLE {tabel} ADD COLUMN {kolom}")
             except sqlite3.OperationalError:
                 pass  # bestaat al
+        _migreer(g.db)
     return g.db
+
+
+def _migreer(c):
+    """Eenmalig: zelfscans van vóór 22 oktober 2026 naar de nieuwe schaal (hoogstens C) omzetten."""
+    c.execute("CREATE TABLE IF NOT EXISTS migraties (naam TEXT PRIMARY KEY, op TEXT)")
+    if c.execute("SELECT 1 FROM migraties WHERE naam = 'zelfscan-tot-c'").fetchone():
+        return
+    zet = " ".join(f"WHEN '{a}' THEN '{b}'" for a, b in OUD_NAAR_NIEUW.items())
+    c.execute(f"UPDATE scores SET letter = CASE letter {zet} ELSE letter END, soort = 'Zelfscan' WHERE soort = 'Zelfcontrole'")
+    for kol in ("eerste", "laatste"):
+        c.execute(f"UPDATE tel_projecten SET {kol} = CASE {kol} {zet} ELSE {kol} END")
+    c.execute("INSERT INTO migraties VALUES ('zelfscan-tot-c', ?)", (nu().isoformat(timespec="seconds"),))
+    c.commit()
 
 
 @app.teardown_appcontext
@@ -250,8 +264,10 @@ def controleer_bewijs(b, voor_telling: bool = False):
             return fout(f"Tegenstrijdig resultaat voor {r['id']}."), None, None
         if r["status"] != "Bevinding" and r["zwaarste"] not in (None, "Info"):
             return fout(f"Tegenstrijdig resultaat voor {r['id']}."), None, None
-    eigen = uit_bewijs(res, int(b.get("niveau", 1)))
-    if eigen["letter"] != b["score"].get("letter"):
+    # Via deze route is elke score een zelfscan (niveau 1, hoogstens C), wat het bewijs ook als niveau opgeeft.
+    eigen = uit_bewijs(res, 1)
+    # Een scanner van vóór 22 oktober 2026 gaf nog de oude letter (hoogstens B). Die aanvaarden we, maar we bewaren de nieuwe.
+    if b["score"].get("letter") not in (eigen["letter"], eigen["oude_letter"]):
         return fout("De score in het bewijs klopt niet met de resultaten."), None, None
     return None, dag, eigen
 
@@ -268,7 +284,7 @@ def resultaat():
     sc = b["scanner"]
 
     sid = secrets.token_hex(5)
-    soort = "Zelfcontrole"
+    soort = "Zelfscan"
     geldig = nu() + SCORE_GELDIG
     pr = b["project"]
     db().execute("UPDATE sessies SET gebruikt = 1 WHERE nonce = ?", (b["nonce"],))
@@ -302,18 +318,35 @@ def score_json(sid):
 @app.get("/score/<sid>.svg")
 def badge(sid):
     r = _score(sid)
-    verlopen = nu().isoformat() > r["geldig_tot"]
-    letter = r["letter"] or "–"
-    rechts = f"{letter} · {'verlopen' if verlopen else r['soort'].lower()}"
-    kleur = "#8a94a6" if verlopen or not r["letter"] else KLEUR[letter]
-    wl, wr = 74, 8 + 7 * len(rechts)
-    svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="{wl + wr}" height="22" role="img" aria-label="Scanscore {html.escape(rechts)}">
-<title>Scanscore {html.escape(rechts)} · {html.escape(r['project'])} · {r['aangemaakt'][:10]}</title>
-<rect width="{wl}" height="22" rx="3" fill="#15203a"/><rect x="{wl}" width="{wr}" height="22" rx="3" fill="{kleur}"/>
-<rect x="{wl - 3}" width="6" height="22" fill="{kleur}"/>
-<g font-family="Verdana,DejaVu Sans,sans-serif" font-size="11" fill="#fff">
-<text x="9" y="15">Scanscore</text><text x="{wl + 6}" y="15" font-weight="bold">{html.escape(rechts)}</text></g></svg>'''
-    return Response(svg, mimetype="image/svg+xml", headers={"Cache-Control": "max-age=3600"})
+    return Response(badge_svg(r["letter"], r["soort"], nu().isoformat() > r["geldig_tot"], r["project"], r["aangemaakt"][:10]),
+                    mimetype="image/svg+xml", headers={"Cache-Control": "max-age=3600"})
+
+
+def badge_svg(letter, soort: str, verlopen: bool, project: str = "", datum: str = "") -> str:
+    """Twee vormen, zodat niemand een zelfscan verwart met een keuring:
+    zelfscan = gestippelde rand, letter als omlijning, het woord ZELFSCAN; keuring = volle kleur, gevulde letter."""
+    zelf = soort in ("Zelfscan", "Zelfcontrole")
+    woord = "ZELFSCAN" if zelf else "GEKEURD"
+    staat = " · verlopen" if verlopen else ""
+    kleur = "#8a94a6" if verlopen or not letter else KLEUR[letter]
+    L = html.escape(letter or "–")
+    tekst = woord + staat
+    wl, wr = 74, 34 + int(7.6 * len(tekst))
+    titel = html.escape(f"Scanscore {letter or '–'} · {woord.lower()}{staat} · {project} · {datum}")
+    kop = (f'<svg xmlns="http://www.w3.org/2000/svg" width="{wl + wr}" height="22" role="img" aria-label="{titel}">'
+           f'<title>{titel}</title><rect width="{wl}" height="22" rx="3" fill="#15203a"/>')
+    if zelf:
+        rechts = (f'<rect x="{wl + 0.75}" y="0.75" width="{wr - 1.5}" height="20.5" rx="3" fill="#fff" stroke="{kleur}" '
+                  f'stroke-width="1.5" stroke-dasharray="3 2"/>'
+                  f'<text x="{wl + 13}" y="16" text-anchor="middle" font-size="14" font-weight="bold" fill="#fff" '
+                  f'stroke="{kleur}" stroke-width="1.1">{L}</text>'
+                  f'<text x="{wl + 26}" y="15" font-size="10" font-weight="bold" fill="#15203a" letter-spacing=".4">{tekst}</text>')
+    else:
+        rechts = (f'<rect x="{wl}" width="{wr}" height="22" rx="3" fill="{kleur}"/><rect x="{wl - 3}" width="6" height="22" fill="{kleur}"/>'
+                  f'<text x="{wl + 13}" y="16" text-anchor="middle" font-size="14" font-weight="bold" fill="#fff">{L}</text>'
+                  f'<text x="{wl + 26}" y="15" font-size="10" font-weight="bold" fill="#fff" letter-spacing=".4">{tekst}</text>')
+    return (kop + '<g font-family="Verdana,DejaVu Sans,sans-serif">'
+            f'<text x="9" y="15" font-size="11" fill="#fff">Scanscore</text>{rechts}</g></svg>')
 
 
 @app.get("/score/<sid>")
@@ -453,9 +486,14 @@ def telling():
         return jsonify({"geteld": False, "melding": "Pull requests tellen niet mee."}), 200
     if claims.get("event_name") == "schedule":  # de dagelijkse lekkenwacht is geen nieuwe scan door de eigenaar
         return jsonify({"geteld": False, "melding": "Dagelijkse controles tellen niet mee."}), 200
-    letter = str((request.get_json(silent=True) or {}).get("letter", ""))
+    d = request.get_json(silent=True) or {}
+    letter = str(d.get("letter", ""))
     if len(letter) != 1 or letter not in LETTERS:
         return fout("Verwacht: {letter: A–G}.")
+    if d.get("schaal") != "zelfscan":  # een oudere action: letter van de oude schaal (hoogstens B)
+        letter = OUD_NAAR_NIEUW[letter]
+    if letter in "AB":
+        return fout("Een zelfscan haalt hoogstens een C.")
     return tel(project_code(str(claims["repository_id"])), letter, "github")
 
 
