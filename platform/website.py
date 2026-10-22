@@ -254,7 +254,16 @@ def check_detail(cid):
 def open_source():
     return pagina("open-source.html", "Open source en transparant", "De scanner is open source (EUPL-1.2): lees "
                   "precies wat hij doet, controleer elke dagversie zelf, en zie wat er wel en niet naar buiten gaat.",
-                  bron=bron_per_check(), n_checks=len(norm()["checks"]))
+                  bron=bron_per_check(), n_checks=len(norm()["checks"]), geen_code=dagbestand("geen-code.json"))
+
+
+def dagbestand(naam: str):
+    """Een JSON-bestand van de dagversie (bv. geen-code.json, testbank.json), of None als het er (nog) niet is."""
+    from werkzeug.exceptions import HTTPException
+    try:
+        return json.loads(BRON["tekst"](naam))
+    except (HTTPException, ValueError, KeyError, OSError):
+        return None
 
 
 @site.get("/wat-je-krijgt")

@@ -24,9 +24,22 @@
       <tr><th scope="row">Bewijsbestand (<code>bewijs.json</code>)</th><td>Alleen na jouw "ja"</td><td class="zacht">Per check alleen de uitkomst en het aantal bevindingen. Geen code, geen paden, geen bestandsnamen. Nodig voor een scorepagina en badge.</td></tr>
       <tr><th scope="row">Opgemaakt rapport</th><td>Versleuteld, als je de rapportlink aanzet</td><td class="zacht">Versleuteld met AES-256-GCM vóór het vertrekt. De sleutel zit alleen in jouw link, na het #-teken, en een browser stuurt dat deel nooit naar een server. Wij kunnen het niet lezen. Zonder account wissen we het na 90 dagen.</td></tr>
       <tr><th scope="row">De letter van je score</th><td>Alleen als <code>meetellen</code> aan staat</td><td class="zacht">Alleen bij scans via GitHub. Alleen de letter (A–G), voor de openbare <a href="/resultaten">resultaten</a>. Geen naam van de repository: per project bewaren we een onomkeerbare code. In ons voorbeeldbestand staat het aan; zet het op "false" om niet mee te tellen.</td></tr>
-      <tr><th scope="row">Je IP-adres</th><td>Ja, als je iets inlevert</td><td class="zacht">Alleen om misbruik te beperken (maximaal aantal aanvragen per uur), niet bewaard in de rapporten.</td></tr>
+      <tr><th scope="row">Je IP-adres</th><td>Alleen kort in het geheugen</td><td class="zacht">Om misbruik te beperken (maximaal aantal aanvragen per uur). We bewaren het niet.</td></tr>
     </tbody>
   </table></div>
+
+  <h2 id="elke-nacht">Elke nacht nagekeken, in het openbaar</h2>
+  <p class="zacht">Dit beloven is één ding; we laten het ook elke nacht nakijken, in GitHub, op een demo-app vol nepsleutels. Iedereen kan de run en de code van de controle (<a href="{{ BRONCODE }}/blob/main/tools/bewijs_geen_code.py">tools/bewijs_geen_code.py</a>) bekijken.</p>
+  {% if geen_code %}
+  <div class="scroll"><table class="tabel">
+    <caption class="sr">Uitkomst van de controle van {{ geen_code.datum[:10] }}</caption>
+    <thead><tr><th scope="col">Controle</th><th scope="col">Uitkomst</th><th scope="col">Wat we nakeken</th></tr></thead>
+    <tbody>{% for c in geen_code.controles %}<tr><th scope="row">{{ c.controle }}</th><td><b>{{ 'In orde' if c.ok else 'Mislukt' }}</b></td><td class="zacht">{{ c.uitleg }}</td></tr>{% endfor %}</tbody>
+  </table></div>
+  <p class="zacht klein">Laatst nagekeken: {{ datum_nl(geen_code.datum[:10]) }}{% if geen_code.run %} · <a href="{{ geen_code.run }}">de run in GitHub</a>{% endif %}.</p>
+  {% else %}
+  <p class="zacht klein">De eerste uitslag verschijnt hier na de volgende nachtelijke run.</p>
+  {% endif %}
 
   <h2>Controleer de dagversie zelf</h2>
   <p class="zacht">Elke nacht bouwt GitHub een nieuwe dagversie uit de broncode, in een openbare workflow. Het manifest vermeldt uit welke commit ze gebouwd is.</p>
