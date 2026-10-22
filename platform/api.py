@@ -93,11 +93,14 @@ def db():
                 laatste TEXT, laatste_op TEXT, scans INTEGER DEFAULT 0, dag TEXT, dag_scans INTEGER DEFAULT 0);
             CREATE TABLE IF NOT EXISTS tel_dagen (dag TEXT PRIMARY KEY, scans INTEGER DEFAULT 0);
         """)
-        for tabel, kolom in (("sessies", "geteld INTEGER DEFAULT 0"), ("tel_projecten", "bron TEXT DEFAULT 'github'"),
-                             ("tel_dagen", "zelf INTEGER DEFAULT 0"), ("scores", "status TEXT"), ("scores", "status_reden TEXT"),
-                             ("scores", "status_op TEXT")):
+        for sql in ("ALTER TABLE sessies ADD COLUMN geteld INTEGER DEFAULT 0",
+                    "ALTER TABLE tel_projecten ADD COLUMN bron TEXT DEFAULT 'github'",
+                    "ALTER TABLE tel_dagen ADD COLUMN zelf INTEGER DEFAULT 0",
+                    "ALTER TABLE scores ADD COLUMN status TEXT",
+                    "ALTER TABLE scores ADD COLUMN status_reden TEXT",
+                    "ALTER TABLE scores ADD COLUMN status_op TEXT"):
             try:
-                g.db.execute(f"ALTER TABLE {tabel} ADD COLUMN {kolom}")
+                g.db.execute(sql)
             except sqlite3.OperationalError:
                 pass  # bestaat al
         _migreer(g.db)
@@ -116,10 +119,12 @@ def _migreer(c):
         c.commit()
     if c.execute("SELECT 1 FROM migraties WHERE naam = 'zelfscan-tot-c'").fetchone():
         return
-    zet = " ".join(f"WHEN '{a}' THEN '{b}'" for a, b in OUD_NAAR_NIEUW.items())
-    c.execute(f"UPDATE scores SET letter = CASE letter {zet} ELSE letter END, soort = 'Zelfscan' WHERE soort = 'Zelfcontrole'")
-    for kol in ("eerste", "laatste"):
-        c.execute(f"UPDATE tel_projecten SET {kol} = CASE {kol} {zet} ELSE {kol} END")
+    # in Python omzetten en met parameters terugschrijven: elke rij precies één keer
+    for rid, letter in c.execute("SELECT id, letter FROM scores WHERE soort = 'Zelfcontrole'").fetchall():
+        c.execute("UPDATE scores SET letter = ?, soort = 'Zelfscan' WHERE id = ?", (OUD_NAAR_NIEUW.get(letter, letter), rid))
+    for proj, eerste, laatste in c.execute("SELECT project, eerste, laatste FROM tel_projecten").fetchall():
+        c.execute("UPDATE tel_projecten SET eerste = ?, laatste = ? WHERE project = ?",
+                  (OUD_NAAR_NIEUW.get(eerste, eerste), OUD_NAAR_NIEUW.get(laatste, laatste), proj))
     c.execute("INSERT INTO migraties VALUES ('zelfscan-tot-c', ?)", (nu().isoformat(timespec="seconds"),))
     c.commit()
 
@@ -603,8 +608,10 @@ def tel(project: str, letter: str, bron: str):
         db().execute("UPDATE tel_projecten SET laatste = ?, laatste_op = ?, scans = scans + 1, "
                      "dag_scans = CASE WHEN dag = ? THEN dag_scans + 1 ELSE 1 END, dag = ? WHERE project = ?",
                      (letter, t.isoformat(), dag, dag, project))
-    kolom = "zelf" if bron == "zelf" else "scans"
-    db().execute(f"INSERT INTO tel_dagen (dag, {kolom}) VALUES (?, 1) ON CONFLICT(dag) DO UPDATE SET {kolom} = {kolom} + 1", (dag,))
+    if bron == "zelf":
+        db().execute("INSERT INTO tel_dagen (dag, zelf) VALUES (?, 1) ON CONFLICT(dag) DO UPDATE SET zelf = zelf + 1", (dag,))
+    else:
+        db().execute("INSERT INTO tel_dagen (dag, scans) VALUES (?, 1) ON CONFLICT(dag) DO UPDATE SET scans = scans + 1", (dag,))
     db().commit()
     return jsonify({"geteld": True, "melding": f"Meegeteld: score {letter}."}), 201
 

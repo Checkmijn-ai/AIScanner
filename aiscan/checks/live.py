@@ -195,9 +195,9 @@ WEAK_CIPHERS = "RC4:3DES:DES:NULL:EXPORT:aNULL:eNULL:MD5"
 
 
 def _tls_try(host, **kw):
-    ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-    ctx.check_hostname = False
-    ctx.verify_mode = ssl.CERT_NONE
+    # Met de gewone controle van het certificaat. Faalt alleen die controle, dan heeft de server de versie of
+    # cipher suite wel aanvaard (de controle komt na die keuze): dat telt dus als aanvaard.
+    ctx = ssl.create_default_context()
     try:
         if "max" in kw:
             ctx.minimum_version = kw["max"]
@@ -210,6 +210,8 @@ def _tls_try(host, **kw):
     try:
         with socket.create_connection((host, 443), timeout=5) as s, ctx.wrap_socket(s, server_hostname=host) as t:
             return t.version()
+    except ssl.SSLCertVerificationError:
+        return "aanvaard (certificaat ongeldig)"
     except Exception:
         return False
 

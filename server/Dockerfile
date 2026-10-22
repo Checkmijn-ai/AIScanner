@@ -3,7 +3,8 @@ FROM python:3.12-slim
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 RUN useradd --create-home --uid 10001 checkmijn
 WORKDIR /app
-RUN pip install --no-cache-dir "flask>=3" "gunicorn>=22" "jinja2>=3.1" "pyyaml>=6" "cryptography>=42" "packaging>=23" "requests>=2.31" "tzdata"
+COPY requirements-server.txt /tmp/requirements-server.txt
+RUN pip install --no-cache-dir --require-hashes -r /tmp/requirements-server.txt
 COPY aiscan ./aiscan
 COPY platform ./platform
 COPY voorbeelden ./voorbeelden

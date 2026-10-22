@@ -1,10 +1,10 @@
 # Zet de versies van alle Python-afhankelijkheden vast, met hashes (requirements.txt, requirements-server.txt, uv.lock).
-# De bestanden komen op de branch 'vastgezet' (alleen die branch; daarna gewoon samenvoegen via test).
+# De bestanden komen op een eigen branch 'vastgezet-<run>'; daarna overnemen via test.
 name: Afhankelijkheden vastzetten
 on:
   workflow_dispatch: {}
 permissions:
-  contents: write   # alleen om de branch 'vastgezet' te pushen
+  contents: write   # alleen om een nieuwe branch 'vastgezet-<run>' te pushen
 jobs:
   vastzetten:
     runs-on: ubuntu-latest
@@ -20,11 +20,11 @@ jobs:
           uv pip compile requirements-server.in --universal --python-version 3.12 --generate-hashes -o requirements-server.txt
           uv lock
           echo "::notice title=Vastgezet::$(grep -E '^[a-z]' requirements-server.txt | tr '\n' ' ')"
-      - name: Op de branch 'vastgezet' zetten
+      - name: Op een nieuwe branch zetten
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -B vastgezet
+          git checkout -b vastgezet-${{ github.run_number }}
           git add requirements.txt requirements-server.txt uv.lock
           git commit -m "Afhankelijkheden vastgezet met hashes" || echo "niets veranderd"
-          git push -f origin vastgezet
+          git push origin vastgezet-${{ github.run_number }}
