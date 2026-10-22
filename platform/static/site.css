@@ -525,3 +525,7 @@ img, svg, video { max-width: 100%; }
 html, body { overflow-x: clip; }
 .codeblok .balk span { min-width: 0; overflow-wrap: anywhere; }
 .codeblok .kopieer { flex: none; }
+/* De nieuwskop (één regel, met ...) mag de kolom van de held niet breder maken dan het scherm */
+.held .rooster > div, .held-sub .rooster > div { min-width: 0; }
+.nieuwsband-rooster > *, .nieuwsband-items > * { min-width: 0; }
+.nieuwsitem { overflow-wrap: anywhere; }
