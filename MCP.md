@@ -80,4 +80,4 @@ Een scan via MCP is altijd een **zelfscan**: de bouwer draaide hem zelf, op zijn
 
 ## Voorbeeld: van G naar C
 
-`tests/maak_demo.py` bouwt de demo-app Factuurhulp. Met `--hersteld` bouwt hij dezelfde app nadat een agent alles hersteld heeft. De eerste krijgt een G (6 scans met een kritieke bevinding), de herstelde een C, zonder bevindingen. De rapporten staan bij de voorbeeldrapporten.
+`tests/maak_demo.py` bouwt de demo-app Factuurhulp. Met `--hersteld` bouwt hij dezelfde app nadat een agent alles hersteld heeft. De eerste krijgt een G (6 scans met een kritieke bevinding), de herstelde een C, zonder bevindingen.

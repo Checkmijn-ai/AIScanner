@@ -377,6 +377,11 @@ def voorbeeldrapport():
     return send_from_directory(Path(site.static_folder), "voorbeeldrapport.html", mimetype="text/html")
 
 
+@site.get("/voorbeeldrapport/na")
+def voorbeeldrapport_na():
+    return send_from_directory(Path(site.static_folder), "voorbeeldrapport-na.html", mimetype="text/html")
+
+
 @site.get("/norm/checks.yaml")
 def norm_bestand():
     return send_from_directory(ROOT / "norm", "checks.yaml", mimetype="text/plain; charset=utf-8")
