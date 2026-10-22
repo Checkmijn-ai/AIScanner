@@ -1,0 +1,57 @@
+# Server nu bijwerken en herstarten, in plaats van te wachten op 02:00 UTC.
+# Alleen met de hand te starten (Actions → Server herstarten → Run workflow).
+name: Server herstarten
+on:
+  workflow_dispatch: {}
+permissions:
+  contents: read
+concurrency:
+  group: uitrollen   # nooit tegelijk met een uitrol
+  cancel-in-progress: false
+jobs:
+  herstarten:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: SSH klaarzetten
+        env:
+          SLEUTEL: ${{ secrets.UITROL_SLEUTEL }}
+          HOSTKEY: ${{ secrets.UITROL_HOSTKEY }}
+          HOST: ${{ secrets.UITROL_HOST }}
+        run: |
+          install -m 700 -d ~/.ssh
+          umask 077
+          printf '%s\n' "$SLEUTEL" | tr -d '\r' > ~/.ssh/uitrol
+          if [ -n "$HOSTKEY" ]; then printf '%s\n' "$HOSTKEY" > ~/.ssh/known_hosts
+          else ssh-keyscan -T 15 -t ed25519 "$HOST" > ~/.ssh/known_hosts 2>/dev/null; fi
+      - name: Updates installeren en herstarten
+        env:
+          HOST: ${{ secrets.UITROL_HOST }}
+        run: |
+          ssh -i ~/.ssh/uitrol -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=20 "root@$HOST" 'bash -s' <<'SH'
+          set -u
+          export DEBIAN_FRONTEND=noninteractive
+          echo "Waarom herstart nodig: $(tr '\n' ' ' < /var/run/reboot-required.pkgs 2>/dev/null || echo 'niet gemeld')"
+          apt-get update -q >/dev/null
+          unattended-upgrade -v 2>&1 | tail -n 5
+          echo "Nog bij te werken: $(apt list --upgradable 2>/dev/null | grep -vc '^Listing')"
+          echo "::notice title=Herstart::Pakketten: $(tr '\n' ' ' < /var/run/reboot-required.pkgs 2>/dev/null || echo geen melding) · kernel nu $(uname -r)"
+          systemd-run --on-active=5 --unit=checkmijn-herstart /bin/systemctl reboot
+          echo "Herstart over 5 seconden."
+          SH
+      - name: Wachten tot de site terug is
+        env:
+          HOST: ${{ secrets.UITROL_HOST }}
+        run: |
+          sleep 45
+          for i in $(seq 1 40); do
+            if curl -fsS -o /dev/null https://checkmijn.ai/robots.txt && curl -fsS -o /dev/null https://test.checkmijn.ai/robots.txt; then
+              k=$(ssh -i ~/.ssh/uitrol -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=20 "root@$HOST" \
+                'echo "kernel $(uname -r) · op sinds $(uptime -s) · herstart nodig: $([ -f /var/run/reboot-required ] && echo ja || echo nee) · containers: $(docker ps --format "{{.Names}}" | tr "\n" " ")"')
+              echo "::notice title=Server terug::checkmijn.ai en test.checkmijn.ai werken · $k"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::De site is na 8 minuten nog niet terug. Kijk in de console van Hetzner."
+          exit 1
