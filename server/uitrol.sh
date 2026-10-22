@@ -42,6 +42,64 @@ haal() {  # haal <map> <tak>
   log "$1 staat op $(git -C "$1" log -1 --format='%h %s')"
 }
 
+# Onderhoud, bij elke uitrol opnieuw gezet (idempotent):
+#  - beveiligingsupdates van Ubuntu én van Docker, elke dag automatisch;
+#  - 's nachts om 02:00 UTC (04:00 in de zomer) herstarten, alleen als een update dat vraagt (bv. een nieuwe kernel);
+#  - elke zondag de containers vernieuwen (nieuwste Python- en Caddy-images, opnieuw bouwen) en daarna controleren.
+command -v unattended-upgrade >/dev/null 2>&1 || apt-get install -yq unattended-upgrades
+cat > /etc/apt/apt.conf.d/20auto-upgrades <<'APT'
+APT::Periodic::Update-Package-Lists "1";
+APT::Periodic::Unattended-Upgrade "1";
+APT::Periodic::AutocleanInterval "7";
+APT
+cat > /etc/apt/apt.conf.d/52checkmijn-upgrades <<'APT'
+// CheckMijn.AI (geplaatst door server/uitrol.sh)
+Unattended-Upgrade::Origins-Pattern:: "origin=Docker,label=Docker CE";
+Unattended-Upgrade::Automatic-Reboot "true";
+Unattended-Upgrade::Automatic-Reboot-Time "02:00";
+Unattended-Upgrade::Remove-Unused-Kernel-Packages "true";
+Unattended-Upgrade::Remove-Unused-Dependencies "true";
+APT
+systemctl enable --now docker >/dev/null 2>&1 || true
+cat > /usr/local/sbin/checkmijn-vernieuw <<'VERNIEUW'
+#!/usr/bin/env bash
+# Elke zondag: nieuwste basisimages ophalen, opnieuw bouwen, en controleren of de site het nog doet.
+set -uo pipefail
+cd /opt/checkmijn/server || exit 1
+echo "== $(date -u +%FT%TZ) vernieuwen"
+docker compose pull caddy
+docker compose build --pull live
+docker compose up -d live caddy
+if [ -d /opt/checkmijn-test/.git ]; then
+  docker compose --profile test build --pull test && docker compose --profile test up -d test
+fi
+docker image prune -f >/dev/null 2>&1
+for i in $(seq 1 30); do
+  if curl -fsS -o /dev/null --resolve checkmijn.ai:443:127.0.0.1 https://checkmijn.ai/robots.txt; then
+    echo "== site werkt"; exit 0
+  fi
+  sleep 5
+done
+echo "== LET OP: checkmijn.ai antwoordt niet na het vernieuwen"; exit 1
+VERNIEUW
+chmod 755 /usr/local/sbin/checkmijn-vernieuw
+cat > /etc/cron.d/checkmijn-onderhoud <<'CRON'
+# CheckMijn.AI: containers elke zondag vernieuwen (geplaatst door server/uitrol.sh)
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+0 3 * * 0 root timeout 1800 /usr/local/sbin/checkmijn-vernieuw >> /var/log/checkmijn-vernieuw.log 2>&1
+CRON
+chmod 644 /etc/cron.d/checkmijn-onderhoud
+cat > /etc/logrotate.d/checkmijn-vernieuw <<'ROT'
+/var/log/checkmijn-vernieuw.log {
+  monthly
+  rotate 6
+  compress
+  missingok
+  notifempty
+}
+ROT
+
 # De live-map levert altijd de configuratie (docker-compose.yml, Caddyfile).
 haal "$LIVE" main
 cd "$LIVE/server"
@@ -95,6 +153,9 @@ for i in $(seq 1 30); do
   sleep 2
 done
 docker compose ps
+# Korte stand van het onderhoud (verschijnt als melding bij de run in GitHub)
+herstart="nee"; [ -f /var/run/reboot-required ] && herstart="ja, vannacht om 02:00 UTC"
+echo "::notice title=Onderhoud server::Ubuntu $(lsb_release -rs 2>/dev/null) · automatische updates: $(apt-config dump 2>/dev/null | grep -q 'Unattended-Upgrade \"1\"' && echo aan || echo UIT) · herstart nodig: $herstart · Docker $(docker version --format '{{.Server.Version}}' 2>/dev/null) · laatste vernieuwing: $(tail -n 1 /var/log/checkmijn-vernieuw.log 2>/dev/null || echo nog niet)"
 
 # Nieuws meteen bijwerken met de nieuwe code (dubbels worden overgeslagen, dus dit kan altijd).
 DIENST=live; [ "$TAK" = "test" ] && DIENST=test

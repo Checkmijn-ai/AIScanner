@@ -1,5 +1,5 @@
 name: Nieuws controleren
-# Kijkt na het ophalen (05:10 en 15:10 UTC) of /nieuws gevuld is en welke bronnen niet werken.
+# Elke ochtend: is de site in de lucht, is /nieuws gevuld, welke bronnen werken niet. Mislukt = mail van GitHub.
 on:
   schedule:
     - cron: "40 5 * * *"
@@ -20,7 +20,12 @@ jobs:
           OMGEVING: ${{ inputs.omgeving || 'live' }}
         run: |
           host=checkmijn.ai; [ "$OMGEVING" = "test" ] && host=test.checkmijn.ai
-          curl -fsS "https://$host/nieuws" -o nieuws.html || { echo "::notice::$host/nieuws is (nog) niet bereikbaar"; exit 0; }
+          # Ook een dagelijkse controle of de site in de lucht is (na updates, herstarts en de vernieuwing op zondag).
+          if ! curl -fsS --retry 3 --retry-delay 20 "https://$host/" -o /dev/null; then
+            echo "::error::$host antwoordt niet. Kijk op de server: /var/log/checkmijn-vernieuw.log en docker compose ps."
+            exit 1
+          fi
+          curl -fsS "https://$host/nieuws" -o nieuws.html || { echo "::error::$host/nieuws antwoordt niet"; exit 1; }
           python3 - <<'PY'
           import html, re
           s = open("nieuws.html", encoding="utf-8").read()

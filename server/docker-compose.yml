@@ -40,7 +40,7 @@ services:
       CHECKMIJN_OMGEVING: test
     profiles: ["test"]
   caddy:
-    image: caddy:2.8
+    image: caddy:2   # elke zondag de nieuwste 2.x (server/uitrol.sh → checkmijn-vernieuw)
     restart: unless-stopped
     ports:
       - "80:80"
