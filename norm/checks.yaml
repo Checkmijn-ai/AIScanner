@@ -3335,6 +3335,18 @@ checks:
     n4: verplicht
   in_scanner: false
   status: actief
+- id: Y-10
+  domein: Y. Communicatieprotocollen
+  wat: 'Volledige TLS-test per adres: elk IPv4- en IPv6-adres van elke publieke host apart getest (certificaat, keten, protocollen, cipher suites, forward secrecy, sleutellengte, HSTS), met minstens een A in een gangbare test zoals SSL Labs'
+  hoe: tool + keurder
+  normen: NIST SP 800-52 Rev. 2; BSI TR-02102-2; CRA I (2)(e)
+  niveaus:
+    n1: niet
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  in_scanner: false
+  status: actief
 - id: Z-01
   domein: Z. Beheer, overdracht, kosten, energie en gebruik
   wat: 'Beheerdossier voor de beheerpartij: draaiboeken voor de meest voorkomende storingen, bekende fouten met een omweg, escalatiepad en contacten'
