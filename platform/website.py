@@ -66,7 +66,7 @@ GRADES = [
 
 LEVELS = [
     {"n": 1, "naam": "Basisscan", "status": "Nu, gratis", "voor": "Interne tools, kleine apps, een eerste meting",
-     "wie": "Volledig automatisch", "checks": "45", "werkt": "—", "aanval": "—", "hoogste": "C",
+     "wie": "Volledig automatisch", "checks": "46", "werkt": "—", "aanval": "—", "hoogste": "C",
      "geldig": "Zolang de scan actueel is"},
     {"n": 2, "naam": "Gekeurd", "status": "In voorbereiding (pilots)", "voor": "De meeste zakelijke apps",
      "wie": "Automatisch + erkende keurder", "checks": "±100, plus checks die je erbij kiest",
@@ -206,7 +206,7 @@ def pagina(sjabloon: str, titel: str, beschrijving: str, **kw):
 @site.get("/")
 def home():
     return pagina("home.html", "Onafhankelijke controle van software die met AI gebouwd is",
-                  "Check je AI-software voor je ze lanceert, koopt of oplevert. Een meetlat, geen mening: 45 vaste "
+                  "Check je AI-software voor je ze lanceert, koopt of oplevert. Een meetlat, geen mening: 46 vaste "
                   f"checks in de gratis zelfscan, {len(norm()['checks'])} in de volledige norm, Europese normen en een score van A tot G.", nieuws_kort=laatste_nieuws(),
                   teller=(lambda st: st if st.get("scans", 0) >= TOON_TELLER_VANAF else None)(statistiek()),
                   lekken=lekkendatabank())
@@ -305,7 +305,7 @@ def vertrouwen():
 
 @site.get("/framework")
 def framework():
-    return pagina("framework.html", "Gratis framework", f"De 45 checks van de zelfscan (niveau 1) als checklist, CSV of JSON, onder CC BY 4.0. De volledige norm telt {len(norm()['checks'])} checks.",
+    return pagina("framework.html", "Gratis framework", f"De 46 checks van de zelfscan (niveau 1) als checklist, CSV of JSON, onder CC BY 4.0. De volledige norm telt {len(norm()['checks'])} checks.",
                   checks=checks())
 
 
