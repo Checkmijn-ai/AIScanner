@@ -1,0 +1,5 @@
+# Afhankelijkheden van de scanner (bereiken). Vastzetten: uv pip compile requirements.in --universal --generate-hashes -o requirements.txt
+PyYAML>=6.0
+Jinja2>=3.1
+requests>=2.31
+packaging>=23.0
