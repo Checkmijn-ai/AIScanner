@@ -57,7 +57,7 @@ Draai na elke wijziging aiscan_scan en herstel kritieke en hoge bevindingen voor
 
 | Tool | Wat |
 | --- | --- |
-| `aiscan_scan` | Scant het project met de 45 scans van niveau 1. Geeft de scanscore, de belangrijkste bevindingen met bestand, regel en bewijs, en een herstelhint per scan. Schrijft het rapport naar `.aiscan/rapport.html` en `.aiscan/rapport.json`. |
+| `aiscan_scan` | Scant het project met de 46 scans van niveau 1. Geeft de scanscore, de belangrijkste bevindingen met bestand, regel en bewijs, en een herstelhint per scan. Schrijft het rapport naar `.aiscan/rapport.html` en `.aiscan/rapport.json`. |
 | `aiscan_details` | Alle bevindingen van één scan, met normen en herstelhint. |
 
 ## De scanscore A–G

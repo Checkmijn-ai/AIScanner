@@ -127,7 +127,8 @@ def bereken(results, niveau: int = 1, deel: bool | None = None):
     dekking = len(gescand) / len(toepasselijk) if toepasselijk else 0.0
     voldoende = dekking >= MIN_DEKKING
     if deel is None:
-        deel = len(results) < 45  # met --alleen gedraaid: geen score
+        from .runner import load_checks  # noqa: PLC0415
+        deel = len(results) < len(load_checks(1))  # met --alleen gedraaid: geen score
     if deel:
         voldoende = False
     return {

@@ -493,6 +493,18 @@
   sinds: '0.1'
   versie: 1
   status: actief
+- id: W-13
+  domein: W. Backend en opslag
+  scan: Rechten per rij in de databank (Row Level Security of Security Rules) staan aan op elke tabel met gebruikersgegevens; de sleutel met volledige rechten zit nooit in de frontend
+  normen: OWASP API1:2023; AVG art. 32
+  ernst: Kritiek
+  modus: deels
+  module: database
+  methode: scan
+  hint: Zet Row Level Security aan op elke tabel in public (ALTER TABLE ... ENABLE ROW LEVEL SECURITY) en geef alleen de eigenaar toegang, bv. USING (auth.uid() = user_id). Policies met USING (true) alleen voor gegevens die echt publiek zijn.
+  sinds: '0.4'
+  versie: 1
+  status: actief
 - id: W-06
   domein: W. Backend en opslag
   scan: 'Limieten op middelen: time-outs, maximale grootte van verzoeken en uploads, paginering, bescherming tegen trage queries'

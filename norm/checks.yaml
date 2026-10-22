@@ -3097,17 +3097,19 @@ checks:
   status: actief
 - id: W-13
   domein: W. Backend en opslag
-  wat: Rechten per rij in de databank (Row Level Security of Security Rules) staan aan op elke tabel met gebruikersgegevens, getest met twee accounts; de sleutel met volledige rechten zit nooit in de frontend
+  wat: 'Rechten per rij in de databank (Row Level Security of Security Rules) staan aan op elke tabel met gebruikersgegevens, getest met twee accounts; de sleutel met volledige rechten zit nooit in de frontend'
   hoe: scan + document + test
   normen: OWASP API1:2023; AVG art. 32
   niveaus:
-    n1: niet
+    n1: als van toepassing
     n2: verplicht
     n3: verplicht
     n4: verplicht
   ernst: Kritiek
-  in_scanner: false
-  status: voorstel
+  herstel: Zet Row Level Security aan op elke tabel in public en geef alleen de eigenaar toegang, bv. USING (auth.uid() = user_id). Policies met USING (true) alleen voor gegevens die echt publiek zijn.
+  module: database
+  in_scanner: true
+  status: actief
 - id: X-01
   domein: X. Hosting en infrastructuur
   wat: 'Hostingoverzicht: welke aanbieders en diensten, welke regio''s en datacenters, wie beheert wat (gedeelde verantwoordelijkheid)'
