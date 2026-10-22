@@ -54,6 +54,14 @@ def _env_bewijs(proj, rel):
     return f"Variabelen die geheim kunnen zijn: {', '.join(geheim[:5])}."
 
 
+def _alleen_publiek(proj, rel) -> bool:
+    """Een PEM-bestand met alleen publieke sleutels of certificaten (geen PRIVATE KEY) hoort gewoon in de repository."""
+    t = proj.text(proj.root / rel)
+    blokken = re.findall(r"-----BEGIN ([A-Z0-9 ]+)-----", t)
+    return bool(blokken) and all(b in ("PUBLIC KEY", "CERTIFICATE", "RSA PUBLIC KEY", "X509 CRL") for b in blokken) \
+        and "PRIVATE" not in t
+
+
 @check("C-20")
 def leftovers(proj, meta):
     r = Result("C-20")
@@ -84,6 +92,9 @@ def leftovers(proj, meta):
         if name.startswith(".env") and name not in (".env.example",):
             sev, title = _env_ernst(proj, rel)
             r.add(Finding("C-20", sev, title, rel, bewijs=_env_bewijs(proj, rel)))
+            continue
+        if name.endswith((".pem", ".key", ".crt", ".pub")) and _alleen_publiek(proj, rel):
+            r.info.append(f"{rel}: alleen een publieke sleutel of certificaat, geen geheim.")
             continue
         for pats, sev, title in RULES:
             if any(fnmatch.fnmatch(name, p) or fnmatch.fnmatch(rel, p) for p in pats):

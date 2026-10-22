@@ -50,7 +50,7 @@ try:
 finally:
     requests.get, live.intern_adres = echt_get, echt_intern
 
-# 5. nergens meer verify=False, behalve de aparte TLS-test (Y-01)
+# 5. nergens verify=False of CERT_NONE: ook de TLS-test (Y-01) laat de certificaatcontrole aan
 src = (ROOT / "aiscan" / "checks" / "live.py").read_text()
-assert "verify=False" not in src and src.count("CERT_NONE") == 1
+assert "verify=False" not in src and "CERT_NONE" not in src
 print("ok: live-scan afgebakend")

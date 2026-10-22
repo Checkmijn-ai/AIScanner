@@ -26,6 +26,26 @@ AI_IMPORT = re.compile(r"""(from\s+['"](openai|@anthropic-ai/sdk|ai|@ai-sdk/[\w-
                        r"""langchain[\w.]*|llama_index|google\.generativeai|google\.genai|ollama|litellm|mistralai|groq|cohere)\b)""", re.M)
 
 
+CODE_ONLY = {"C-01", "E-06"}  # regels over code die draait: een treffer in een tekst tussen aanhalingstekens telt niet
+
+
+def in_tekst(line: str, pos: int) -> bool:
+    """Staat positie pos in een tekst tussen aanhalingstekens (', ", `)? Eenvoudig, per regel; escapes tellen mee."""
+    quote, i = None, 0
+    while i < pos and i < len(line):
+        ch = line[i]
+        if quote:
+            if ch == "\\":
+                i += 2
+                continue
+            if ch == quote:
+                quote = None
+        elif ch in "'\"`":
+            quote = ch
+        i += 1
+    return quote is not None
+
+
 class R:
     def __init__(self, check, langs, pattern, ernst, titel, bevestigen=False, flags=0, skip_tests=True,
                  file_needs=None, file_lacks=None, aggregate=False):
@@ -179,7 +199,7 @@ RULES = [
     R("W-03", JS, r"\.(from|createBucket)\([^)]*\{[^}]*public\s*:\s*true", "Middel", "Publieke opslagbucket", bevestigen=True),
 
     # ---------------- W-06 limieten
-    R("W-06", PY, r"\brequests\.(get|post|put|patch|delete|head|request)\s*\((?![^)]*timeout)", "Middel",
+    R("W-06", PY, r"\brequests\.(get|post|put|patch|delete|head|request)\s*\((?!.*\btimeout\s*=)", "Middel",
       "Uitgaand verzoek zonder time-out", aggregate=True, bevestigen=True),
     R("W-06", JS, r"limit\s*:\s*['\"](\d{3,}|[5-9]\d)\s*mb['\"]", "Laag", "Zeer hoge limiet op de grootte van verzoeken", flags=I),
     R("W-06", JS, r"multer\(\s*\{(?![^}]*limits)[^}]*\}\s*\)|multer\(\s*\)", "Middel", "Uploads zonder limiet op de bestandsgrootte"),
@@ -225,7 +245,10 @@ def _run_rules(proj):
             for i, line in enumerate(lines, 1):
                 if len(line) > 1000 or COMMENT.match(line) and rule.check not in ("C-13",):
                     continue
-                if rule.rx.search(line):
+                m = rule.rx.search(line)
+                if m:
+                    if rule.check in CODE_ONLY and in_tekst(line, m.start()):
+                        continue
                     if rule.aggregate:
                         agg[rule][rel].append((i, line))
                     else:

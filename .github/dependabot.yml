@@ -1,0 +1,11 @@
+# Wekelijks nakijken of er nieuwe versies (en security-fixes) zijn voor de afhankelijkheden en de gebruikte GitHub Actions.
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: "/"
+    schedule:
+      interval: weekly
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
