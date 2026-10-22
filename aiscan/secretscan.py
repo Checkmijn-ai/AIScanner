@@ -15,6 +15,12 @@ PLACEHOLDER = re.compile(r"(?i)(example|sample|dummy|placeholder|changeme|your[_
                          r"process\.env|os\.environ|getenv|redacted|test[_-]?key|fake|lorem|\*\*\*\*)")
 
 
+DB_URL = re.compile(r"\b(?:postgres(?:ql)?|mysql|mariadb|mongodb(?:\+srv)?|rediss?|amqps?|mssql|sqlserver)://"
+                    r"[^\s:/@'\"`]+:([^\s@/'\"`]{4,})@([^\s/:'\"`]+)")
+# lokale ontwikkeldatabanken en standaardwaarden uit voorbeelden tellen niet (de 'allow' kijkt naar het wachtwoord)
+DB_LOKAAL = re.compile(r"(?i)^(password|passwd|pass|secret|postgres|root|admin|mysql|user|wachtwoord)$")
+
+
 @lru_cache(maxsize=1)
 def rules():
     d = json.loads((DATA / "secret_rules.json").read_text())
@@ -26,6 +32,9 @@ def rules():
                              "allow_rx": [re.compile(x) for grp in r.get("allow", []) for x in grp]})
         except re.error:
             continue
+    # eigen regel bovenop gitleaks: een databaseadres met gebruikersnaam en wachtwoord (postgres://user:wachtwoord@host)
+    compiled.append({"id": "database-url-met-wachtwoord", "desc": "Databaseadres met wachtwoord", "keywords": ["://"],
+                     "rx": DB_URL, "group": 1, "path_rx": None, "allow_rx": [DB_LOKAAL]})
     allow_paths = []
     for p in d.get("allow_paths", []):
         try:
@@ -99,6 +108,9 @@ def scan_text(text: str, path: str = ""):
                 except IndexError:
                     secret = m.group(0)
                 if r.get("entropy") and entropy(secret) < float(r["entropy"]):
+                    continue
+                if r["id"] == "database-url-met-wachtwoord" and re.match(r"(?i)(localhost|127\.|0\.0\.0\.0|db|postgres|mysql|mongo|redis|"
+                                                                     r"database|host\.docker\.internal)$", m.group(2)):
                     continue
                 if PLACEHOLDER.search(secret) or any(a.search(secret) for a in r["allow_rx"]) or any(a.search(secret) for a in allow_rx):
                     continue

@@ -54,4 +54,15 @@ assert any(b["ernst"] == "Kritiek" for b in c["bevindingen"]), c
 c = scan({"package.json": '{"dependencies": {"@supabase/supabase-js": "2.0.0"}}'})
 assert c["status"] == "Niet gescand", c                                                # Supabase zonder migraties
 assert scan({"app.py": "print(1)\n"})["status"] == "Niet van toepassing"
-print("ok: rechten per rij (W-13)")
+# databaseadres met wachtwoord in de code (E-05); lokale standaardwaarden niet
+import tempfile as _t
+d = Path(_t.mkdtemp())
+geheim = "S3cr3t" + "Passw0rd"  # in stukken, zodat de scan van deze repository zelf er niet over valt
+(d / "cfg.py").write_text('DB = "postgres://admin:' + geheim + '@db.example.com:5432/app"\n'
+                          'L = "postgres://postgres:postgres@localhost:5432/dev"\n')
+subprocess.run([sys.executable, "-m", "aiscan", str(d), "--offline", "--alleen", "E-05", "--out", str(d / "uit")], cwd=ROOT,
+               capture_output=True)
+e = next(c for c in json.loads((d / "uit" / "rapport.json").read_text())["checks"] if c["id"] == "E-05")
+assert [b["regel"] for b in e["bevindingen"]] == [1], e["bevindingen"]
+assert geheim not in json.dumps(e), "wachtwoord niet in het rapport"
+print("ok: rechten per rij (W-13) en databaseadressen met wachtwoord (E-05)")
