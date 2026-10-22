@@ -155,7 +155,7 @@ done
 docker compose ps
 # Korte stand van het onderhoud (verschijnt als melding bij de run in GitHub)
 herstart="nee"; [ -f /var/run/reboot-required ] && herstart="ja, vannacht om 02:00 UTC"
-echo "::notice title=Onderhoud server::Ubuntu $(lsb_release -rs 2>/dev/null) · automatische updates: $(apt-config dump 2>/dev/null | grep -q 'Unattended-Upgrade \"1\"' && echo aan || echo UIT) · herstart nodig: $herstart · Docker $(docker version --format '{{.Server.Version}}' 2>/dev/null) · laatste vernieuwing: $(tail -n 1 /var/log/checkmijn-vernieuw.log 2>/dev/null || echo nog niet)"
+echo "::notice title=Onderhoud server::Ubuntu $(lsb_release -rs 2>/dev/null) · automatische updates: $([ "$(apt-config dump 2>/dev/null | grep -c 'Unattended-Upgrade \"1\"')" -gt 0 ] && echo aan || echo UIT) · herstart nodig: $herstart · Docker $(docker version --format '{{.Server.Version}}' 2>/dev/null) · laatste vernieuwing: $(tail -n 1 /var/log/checkmijn-vernieuw.log 2>/dev/null || echo nog niet)"
 
 # Nieuws meteen bijwerken met de nieuwe code (dubbels worden overgeslagen, dus dit kan altijd).
 DIENST=live; [ "$TAK" = "test" ] && DIENST=test
