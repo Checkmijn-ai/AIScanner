@@ -31,7 +31,53 @@ def _need(proj, cid):
         r.status, r.reden = "Niet gescand", "Geen URL opgegeven. Start met --url en schriftelijke toestemming van de eigenaar."
     elif proj.offline:
         r.status, r.reden = "Niet gescand", "Offline gestart; de live site is niet bezocht."
+    else:
+        live = _ctx(proj)
+        if live.get("geweigerd"):
+            r.status, r.reden = "Niet gescand", live["geweigerd"]
     return r
+
+
+def intern_adres(host: str) -> str | None:
+    """Geeft het eerste interne adres van host terug (privé, loopback, link-local, ...), of None als alles publiek is.
+    De live-scan is voor publieke sites: zo kan niemand de scanner gebruiken om een intern netwerk af te tasten."""
+    import ipaddress
+    try:
+        adressen = {i[4][0] for i in socket.getaddrinfo(host, None)}
+    except socket.gaierror:
+        return None  # bestaat niet: de verbinding faalt later vanzelf
+    for a in sorted(adressen):
+        ip = ipaddress.ip_address(a.split("%")[0])
+        if not ip.is_global or ip.is_multicast:
+            return a
+    return None
+
+
+def zelfde_domein(a: str, b: str) -> bool:
+    """Doorsturen mag alleen binnen dezelfde site: dezelfde host, of www. ervoor of erachter weg."""
+    a, b = a.lower().rstrip("."), b.lower().rstrip(".")
+    return a == b or a == "www." + b or b == "www." + a
+
+
+def _haal(url, host, max_stappen=5):
+    """Volgt doorverwijzingen zelf, en alleen binnen dezelfde site en naar publieke adressen. Altijd met certificaatcontrole."""
+    import requests
+    from urllib.parse import urljoin
+    reeks = []
+    for _ in range(max_stappen + 1):
+        resp = requests.get(url, timeout=15, allow_redirects=False, headers={"User-Agent": "aiscan/0.1 (geautoriseerde scan)"})
+        reeks.append(resp)
+        loc = resp.headers.get("Location")
+        if resp.status_code not in (301, 302, 303, 307, 308) or not loc:
+            break
+        nieuw = urljoin(url, loc)
+        nh = urlparse(nieuw).hostname or ""
+        if urlparse(nieuw).scheme != "https" or not zelfde_domein(nh, host) or intern_adres(nh):
+            break  # niet volgen: andere site, geen HTTPS of een intern adres; we meten de pagina waar we zijn
+        url = nieuw
+    resp = reeks[-1]
+    resp.history = reeks[:-1]
+    return resp
 
 
 def _ctx(proj):
@@ -39,31 +85,27 @@ def _ctx(proj):
         return proj._live
     import requests
     u = urlparse(proj.url if "://" in proj.url else "https://" + proj.url)
-    host = u.hostname
+    host = u.hostname or ""
     live = {"host": host, "url": f"https://{host}{u.path or '/'}", "error": None}
+    proj._live = live
+    intern = intern_adres(host)
+    if intern:
+        live["geweigerd"] = live["error"] = (f"{host} wijst naar een intern adres ({intern}). De live-scan is alleen voor "
+                                            "publieke sites; interne netwerken scannen we niet.")
+        return live
     try:
-        resp = requests.get(live["url"], timeout=15, allow_redirects=True, headers={"User-Agent": "aiscan/0.1 (geautoriseerde scan)"})
+        resp = _haal(live["url"], host)
         live["resp"] = resp
         live["first"] = resp.history[0] if resp.history else resp
         live["set_cookies"] = []
         for h in (resp.history + [resp]):
             live["set_cookies"] += h.raw.headers.getlist("Set-Cookie") if hasattr(h.raw, "headers") else []
     except requests.exceptions.SSLError:
-        # certificaatprobleem: Y-01 meldt het; de andere controles gaan verder zonder certificaatcontrole
-        import urllib3
-        urllib3.disable_warnings()
-        try:
-            resp = requests.get(live["url"], timeout=15, allow_redirects=True, verify=False,
-                                headers={"User-Agent": "aiscan/0.1 (geautoriseerde scan)"})
-            live["resp"], live["first"], live["insecure"] = resp, (resp.history[0] if resp.history else resp), True
-            live["set_cookies"] = []
-            for h in (resp.history + [resp]):
-                live["set_cookies"] += h.raw.headers.getlist("Set-Cookie") if hasattr(h.raw, "headers") else []
-        except Exception as e:
-            live["error"] = f"Site niet bereikbaar: {type(e).__name__}"
+        # Certificaatprobleem: Y-01 meldt het (alleen die test kijkt zonder certificaatcontrole). De andere controles
+        # gaan niet verder zonder controle: we bezoeken een site nooit met een certificaat dat we niet vertrouwen.
+        live["error"] = "Het certificaat van de site is niet geldig (zie Y-01); deze controle is niet gedaan."
     except Exception as e:
         live["error"] = f"Site niet bereikbaar: {type(e).__name__}"
-    proj._live = live
     return live
 
 
@@ -134,7 +176,7 @@ def headers(proj, meta):
         r.add(Finding("E-08", "Laag", "Content Security Policy laat inline of eval toe", live["resp"].url, bewijs=snippet(csp)))
     try:
         evil = "https://aiscan-cors-test.example"
-        cr = requests.get(live["resp"].url, headers={"Origin": evil}, timeout=10, verify=not live.get("insecure"))
+        cr = requests.get(live["resp"].url, headers={"Origin": evil}, timeout=10, verify=True)
         acao, acac = cr.headers.get("Access-Control-Allow-Origin"), cr.headers.get("Access-Control-Allow-Credentials")
         if acao == evil and acac == "true":
             r.add(Finding("E-08", "Hoog", "CORS laat elke herkomst toe, met cookies", live["resp"].url, bewijs=f"Access-Control-Allow-Origin: {acao}"))
@@ -300,7 +342,7 @@ def site_safe(proj, meta):
     base = f"https://{live['host']}"
     for path, rx, sev, title in PROBES:
         try:
-            resp = requests.get(base + path, timeout=8, allow_redirects=False, verify=not live.get("insecure"))
+            resp = requests.get(base + path, timeout=8, allow_redirects=False, verify=True)
             if resp.status_code == 200 and rx.search(resp.text[:5000]):
                 r.add(Finding("O-05", sev, title, base + path, bevestigen=sev in ("Laag", "Middel")))
         except Exception:

@@ -78,8 +78,10 @@ def oude_letter(k: int, h: int, m: int) -> str:
     Alleen om bewijs van een oudere dagversie nog te aanvaarden; de API bewaart altijd de nieuwe letter."""
     if k == 0 and h == 0:
         return "B"
-    if k == 0:
-        return "C" if h <= 2 else "D"
+    if k == 0 and h <= 2:
+        return "C"
+    if k == 0 and h <= 5:
+        return "D"
     return "E" if k <= 1 else ("F" if k <= 3 else "G")
 
 
@@ -131,8 +133,17 @@ def bereken(results, niveau: int = 1, deel: bool | None = None):
 
 def uit_bewijs(resultaten: list, niveau: int = 1):
     """Herberekent de score uit een bewijsbestand (zoals de API dat doet)."""
-    zw = [r.get("zwaarste") for r in resultaten]
-    k, h, m = zw.count("Kritiek"), zw.count("Hoog"), zw.count("Middel")
+    # Per check telt alleen de zwaarste uitkomst, ook als een check (door een fout of geknoei) twee keer in het bewijs staat.
+    per_check = {}
+    for r in resultaten:
+        e = ORDE.get(r.get("zwaarste"), -1)
+        per_check[r.get("id")] = max(per_check.get(r.get("id"), -1), e)
+    zw = list(per_check.values())
+    k, h, m = zw.count(4), zw.count(3), zw.count(2)
+    uniek = {}
+    for r in resultaten:  # dekking: één status per check (de eerste)
+        uniek.setdefault(r.get("id"), r)
+    resultaten = list(uniek.values())
     toep = [r for r in resultaten if r.get("status") != "Niet van toepassing"]
     gescand = [r for r in toep if r.get("status") in ("Geen bevinding", "Gehaald", "Bevinding")]
     dekking = len(gescand) / len(toep) if toep else 0.0

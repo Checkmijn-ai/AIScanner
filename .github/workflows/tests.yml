@@ -25,3 +25,4 @@ jobs:
       - run: python tests/test_lekkenwacht.py
       - run: python tests/test_talen.py
       - run: python tests/test_handtekening.py
+      - run: python tests/test_live.py
