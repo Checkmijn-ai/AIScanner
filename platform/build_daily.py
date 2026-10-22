@@ -129,6 +129,8 @@ def main(argv=None):
     ap.add_argument("--public", required=True, help="map die de website publiek serveert, bv. /var/www/checkmijn")
     ap.add_argument("--ghsa", required=True, help="lokale kopie van github/advisory-database")
     ap.add_argument("--sleutel", default=None, help="privésleutel (PEM, Ed25519) om het manifest te ondertekenen")
+    ap.add_argument("--verwachte-sleutel", default=None,
+                    help="publieke sleutel (PEM) die bij --sleutel moet horen, bv. action/public-key.pem; anders stoppen")
     ap.add_argument("--site", required=True, help="publiek adres waar --public staat, bv. https://checkmijn.ai")
     ap.add_argument("--api", required=True, help="adres van de API, bv. https://api.checkmijn.ai")
     ap.add_argument("--instructie", default=None,
@@ -210,6 +212,12 @@ def main(argv=None):
         "bron": {"repository": "https://github.com/" + os.environ.get("GITHUB_REPOSITORY", "Checkmijn-ai/AIScanner"),
                  "commit": os.environ.get("GITHUB_SHA") or _git_commit(), "licentie": "EUPL-1.2"},
     }
+    if a.sleutel and a.verwachte_sleutel:
+        from cryptography.hazmat.primitives import serialization as _ser
+        _pem = _ser.load_pem_private_key(Path(a.sleutel).read_bytes(), password=None).public_key().public_bytes(
+            _ser.Encoding.PEM, _ser.PublicFormat.SubjectPublicKeyInfo)
+        if Path(a.verwachte_sleutel).read_bytes().strip() != _pem.strip():
+            raise SystemExit("De ondertekensleutel hoort niet bij --verwachte-sleutel (action/public-key.pem). Niets gepubliceerd.")
     onderteken(manifest, Path(a.sleutel) if a.sleutel else None)
 
     # 6. publiceren
@@ -228,15 +236,18 @@ def main(argv=None):
         tmpf = pub / (naam_ + ".tmp")
         tmpf.write_text(json.dumps(inhoud, indent=1, ensure_ascii=False))
         tmpf.replace(pub / naam_)
+    sleutel_b64 = ""
     if a.sleutel:
         from cryptography.hazmat.primitives import serialization
         key = serialization.load_pem_private_key(Path(a.sleutel).read_bytes(), password=None)
-        (pub / "public-key.pem").write_bytes(key.public_key().public_bytes(
-            serialization.Encoding.PEM, serialization.PublicFormat.SubjectPublicKeyInfo))
+        pem = key.public_key().public_bytes(serialization.Encoding.PEM, serialization.PublicFormat.SubjectPublicKeyInfo)
+        (pub / "public-key.pem").write_bytes(pem)
+        sleutel_b64 = base64.b64encode(key.public_key().public_bytes(serialization.Encoding.Raw,
+                                                                     serialization.PublicFormat.Raw)).decode()
     from jinja2 import Template
     tpl = Template((ROOT / "platform" / "templates" / "scan.md.j2").read_text())
     workflow = (ROOT / "voorbeelden" / "checkmijn.yml").read_text()
-    (pub / "scan.md").write_text(tpl.render(m=manifest, workflow=workflow))
+    (pub / "scan.md").write_text(tpl.render(m=manifest, workflow=workflow, sleutel=sleutel_b64))
     shutil.copy(ROOT / "voorbeelden" / "checkmijn.yml", pub / "checkmijn.yml")
     log(f"Gepubliceerd: {naam} · sha256 {sha[:16]}… · databank {meta.get('stand')} ({meta.get('aantal')} lekken)")
     return 0

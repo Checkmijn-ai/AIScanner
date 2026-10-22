@@ -57,12 +57,12 @@ jobs:
         run: |
           ARGS=""
           if [ -n "$SLEUTEL" ]; then
-            umask 077; printf '%s\n' "$SLEUTEL" > "$RUNNER_TEMP/dagversie.pem"; ARGS="--sleutel $RUNNER_TEMP/dagversie.pem"
+            umask 077; printf '%s\n' "$SLEUTEL" > "$RUNNER_TEMP/dagversie.pem"; ARGS="--sleutel $RUNNER_TEMP/dagversie.pem --verwachte-sleutel action/public-key.pem"
           else
             echo "::warning::Geen secret DAGVERSIE_SLEUTEL: de dagversie wordt NIET ondertekend."
           fi
           python platform/build_daily.py --public _site --ghsa ghsa $ARGS \
-            --site "$BASIS" --api https://api.checkmijn.ai --instructie https://checkmijn.ai/scan.md
+            --site "$BASIS" --api https://checkmijn.ai --instructie https://checkmijn.ai/scan.md
           rm -f "$RUNNER_TEMP/dagversie.pem"
           touch _site/.nojekyll
           cp action/public-key.pem _site/public-key.pem 2>/dev/null || true

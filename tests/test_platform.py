@@ -46,11 +46,32 @@ def test_platform():
         try:
             time.sleep(2)
             md = (www / "aiscan" / "scan.md").read_text()
-            blocks = re.findall(r"```\n(.*?)\n```", md, re.S)
+            blocks = re.findall(r"```\n(.*?)\n```", re.sub(r"```(python|yaml)\n.*?\n```", "", md, flags=re.S), re.S)
             run = lambda cmd, cwd: subprocess.run(cmd, shell=True, capture_output=True, text=True, cwd=cwd, env=ENV)
             work = Path(run(blocks[0], tmp).stdout.strip())
             assert run(blocks[1], work).returncode == 0
-            assert run(blocks[2], work).stdout.strip() == m["sha256"]
+            # stap 3: controle van handtekening en controlegetal, met het script uit scan.md (alleen standaardbibliotheek)
+            script = re.search(r"```python\n(.*?)\n```", md, re.S).group(1)
+            (work / "controleer.py").write_text(script)
+            ok = run(blocks[2], work)
+            assert ok.returncode == 0 and ok.stdout.startswith("OK"), (ok.stdout, ok.stderr)
+            # geknoeid manifest (zelfde controlegetal, andere inhoud zonder nieuwe handtekening) wordt geweigerd
+            echt_manifest = (www / "aiscan" / "latest.json").read_text()
+            (www / "aiscan" / "latest.json").write_text(json.dumps({**m, "scanner_versie": "9.9.9"}))
+            nok = run(blocks[2], work)
+            assert nok.returncode == 1 and "handtekening" in nok.stdout, nok.stdout
+            (www / "aiscan" / "latest.json").write_text(echt_manifest)
+            # geknoeide scanner wordt geweigerd
+            pyz = work / "checkmijn.pyz"; echt_pyz = pyz.read_bytes(); pyz.write_bytes(echt_pyz + b"x")
+            assert run(blocks[2], work).returncode == 1
+            pyz.write_bytes(echt_pyz)
+            # één domein: de API geeft ook de scanner van vandaag, en alleen die
+            opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+            assert opener.open(f"http://127.0.0.1:{pa}/{m['bestand']}").read() == echt_pyz
+            try:
+                opener.open(f"http://127.0.0.1:{pa}/checkmijn-2000-01-01.pyz"); raise AssertionError("oude dagversie gaf geen 404")
+            except urllib.error.HTTPError as e:
+                assert e.code == 404
             nonce = run(blocks[3], work).stdout.strip()
             scan = run(blocks[4].replace("PROJECTMAP", str(demo)).replace("NONCE", nonce), work)
             assert scan.returncode in (0, 2), scan.stderr

@@ -211,6 +211,16 @@ for _naam in DAGVERSIE_BESTANDEN:
     app.add_url_rule(f"/{_naam}", view_func=_dagversie_bestand(_naam))
 
 
+@app.get("/checkmijn-<dag>.pyz")
+def scanner_pyz(dag):
+    """De scanner zelf, ook via checkmijn.ai: zo heeft een AI-agent maar één domein nodig. Alleen de huidige dagversie."""
+    m = json.loads(lees_tekst("latest.json"))
+    if f"checkmijn-{dag}.pyz" != m.get("bestand"):
+        abort(404)
+    return Response(lees_tekst(m["bestand"]), mimetype="application/zip",
+                    headers={"Cache-Control": "public, max-age=3600", "Content-Disposition": f'attachment; filename="{m["bestand"]}"'})
+
+
 # ------------------------------------------------------------------ API
 @app.get("/api/v1/versie")
 def versie():
