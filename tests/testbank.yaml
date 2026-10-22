@@ -1,0 +1,127 @@
+# Testbank: elke nacht scant de scanner bewust kwetsbare apps en schone apps, op een vaste commit.
+# - Bij kwetsbare apps: elk gedocumenteerd lek staat hieronder, met de plek in de code. Vindt de scanner het
+#   (een melding Middel of zwaarder bij een van de checks, in dat bestand), dan telt het als gevonden; anders als gemist.
+# - Bij schone apps: elke kritieke of hoge melding die niet als terecht hieronder staat, telt als vals alarm.
+# 'zoek' = een woord dat in de titel van de melding moet staan, zodat een andere melding in hetzelfde bestand niet meetelt.
+# Een lek of een terechte melding toevoegen = een regel erbij, met de plek in de code als bewijs.
+apps:
+  - naam: OWASP Juice Shop
+    repo: juice-shop/juice-shop
+    commit: 399fba76194305a312693eee44f4df64bdf0c3ce
+    soort: kwetsbaar
+    over: De bekendste bewust onveilige webwinkel (Node.js, Angular), van OWASP.
+    lekken:
+      - wat: SQL-injectie bij het inloggen
+        zoek: '(?<!No)SQL'
+        checks: [E-04, C-01]
+        bestand: routes/login.ts
+      - wat: NoSQL-injectie bij het volgen van een bestelling
+        zoek: 'NoSQL'
+        checks: [E-04]
+        bestand: routes/trackOrder.ts
+      - wat: NoSQL-injectie bij de reviews
+        zoek: 'NoSQL'
+        checks: [E-04]
+        bestand: routes/showProductReviews.ts
+      - wat: Privésleutel voor de inlogtokens in de code
+        zoek: 'sleutel|geheim|key'
+        checks: [E-05]
+        bestand: lib/insecurity.ts
+      - wat: Wachtwoorden met MD5 gehasht
+        zoek: 'MD5'
+        checks: [E-06]
+        bestand: lib/insecurity.ts
+      - wat: Inlogtoken in localStorage
+        zoek: 'localStorage'
+        checks: [U-03]
+      - wat: Pakketten met bekende lekken
+        checks: [F-01]
+  - naam: OWASP NodeGoat
+    repo: OWASP/NodeGoat
+    commit: c5cb68a7084e4ae7dcc60e6a98768720a81841e8
+    soort: kwetsbaar
+    over: Bewust onveilige Node.js-app van OWASP, met een les per lek uit de OWASP Top 10.
+    lekken:
+      - wat: Code van de gebruiker uitgevoerd met eval()
+        zoek: 'eval'
+        checks: [C-01, E-04]
+        bestand: app/routes/contributions.js
+      - wat: NoSQL-injectie in de toewijzingen
+        zoek: 'NoSQL'
+        checks: [E-04]
+        bestand: app/data/allocations-dao.js
+      - wat: XSS, automatische escaping in de templates uitgezet
+        zoek: 'escap|XSS'
+        checks: [E-04]
+        bestand: server.js
+      - wat: Wachtwoorden onversleuteld opgeslagen
+        zoek: 'wachtwoord'
+        checks: [E-06]
+        bestand: app/data/user-dao.js
+      - wat: Pakketten met bekende lekken
+        checks: [F-01]
+  - naam: DVNA
+    repo: appsecco/dvna
+    commit: 9ba473add536f66ac9007966acb2a775dd31277a
+    soort: kwetsbaar
+    over: Damn Vulnerable NodeJS Application van Appsecco, per lek uit de OWASP Top 10.
+    lekken:
+      - wat: SQL-injectie met een samengestelde query
+        zoek: '(?<!No)SQL'
+        checks: [E-04, C-01]
+        bestand: core/appHandler.js
+      - wat: Commando-injectie (ping met invoer van de gebruiker)
+        zoek: 'commando|shell|exec'
+        checks: [E-04, C-01]
+        bestand: core/appHandler.js
+      - wat: Onveilige deserialisatie
+        zoek: 'deserialis'
+        checks: [C-01]
+        bestand: core/appHandler.js
+      - wat: XML-parser met externe entiteiten (XXE)
+        zoek: 'XXE'
+        checks: [C-01]
+        bestand: core/appHandler.js
+      - wat: XSS, uitvoer zonder escaping
+        zoek: 'escap|XSS'
+        checks: [E-04]
+        bestand: views/app/products.ejs
+      - wat: Pakketten met bekende lekken
+        checks: [F-01]
+  - naam: DVPWA
+    repo: anxolerd/dvpwa
+    commit: a1d8f89fac2e57093189853c6527c2b01fc1d9c1
+    soort: kwetsbaar
+    over: Damn Vulnerable Python Web Application (aiohttp), met SQL-injectie en XSS.
+    lekken:
+      - wat: SQL-injectie met tekstopmaak in de query
+        zoek: '(?<!No)SQL'
+        checks: [E-04, C-01]
+        bestand: sqli/dao/student.py
+      - wat: XSS, automatische escaping in Jinja2 uitgezet
+        zoek: 'escap|XSS'
+        checks: [E-04]
+        bestand: sqli/app.py
+      - wat: Wachtwoorden met MD5 gehasht
+        zoek: 'MD5'
+        checks: [E-06]
+        bestand: sqli/dao/user.py
+  - naam: Full Stack FastAPI Template
+    repo: fastapi/full-stack-fastapi-template
+    commit: b1125d8839482cb7bbae603ddc6d0081bf87532e
+    soort: schoon
+    over: Het officiële, onderhouden sjabloon van FastAPI. Geen bewust lekke app; wat de scan vindt, beoordelen we hieronder.
+    terecht:
+      - wat: .env met standaardwaarden in de repository (bedoeld om te vervangen)
+        checks: [C-20]
+      - wat: Pakketten met gepubliceerde lekken op deze commit
+        checks: [F-01]
+      - wat: Geen lockfile voor een deel van de frontend
+        checks: [F-13]
+      - wat: Inlogtoken in localStorage
+        zoek: 'localStorage'
+        checks: [U-03]
+  - naam: Demo-app Factuurhulp, hersteld
+    demo: hersteld
+    soort: schoon
+    over: Onze eigen demo-app nadat alles hersteld is (tests/maak_demo.py --hersteld).

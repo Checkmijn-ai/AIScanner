@@ -1,0 +1,38 @@
+{% extends "site/basis.html" %}
+{% import "site/macros.html" as m %}
+{% block inhoud %}
+{{ m.kop("Testbank", "Werkt de scanner? Elke nacht nagekeken.", "Elke nacht scant de scanner bewust lekke apps, waarvan we weten welke lekken erin zitten, en schone apps. Zo zie je wat hij vindt, wat hij mist en hoe vaak hij vals alarm geeft. Ook wat hij mist, tonen we.") }}
+<section class="wrap sectie">
+  {% if tb %}
+  <div class="cijfers rooster-3">
+    <div><b>{{ tb.totaal.gevonden }} van {{ tb.totaal.lekken }}</b><span class="zacht">gedocumenteerde lekken gevonden in {{ tb.apps|selectattr('soort', 'equalto', 'kwetsbaar')|list|length }} bewust lekke apps</span></div>
+    <div><b>{{ tb.totaal.lekken - tb.totaal.gevonden }}</b><span class="zacht">gemist: staat hieronder, met de plek in de code</span></div>
+    <div><b>{{ tb.totaal.vals_alarm }}</b><span class="zacht">kritieke of hoge meldingen die niet kloppen, op {{ tb.totaal.schone_apps }} schone apps</span></div>
+  </div>
+  <p class="zacht klein">Laatst gedraaid: {{ datum_nl(tb.datum[:10]) }}{% if tb.run %} · <a href="{{ tb.run }}">de run in GitHub</a>{% endif %} · de lijst met lekken: <a href="{{ BRONCODE }}/blob/main/tests/testbank.yaml">tests/testbank.yaml</a> · de code: <a href="{{ BRONCODE }}/blob/main/tools/testbank.py">tools/testbank.py</a></p>
+
+  {% for a in tb.apps if a.soort == 'kwetsbaar' %}
+  <h2>{{ a.naam }}{% if a.letter %} <span class="chip zelf l-{{ a.letter }}" title="Scanscore van deze scan">{{ a.letter }}</span>{% endif %}</h2>
+  <p class="zacht">{{ a.over }}{% if a.repo %} <a href="https://github.com/{{ a.repo }}/tree/{{ a.commit }}">Code op GitHub</a>, commit <code>{{ a.commit[:7] }}</code>.{% endif %}</p>
+  {% if a.fout %}<p class="zacht">Deze nacht niet gescand: {{ a.fout }}</p>{% else %}
+  <div class="tabel-scroll"><table class="tabel">
+    <thead><tr><th scope="col">Gedocumenteerd lek</th><th scope="col">Uitkomst</th><th scope="col">Waar in de code</th></tr></thead>
+    <tbody>{% for x in a.lekken %}<tr><td>{{ x.wat }}</td><td><b>{{ 'Gevonden' if x.gevonden else 'Gemist' }}</b>{% if x.als %}<br><span class="zacht klein">{{ x.als }}</span>{% endif %}</td><td class="zacht">{% if x.bron %}<a href="{{ x.bron }}">{{ x.bestand }}</a>{% else %}overal in het project{% endif %}</td></tr>{% endfor %}</tbody>
+  </table></div>{% endif %}
+  {% endfor %}
+
+  <h2>Vals alarm op schone apps</h2>
+  <p class="zacht">Een schone app is geen bewust lekke app. Een kritieke of hoge melding die we bekeken en terecht vonden, telt niet als vals alarm; die staat hieronder ook.</p>
+  {% for a in tb.apps if a.soort == 'schoon' %}
+  <h3>{{ a.naam }}{% if a.letter %} <span class="chip zelf l-{{ a.letter }}">{{ a.letter }}</span>{% endif %}</h3>
+  <p class="zacht">{{ a.over }}</p>
+  {% if a.fout %}<p class="zacht">Deze nacht niet gescand: {{ a.fout }}</p>
+  {% elif a.vals_alarm %}<ul>{% for v in a.vals_alarm %}<li><b>{{ v.check }} {{ v.ernst|lower }}:</b> {{ v.titel }} <span class="zacht">({{ v.bestand }})</span></li>{% endfor %}</ul>
+  {% else %}<p><b>Geen vals alarm.</b>{% if a.terecht %} <span class="zacht">Terechte meldingen: {{ a.terecht|join('; ') }}.</span>{% endif %}</p>{% endif %}
+  {% endfor %}
+  {% else %}
+  <p class="zacht">De eerste uitslag verschijnt hier na de volgende nachtelijke run.</p>
+  {% endif %}
+  {{ m.let_op(DISCLAIMER) }}
+</section>
+{% endblock %}

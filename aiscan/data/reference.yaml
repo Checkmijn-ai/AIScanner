@@ -17,7 +17,7 @@ populair:
         "react-hook-form", "@tanstack/react-query", swr, "firebase", "stripe", "aws-sdk", "@aws-sdk/client-s3", "@google/generative-ai",
         "pdfkit", "xlsx", "papaparse", "sqlite3", "better-sqlite3", "jose", "passport-jwt", "express-rate-limit", "csurf"]
   PyPI: [requests, urllib3, numpy, pandas, scipy, matplotlib, seaborn, scikit-learn, tensorflow, torch, keras, flask, django,
-         fastapi, starlette, uvicorn, gunicorn, sqlalchemy, alembic, psycopg2, psycopg2-binary, pymysql, redis, celery, boto3,
+         fastapi, starlette, uvicorn, gunicorn, sqlalchemy, alembic, psycopg, psycopg-binary, psycopg2, psycopg2-binary, pymysql, redis, celery, boto3,
          botocore, pydantic, jinja2, werkzeug, click, rich, typer, pyyaml, toml, python-dotenv, pytest, tox, black, flake8,
          pylint, mypy, setuptools, wheel, pip, six, attrs, certifi, idna, charset-normalizer, cryptography, pyjwt, bcrypt,
          passlib, paramiko, beautifulsoup4, lxml, selenium, scrapy, httpx, aiohttp, websockets, openai, anthropic, langchain,

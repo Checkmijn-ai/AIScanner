@@ -332,6 +332,12 @@ def vragen():
     return pagina("vragen.html", "Veelgestelde vragen", "Antwoorden over code, rapporten, de score en de niveaus.", faq=FAQ)
 
 
+@site.get("/testbank")
+def testbank():
+    return pagina("testbank.html", "Testbank", "Elke nacht scant de scanner bewust lekke en schone apps: wat hij vindt, wat hij "
+                  "mist en hoe vaak hij vals alarm geeft.", tb=dagbestand("testbank.json"))
+
+
 @site.get("/privacy")
 def privacy():
     return pagina("privacy.html", "Privacyverklaring", "Welke gegevens CheckMijn.AI verwerkt, waarom en hoe lang. Je code komt nooit bij ons.")

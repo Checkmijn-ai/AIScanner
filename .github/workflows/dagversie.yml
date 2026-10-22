@@ -71,6 +71,9 @@ jobs:
         run: |
           sudo apt-get install -yq strace >/dev/null
           python tools/bewijs_geen_code.py _site/geen-code.json --strace --unshare
+      - name: Testbank (bewust kwetsbare en schone apps, publiek)
+        continue-on-error: true
+        run: python tools/testbank.py _site/testbank.json
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa  # v3.0.1
         with:
           path: _site
