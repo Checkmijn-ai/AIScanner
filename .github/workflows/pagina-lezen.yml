@@ -1,0 +1,40 @@
+# Leest een webpagina zoals een browser ze toont (ook sites die met JavaScript gebouwd zijn) en zet de tekst bij de run.
+# Handig om eigen pagina's na te kijken. Alleen op aanvraag.
+name: Pagina lezen
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "Adres van de pagina"
+        required: true
+permissions:
+  contents: read
+jobs:
+  lezen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5.6.0
+        with:
+          python-version: "3.12"
+      - run: pip install "playwright>=1.45" && python -m playwright install --with-deps chromium
+      - name: Lezen
+        env:
+          URL: ${{ inputs.url }}
+        run: |
+          python - <<'PY'
+          import os
+          from playwright.sync_api import sync_playwright
+          with sync_playwright() as p:
+              b = p.chromium.launch()
+              pg = b.new_page()
+              pg.goto(os.environ["URL"], wait_until="networkidle", timeout=60000)
+              tekst = pg.inner_text("body")
+              links = pg.eval_on_selector_all("a[href]", "els => els.map(e => e.href)")
+              b.close()
+          regels = [r.strip() for r in tekst.splitlines() if r.strip()]
+          blok = " | ".join(regels)
+          for i in range(0, len(blok), 3500):
+              print(f"::notice title=Tekst {i // 3500 + 1}::" + blok[i:i + 3500].replace("\n", " "))
+          print("::notice title=Links::" + " ".join(sorted(set(links)))[:3800])
+          PY
