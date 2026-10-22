@@ -1,0 +1,42 @@
+# Geeft een versie van de Action vrij: zet het label v1 op een commit waarvan de tests geslaagd zijn.
+# Klanten gebruiken `Checkmijn-ai/AIScanner@v1`; wat op main staat, bereikt hen pas na deze stap.
+# Wie nog strenger wil, zet in zijn workflow de volledige commit (40 tekens) in plaats van v1.
+name: Action vrijgeven
+on:
+  workflow_dispatch:
+    inputs:
+      commit:
+        description: "commit om vrij te geven (leeg = de laatste op main)"
+        default: ""
+permissions:
+  contents: write   # alleen om het label v1 te verzetten
+  checks: read
+  actions: read
+jobs:
+  vrijgeven:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5.0.0
+        with:
+          fetch-depth: 0
+      - name: Tests geslaagd?
+        id: c
+        env:
+          GH_TOKEN: ${{ github.token }}
+          COMMIT: ${{ inputs.commit }}
+        run: |
+          sha=$(git rev-parse "${COMMIT:-origin/main}")
+          git merge-base --is-ancestor "$sha" origin/main || { echo "::error::$sha staat niet op main."; exit 1; }
+          ok=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=$sha&status=success" \
+               -q '[.workflow_runs[] | select(.name == "Tests")] | length')
+          if [ "${ok:-0}" -lt 1 ]; then echo "::error::Geen geslaagde run van Tests voor $sha. Niets vrijgegeven."; exit 1; fi
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+      - name: Label v1 verzetten
+        env:
+          SHA: ${{ steps.c.outputs.sha }}
+        run: |
+          oud=$(git rev-parse -q --verify "refs/tags/v1^{commit}" || echo "geen")
+          git tag -f v1 "$SHA"
+          git push -f origin refs/tags/v1
+          echo "::notice title=Vrijgegeven::v1 stond op ${oud:0:12}, nu op ${SHA:0:12}"
