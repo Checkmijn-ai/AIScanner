@@ -391,7 +391,7 @@ def cra():
     cs = cra_checks()
     per = {n: [c for c in cs if c["vanaf"] == n] for n in (1, 2, 3, 4)}
     return pagina("cra.html", "CheckMijn.AI en de Cyber Resilience Act",
-                  "Helpt je CRA-dossier in orde te krijgen, en houdt het in orde. Wat de scan en de keuring wel en niet "
+                  "Helpt je CRA-dossier op orde te brengen en te houden. Wat de scan en de keuring wel en niet "
                   "doen voor de Europese Cyber Resilience Act.", checks=cs, per=per, totaal=len(norm()["checks"]))
 
 
