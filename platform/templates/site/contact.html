@@ -1,7 +1,7 @@
 {% extends "site/basis.html" %}
 {% import "site/macros.html" as m %}
 {% block inhoud %}
-{{ m.kop("Contact", "Hoe kunnen we helpen?", "Kies wat bij je past. We reageren binnen één werkdag.") }}
+{{ m.kop("Contact", "Hoe kunnen we helpen?", "Mail ons. Je krijgt binnen een werkdag antwoord.") }}
 <section class="wrap sectie">
   <div class="rooster-3">
     {% for t, d, onderwerp in [
@@ -15,12 +15,11 @@
     </div>
     {% endfor %}
   </div>
-  <p class="mt2">Of mail rechtstreeks naar <a href="mailto:{{ CONTACT }}">{{ CONTACT }}</a>. Vertel wie je bent, welke software het betreft en hoeveel apps.</p>
-  <p class="zacht klein">Stuur geen code of bestanden mee: die hebben we niet nodig.</p>
+  <p class="mt2">Of mail rechtstreeks naar <a href="mailto:{{ CONTACT }}">{{ CONTACT }}</a>. Vertel kort wie je bent en over welke app het gaat. Stuur geen code mee, die hebben we niet nodig.</p>
   {% if BEDRIJF_KLAAR %}<p class="zacht klein">{{ BEDRIJF.naam }} · {{ BEDRIJF.adres }} · ondernemingsnummer {{ BEDRIJF.kvk }} · btw {{ BEDRIJF.btw }} · <a href="/bedrijfsgegevens">bedrijfsgegevens</a></p>{% endif %}
   <h2>Partner worden?</h2>
-  <p class="zacht">We zoeken regiopartners in Nederland en Vlaanderen: zwaargewichten met minstens 10 jaar ervaring in de IT, waarvan 5 jaar in cybersecurity. <a href="mailto:{{ CONTACT }}?subject={{ 'CheckMijn.AI: regiopartner'|urlencode }}">Laat het ons weten</a>.</p>
+  <p class="zacht">We zoeken partners in Nederland en Vlaanderen met minstens tien jaar ervaring in IT, waarvan vijf in beveiliging. <a href="mailto:{{ CONTACT }}?subject={{ 'CheckMijn.AI: regiopartner'|urlencode }}">Laat het ons weten</a>.</p>
   <h2>Een kwetsbaarheid melden</h2>
-  <p class="zacht">Mail naar <a href="mailto:security@checkmijn.ai">security@checkmijn.ai</a>. Zie ook <a href="/.well-known/security.txt">security.txt</a>.</p>
+  <p class="zacht">Lek gevonden bij ons? Mail naar <a href="mailto:security@checkmijn.ai">security@checkmijn.ai</a>.</p>
 </section>
 {% endblock %}

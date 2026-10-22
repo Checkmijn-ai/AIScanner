@@ -45,8 +45,8 @@ LEKKENWACHT_PIPELINE = ("# 1. elke dag scannen\non:\n  schedule:\n    - cron: \"
                         "# 3. bij de stap van checkmijn\n  with:\n    waarschuwen: auto")
 BRON: dict = {}  # api.py zet hier "tekst": functie die een bestand van de dagversie als bytes geeft
 
-DISCLAIMER = ("De scanscore is een uitslag van de scan op een bepaald moment. Ze is geen keurmerk, certificaat of "
-              "garantie dat software veilig is.")
+DISCLAIMER = ("De scanscore is de uitslag van een scan op één moment. Het is geen keurmerk, certificaat of "
+              "garantie dat je software veilig is.")
 
 NAV = [("hoe_het_werkt", "Hoe het werkt"), ("controles", "Alle checks"), ("niveaus", "Niveaus"),
        ("prijzen", "Wat je krijgt"), ("nieuws", "Nieuws"), ("open_source", "Open source"), ("bureaus", "Voor bureaus")]
@@ -83,50 +83,40 @@ LEVELS = [
      "aanval": "Pentest op aanvalsscenario's (vanaf 8 dagen), door een CCV-gecertificeerd pentestbedrijf", "hoogste": "A", "geldig": "12 maanden, doorlopend toezicht"},
 ]
 
-ERKEND = ("Een erkende keurder is een IT-securityspecialist die door CheckMijn.AI erkend is: hij volgde onze opleiding, "
-          "slaagde voor het examen, volgt elk jaar bijscholing en werkt volgens ons keurhandboek, met steekproeven op zijn werk. "
-          "Hij keurt nooit een app die hij zelf herstelde of als klant aanbracht, en zijn vergoeding hangt nooit af van de uitslag. "
-          "\"Erkend\" betekent erkend door CheckMijn.AI. Het is (nog) geen accreditatie door een overheidsinstantie zoals de RvA of "
-          "BELAC. Later beheert een onafhankelijke organisatie de erkenning.")
+ERKEND = ("Een erkende keurder is een beveiligingsspecialist die wij hebben opgeleid en getoetst. Hij volgt elk jaar "
+          "bijscholing, werkt volgens ons keurhandboek, en we controleren steekproefsgewijs zijn werk. Hij keurt nooit een app "
+          "die hij zelf heeft hersteld of als klant heeft aangebracht, en zijn vergoeding hangt nooit af van de uitslag. "
+          "Erkend betekent voorlopig: erkend door CheckMijn.AI. Er is nog geen erkenning door een officiële instantie zoals "
+          "BELAC of de RvA. Daar werken we aan.")
 
 FAQ = [
-    ("Krijgen jullie mijn code?", "Nee. De scanner draait in je eigen GitHub of op je eigen machine. Wil je een "
-     "scorepagina, dan stuur je alleen een bewijsbestand met per check de uitkomst, zonder code, paden of geheimen."),
+    ("Krijgen jullie mijn code?", "Nee. De scanner draait op je eigen computer of in je eigen GitHub. Vraag je een "
+     "scorepagina aan, dan krijgen we alleen per check de uitslag. Geen code, geen bestandsnamen, geen wachtwoorden."),
     ("Ik bouw in Lovable, Bolt of v0. Kan ik scannen?", "Ja, via GitHub. Koppel je project aan een privé-repository en "
-     "vraag je bouwtool om het workflowbestand van checkmijn.ai toe te voegen (zie Hoe het werkt). GitHub scant dan bij "
-     "elke wijziging, en het rapport komt terug in je project. Je bouwtool toont eerst de score en een link naar het "
-     "opgemaakte rapport, en herstelt pas na je akkoord."),
-    ("Wat bewaren jullie van het rapport?", "Het opgemaakte rapport bewaren we versleuteld. De sleutel zit alleen in jouw "
-     "persoonlijke link, na het #-teken, en komt nooit bij ons. Wij kunnen het dus niet lezen. Zonder account wissen we "
-     "het na 90 dagen."),
-    ("Moet ik iets installeren?", "Nee. Je AI-agent of je pipeline draait de scanner uit één bestand en ruimt daarna op."),
-    ("Gebruiken jullie AI om te beoordelen?", "Nee. De meting gebruikt vaste regels: dezelfde code geeft altijd "
-     "dezelfde uitkomst. AI mag je helpen herstellen, maar telt niet mee in de score."),
-    ("Kan iemand vals spelen bij een zelfscan?", "Een zelfscan draait op een machine die wij niet controleren. "
-     "Daarom staat er ZELFSCAN op de badge, met een gestippelde rand, en gaat de score hoogstens tot C. Wie zekerheid "
-     "wil, kiest een keuring."),
-    ("Is dit een certificaat?", "Nee, het is een onafhankelijke scanscore. Een officieel keurmerk komt er later, via een "
-     "onafhankelijke organisatie, met deze scan als basis."),
+     "plak de tekst van onze pagina Hoe het werkt in de chat. Daarna scant GitHub bij elke wijziging en zet het rapport in "
+     "je project. Je bouwtool laat eerst de score zien en lost pas iets op als jij ja zegt."),
+    ("Wat bewaren jullie van het rapport?", "Een versleutelde kopie. De sleutel zit alleen in jouw link, dus wij kunnen het "
+     "niet lezen. Na 90 dagen wissen we het."),
+    ("Moet ik iets installeren?", "Nee. Je AI-assistent of GitHub haalt de scanner op en ruimt daarna op."),
+    ("Gebruiken jullie AI om te beoordelen?", "Nee. De meting gebruikt vaste regels, dus dezelfde code geeft altijd "
+     "dezelfde uitslag. Je AI mag wel helpen met oplossen."),
+    ("Kan iemand vals spelen bij een zelfscan?", "In theorie wel, want een zelfscan draait op een computer die wij niet "
+     "zien. Daarom staat er ZELFSCAN op de badge en gaat de score maar tot C. Wie zekerheid wil, kiest een keuring."),
+    ("Is dit een certificaat?", "Nee, het is een scanscore. Een officieel keurmerk komt later, via een onafhankelijke "
+     "organisatie."),
     ("Wat is een erkende keurder?", ERKEND),
-    ("Hoe echt is een zelfscan?", "We controleren dat het een echte, ondertekende scanner van die dag was, met een sessiecode "
-     "die maar één keer werkt, en we rekenen de letter zelf na uit de resultaten. De uitvoering zelf zien we niet: wie zijn eigen "
-     "omgeving beheert, kan een uitslag vervalsen. Daarom staat er ZELFSCAN op de badge en gaat de score hoogstens tot C. "
-     "Vanaf niveau 2 draait een erkende keurder de scanner zelf, in jouw omgeving."),
-    ("Wat betekent het percentage naast de letter?", "Hoeveel van de checks die op je app van toepassing zijn, echt gescand is, "
-     "bv. \"C · zelfscan · 74% gecontroleerd\". Zonder URL van je live site kan de scanner bv. de headers en het certificaat niet "
-     "nakijken. Onder 70% komt er geen letter. En zonder de kernchecks (geheimen in de code en pakketten met bekende lekken) "
-     "geen hoogste letter."),
-    ("Waarom haalt een zelfscan hoogstens een C?", "Een automatische scan ziet niet alles, en een zelfscan draait op een "
-     "machine die wij niet zien. Zo verwart niemand een gratis C met een gekeurde C. Voor een A of B moet een erkende "
-     "keurder hebben meegekeken."),
-    ("Testen jullie ook of mijn app werkt?", "Vanaf niveau 2, samen met gerichte aanvalstests. Een volledige pentest zit "
-     "in niveau 3."),
-    ("Wie voert de pentest uit?", "Op niveau 3 en 4 voert een pentestbedrijf met het CCV Keurmerk Pentesten de handmatige "
-     "pentest uit. Dat is het Nederlandse kwaliteitskeurmerk voor pentestbedrijven. De pentest volgt onze norm, zodat "
-     "uitslagen vergelijkbaar zijn. De aanvalstests van niveau 2 zijn geautomatiseerd en voor iedereen dezelfde."),
-    ("Welke programmeertalen?", "JavaScript/TypeScript en Python, met de populaire webframeworks. Meer volgt."),
-    ("Hoe lang is een score geldig?", "Een scorepagina van een zelfscan blijft 30 dagen actueel; daarna wordt de badge "
-     "grijs. Een scan bij elke wijziging houdt hem vanzelf actueel. Een keuring is 12 maanden geldig."),
+    ("Wat betekent het percentage naast de letter?", "Hoeveel van de checks die bij jouw app horen, echt gescand zijn. "
+     "Zonder het adres van je live site kan de scanner bijvoorbeeld je certificaat niet nakijken. Onder 70% krijg je "
+     "geen letter."),
+    ("Waarom haalt een zelfscan hoogstens een C?", "Omdat we niet zien wat er op jouw computer gebeurt, en omdat een "
+     "automatische scan niet alles ziet. Zo verwart niemand een gratis C met een gekeurde. Voor een A of B moet een "
+     "keurder meekijken."),
+    ("Testen jullie ook of mijn app werkt?", "Vanaf niveau 2. Een volledige pentest zit in niveau 3."),
+    ("Wie doet de pentest?", "Een pentestbedrijf met het CCV Keurmerk Pentesten, het Nederlandse keurmerk voor "
+     "pentesters. Het werkt volgens onze norm, zodat de uitslagen te vergelijken zijn."),
+    ("Welke programmeertalen?", "JavaScript, TypeScript en Python. Voor lekke pakketten ook PHP, Go, Java en Ruby."),
+    ("Hoe lang is een score geldig?", "Een zelfscan blijft 30 dagen actueel, een keuring 12 maanden. Daarna wordt de "
+     "badge grijs. Scan je bij elke wijziging, dan blijft hij vanzelf actueel."),
     ("Controleren jullie of een tekst door AI geschreven is?", "Nee. We controleren software die met AI gebouwd is."),
 ]
 
@@ -265,6 +255,11 @@ def dagbestand(naam: str):
         return json.loads(BRON["tekst"](naam))
     except (HTTPException, ValueError, KeyError, OSError):
         return None
+
+
+@site.get("/over-ons")
+def over_ons():
+    return pagina("over-ons.html", "Over ons", "Wie achter CheckMijn.AI zit, waarom we het maken en hoe we werken.")
 
 
 @site.get("/wat-je-krijgt")
@@ -720,7 +715,7 @@ def robots():
 @site.get("/sitemap.xml")
 def sitemap():
     paden = ["/", "/hoe-het-werkt", "/niveaus", "/wat-we-controleren", "/wat-je-krijgt", "/open-source", "/score-uitleg", "/waarom", "/bureaus",
-             "/opdrachtgevers", "/vertrouwen", "/framework", "/vragen", "/contact", "/scan", "/nieuws", "/nieuwsbrief", "/resultaten", "/cra", "/crosswalk"]
+             "/opdrachtgevers", "/vertrouwen", "/framework", "/vragen", "/contact", "/scan", "/nieuws", "/nieuwsbrief", "/resultaten", "/cra", "/crosswalk", "/over-ons"]
     xml = ('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
            + "".join(f"  <url><loc>{SITE_URL}{p}</loc></url>\n" for p in paden)
            + "".join(f"  <url><loc>{SITE_URL}/check/{c['id']}</loc></url>\n" for c in norm()["checks"]) + "</urlset>\n")

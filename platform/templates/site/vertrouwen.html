@@ -1,25 +1,23 @@
 {% extends "site/basis.html" %}
 {% import "site/macros.html" as m %}
 {% block inhoud %}
-{{ m.kop("Vertrouwen en veiligheid", "Hoe we met je gegevens omgaan", "Een controleur die je code nodig heeft, wordt zelf een risico. Daarom is CheckMijn.AI zo ontworpen dat je broncode bij jou blijft, en dat wij je rapporten niet kunnen lezen.") }}
+{{ m.kop("Vertrouwen en veiligheid", "Hoe we met je gegevens omgaan", "Wie je code nodig heeft om ze te controleren, wordt zelf een risico. Daarom hebben we het zo gebouwd dat je code bij jou blijft en dat wij je rapporten niet kunnen lezen.") }}
 <section class="wrap sectie">
   <div class="rooster-2">
     {% for t, d in [
-      ("Je code blijft bij jou", "De scan draait in je eigen omgeving: je GitHub of je eigen machine. Wil je een scorepagina, dan ontvangen we alleen een bewijsbestand met per check de uitkomst, zonder code, paden of geheimen."),
-      ("Rapporten die wij niet kunnen lezen", "Het opgemaakte rapport wordt versleuteld (AES-256-GCM) voor het onze server bereikt. De sleutel staat alleen in jouw persoonlijke link, na het #-teken, en een browser stuurt dat deel nooit naar een server."),
-      ("Alleen echte scans", "Een rapport inleveren kan alleen vanuit GitHub Actions. GitHub bewijst met een ondertekend token uit welke repository de scan komt."),
-      ("Geen AI in de meting", "De meting gebruikt vaste regels. Dezelfde code geeft altijd dezelfde uitkomst."),
-      ("Tijdens het scannen staat het netwerk van de scanner dicht", "De scanner draait met --offline. Elke scan bevestigt dat."),
-      ("Geheimen worden gemaskeerd", "In elk rapport, zonder uitzondering."),
-      ("Elke dagversie is ondertekend", "Met Ed25519. Je kunt het zelf nakijken met onze publieke sleutel."),
-      ("Publieke lijst van checks en van alle wijzigingen", "Iedereen kan nagaan hoe en wanneer de meetlat verandert."),
-      ("Gehost in Helsinki, in de EU", "Deze site, de API en de versleutelde rapporten staan op onze eigen server bij Hetzner in Helsinki (Finland). Geen Amerikaanse cloud, geen trackers, geen cookies van derden."),
-      ("Diensten van anderen, en waarvoor", "Brevo (Frankrijk, EU) verstuurt de nieuwsbrief en bewaart alleen het e-mailadres van wie zich aanmeldt. Claude van Anthropic (VS) maakt korte Nederlandse samenvattingen van openbare nieuwsberichten op /nieuws; daar gaat alleen openbare tekst uit nieuwsfeeds heen, nooit code, rapporten of gegevens van klanten."),
-      ("Open source", "De scanner is open source onder de Europese licentie EUPL-1.2. Iedereen kan nakijken wat hij doet."),
-      ("Kwetsbaarheid gevonden bij ons?", "Meld het via security@checkmijn.ai (zie security.txt). We reageren binnen twee werkdagen.")] %}
+      ("Je code blijft bij jou", "De scan draait op je eigen computer of in je eigen GitHub. Vraag je een scorepagina aan, dan krijgen we alleen per check de uitslag. Geen code, geen bestandsnamen, geen wachtwoorden."),
+      ("Rapporten die wij niet kunnen lezen", "Het rapport wordt versleuteld voor het bij ons aankomt. De sleutel zit alleen in jouw link, en die stuurt je browser nooit naar ons."),
+      ("De scanner gebruikt geen internet", "Tijdens het scannen maakt hij geen verbinding met buiten. Dat testen we elke nacht opnieuw, en de uitslag is openbaar."),
+      ("Altijd dezelfde uitslag", "Er zit geen AI in de meting, alleen vaste regels."),
+      ("Wachtwoorden worden altijd afgeschermd", "In elk rapport, zonder uitzondering."),
+      ("Elke scanner is ondertekend", "Met onze sleutel. Je kunt zelf nakijken of hij echt van ons komt."),
+      ("Alles staat open", "De scanner is open source (EUPL-1.2). De lijst met checks en elke wijziging erin is openbaar."),
+      ("Gehost in de EU", "Onze server staat bij Hetzner in Helsinki. Geen Amerikaanse cloud, geen trackers, geen cookies van anderen."),
+      ("Wie we nog gebruiken", "Brevo (Frankrijk) voor de nieuwsbrief: alleen je e-mailadres. Claude van Anthropic (VS) voor Nederlandse samenvattingen van openbaar nieuws: alleen die openbare tekst, nooit code of gegevens van klanten."),
+      ("Een lek bij ons gevonden?", "Mail security@checkmijn.ai. We antwoorden binnen twee werkdagen.")] %}
       <div><h3>{{ t }}</h3><p class="zacht">{{ d }}</p></div>
     {% endfor %}
   </div>
-  <p class="zacht mt2">Technische bronnen: <a href="/public-key.pem">public-key.pem</a> · <a href="/versies.json">versies.json</a> · <a href="/changelog.json">changelog.json</a> · <a href="/.well-known/security.txt">security.txt</a> · <a href="https://github.com/Checkmijn-ai/AIScanner">broncode</a></p>
+  <p class="zacht mt2">Zelf nakijken: <a href="/open-source">open source</a> · <a href="/public-key.pem">publieke sleutel</a> · <a href="/versies.json">versies</a> · <a href="/changelog.json">wijzigingen</a> · <a href="/.well-known/security.txt">security.txt</a></p>
 </section>
 {% endblock %}

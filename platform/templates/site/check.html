@@ -38,8 +38,8 @@
         <h3 class="mt2">Gekoppeld aan norm of wet</h3>
         <p>{{ c.normen }}</p>
         {% if annex %}<p class="klein"><b>ISO/IEC 27001 bijlage A:</b> {% for x in annex %}<a href="/crosswalk#iso-{{ x.id }}">{{ x.id }}</a> ({{ x.dekking }}){{ ', ' if not loop.last }}{% endfor %} · <a href="/crosswalk">crosswalk</a></p>{% endif %}
-        <p class="zacht klein">Deze check is een gecontroleerde maatregel die verwijst naar die bepaling. Een goede uitslag betekent niet dat je aan de wet of norm voldoet; dat vraagt een conformiteitsbeoordeling van je hele product.</p>
-        {% if c.ernst %}<h3>Standaardernst</h3><p><span class="ernst e-{{ c.ernst }}">{{ c.ernst }}</span> <span class="zacht klein">Een keurder mag hiervan afwijken, met een motivatie in het rapport.</span></p>{% endif %}
+        <p class="zacht klein">Een goede uitslag op deze check betekent nog niet dat je aan de hele wet of norm voldoet.</p>
+        {% if c.ernst %}<h3>Standaardernst</h3><p><span class="ernst e-{{ c.ernst }}">{{ c.ernst }}</span> <span class="zacht klein">Een keurder mag hiervan afwijken, als hij uitlegt waarom.</span></p>{% endif %}
       </div>
     </div>
   </div>

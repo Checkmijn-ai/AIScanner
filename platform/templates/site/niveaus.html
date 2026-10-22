@@ -1,7 +1,7 @@
 {% extends "site/basis.html" %}
 {% import "site/macros.html" as m %}
 {% block inhoud %}
-{{ m.kop("Niveaus", "Hoe diep kijken we?", "De letter (A–G) zegt hoe goed je software is. Het niveau (1–4) zegt hoe diep we gekeken hebben. Ze staan altijd samen, bijvoorbeeld \"B · niveau 2\". Elk niveau bevat alles van het niveau ervoor.") }}
+{{ m.kop("Niveaus", "Hoe diep kijken we?", "De letter zegt hoe goed je app is. Het niveau zegt hoe goed we gekeken hebben. Je ziet ze altijd samen, bijvoorbeeld \"B · niveau 2\".") }}
 <section class="wrap sectie">
   <div class="scroll">
     <table class="tabel">
@@ -15,28 +15,19 @@
     </table>
   </div>
 
-  <h2>Niveau 1 controleert automatisch</h2>
-  <div class="rooster-2">
-    <div><h3>Afhankelijkheden</h3><p class="zacht">Bekende lekken (dagelijks bijgewerkt), verzonnen of verdachte pakketten, verouderde frameworks, licenties, lockfiles.</p></div>
-    <div><h3>Geheimen</h3><p class="zacht">API-sleutels, wachtwoorden en tokens in code, configuratie, de JavaScript-bundel en de volledige git-geschiedenis.</p></div>
-    <div><h3>Bouwen met AI</h3><p class="zacht">Agentbestanden (zoals CLAUDE.md en MCP-configuratie) zonder geheimen of onveilige instructies, en waar AI in het product zit.</p></div>
-    <div><h3>Code</h3><p class="zacht">Injectie (SQL, OS, XSS), zwakke cryptografie, foutafhandeling, achtergebleven rommel, onveilige functies in de browser.</p></div>
-    <div><h3>AI in het product</h3><p class="zacht">De uitvoer van het model wordt niet blind uitgevoerd, er zijn limieten op verbruik.</p></div>
-    <div><h3>Pipeline en repository</h3><p class="zacht">Tests en beveiligingsscans in de pipeline, een beschermde hoofdbranch, veilige repo-instellingen.</p></div>
-    <div><h3>Live site</h3><p class="zacht">TLS, beveiligingsheaders, cookies, geen trackers vóór toestemming, e-mailbeveiliging (SPF, DKIM, DMARC).</p></div>
-  </div>
+  <h2>Niveau 1: de gratis scan</h2>
+  <p>Volledig automatisch. Hij zoekt naar lekke en verzonnen pakketten, wachtwoorden en sleutels in de code (ook in oude versies), onveilige code, tabellen die voor iedereen openstaan, de instellingen van je AI-assistent, en de beveiliging van je live site. <a href="/wat-we-controleren">Alle checks</a></p>
 
 <div class="kaart vlak mt2" id="erkende-keurder"><h2 class="mt0">Wat is een erkende keurder?</h2><p>{{ ERKEND }}</p></div>
 
-  <h2>Niveau 2 doet daar bovenop</h2>
+  <h2>Niveau 2: een keurder kijkt mee</h2>
   <div class="rooster-2">
-    <div class="kaart"><h3>Testen of het werkt</h3><p class="zacht">Knoppen, validaties en beveiliging doen wat ze beloven. We testen inloggen, rechten en invoer met foute en kwaadwillige gegevens, en scannen de draaiende app in een testomgeving.</p></div>
-    <div class="kaart"><h3>Gerichte aanvalstests</h3><p class="zacht">14 tests op de plekken waar het meestal misgaat:</p>
-      <ul class="zacht"><li>kan gebruiker A de gegevens van gebruiker B zien</li><li>zijn klanten van elkaar gescheiden</li><li>zijn de API's afgeschermd</li><li>inloggen via een externe dienst</li><li>misleiden van AI-functies (prompt injection) en lekken via AI</li><li>GraphQL, XML en WebSockets</li><li>gateway en firewall</li><li>opslag en verkeer van mobiele apps</li></ul></div>
-    <div class="kaart"><h3>Een keurder kijkt mee</h3><p class="zacht">Rechten en inloggen, structuur van de code, hosting en cloud, databank, logging, koppelingen, AI-inventaris, en de privacyverklaring tegenover wat de app echt doet.</p></div>
-    <div class="kaart"><h3>Bewijs van het proces</h3><p class="zacht">Meldbeleid voor kwetsbaarheden, wijzigingsbeheer, releases, foutenbeheer.</p></div>
+    <div class="kaart"><h3>Werkt het echt?</h3><p class="zacht">De keurder test of knoppen, invoer en beveiliging doen wat ze beloven. Ook met foute en kwaadwillige invoer.</p></div>
+    <div class="kaart"><h3>Gerichte aanvalstests</h3><p class="zacht">Veertien tests op de plekken waar het meestal misgaat. Kan klant A de gegevens van klant B zien? Zijn de API's afgeschermd? Laat de AI in je app zich ompraten?</p></div>
+    <div class="kaart"><h3>Wat de scan niet kan zien</h3><p class="zacht">Hoe rechten en inloggen geregeld zijn, de hosting, de databank, logging, en of je privacyverklaring klopt met wat de app doet.</p></div>
+    <div class="kaart"><h3>Hoe je werkt</h3><p class="zacht">Hoe je omgaat met meldingen van lekken, wijzigingen en releases.</p></div>
   </div>
-  <p class="zacht mt2">Niveau 2 is geen volledige pentest. Die begint bij niveau 3, en wordt uitgevoerd door een pentestbedrijf met het CCV Keurmerk Pentesten.</p>
-  <div class="knoppenrij"><a class="knop" href="/hoe-het-werkt">Check mijn app, gratis niveau 1</a><a class="knop licht" href="/contact">Plan een gesprek over niveau 2 of 3</a></div>
+  <p class="zacht mt2">Niveau 2 is nog geen volledige pentest. Die zit in niveau 3, en wordt gedaan door een pentestbedrijf met het CCV Keurmerk Pentesten.</p>
+  <div class="knoppenrij"><a class="knop" href="/hoe-het-werkt">Begin met de gratis scan</a><a class="knop licht" href="/contact">Praat met ons over een keuring</a></div>
 </section>
 {% endblock %}

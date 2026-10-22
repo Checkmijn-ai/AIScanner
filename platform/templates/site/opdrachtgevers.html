@@ -1,19 +1,23 @@
 {% extends "site/basis.html" %}
 {% import "site/macros.html" as m %}
 {% block inhoud %}
-{{ m.kop("Voor opdrachtgevers en inkopers", "Weet wat je leverancier oplevert", "Je hoeft geen beveiligingsexpert te zijn om goede software in te kopen. Vraag om een actuele scanscore en lees de uitslag zelf.") }}
+{{ m.kop("Voor opdrachtgevers en inkopers", "Weet wat je leverancier oplevert", "Je hoeft geen beveiligingsexpert te zijn om goede software in te kopen. Vraag je leverancier om een recente scanscore. De uitslag kun je zelf lezen.") }}
 <section class="wrap sectie">
   <div class="rooster-2">
     <div>
-      <h3>Wat de score betekent</h3><p class="zacht">De letter zegt hoe goed de software is, het niveau hoe diep er gekeken is.</p>
-      <h3>Een scorepagina controleren</h3><p class="zacht">Kijk naar de datum, het niveau en de soort scan (zelfscan tot C, geverifieerd of gekeurd tot A). Een verlopen score is grijs.</p>
-      <h3>Voor je leveranciersbeoordeling (NIS2)</h3><p class="zacht">Het rapport toont welke wetten en normen geraakt worden.</p>
-      <p><a href="/score-uitleg">Lees meer over de score</a></p>
+      <h3>Waar je op let</h3>
+      <ul>
+        <li><b>De letter:</b> A is het best, G het slechtst.</li>
+        <li><b>Zelfscan of keuring:</b> een zelfscan deed de leverancier zelf en gaat tot C. Bij een keuring keek iemand van buiten mee.</li>
+        <li><b>De datum:</b> een oude score wordt grijs.</li>
+      </ul>
+      <p>Moet je onder NIS2 je leveranciers beoordelen? Het rapport laat zien welke wetten en normen er geraakt worden.</p>
+      <p><a href="/score-uitleg">Meer over de score</a></p>
     </div>
     <div>
-      <h3>Gratis standaardzin voor je bestek</h3>
-      {{ m.code("bestek", bestek, "Bestekclausule (vrij te gebruiken)") }}
-      <p class="zacht klein">Laat de clausule altijd toetsen door je eigen juridische afdeling.</p>
+      <h3>Een zin voor je bestek</h3>
+      <p class="zacht">Vrij te gebruiken. Laat hem wel nakijken door je eigen juristen.</p>
+      {{ m.code("bestek", bestek, "Bestekclausule") }}
     </div>
   </div>
   <div class="knoppenrij"><a class="knop" href="/contact">Plan een gesprek</a></div>

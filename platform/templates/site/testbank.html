@@ -1,7 +1,7 @@
 {% extends "site/basis.html" %}
 {% import "site/macros.html" as m %}
 {% block inhoud %}
-{{ m.kop("Testbank", "Werkt de scanner? Elke nacht nagekeken.", "Elke nacht scant de scanner bewust lekke apps, waarvan we weten welke lekken erin zitten, en schone apps. Zo zie je wat hij vindt, wat hij mist en hoe vaak hij vals alarm geeft. Ook wat hij mist, tonen we.") }}
+{{ m.kop("Testbank", "Vindt de scanner wat hij moet vinden?", "Elke nacht laten we hem los op apps waarvan we weten welke lekken erin zitten, en op apps die in orde zijn. Hier zie je wat hij vond, wat hij miste en wanneer hij onterecht alarm sloeg.") }}
 <section class="wrap sectie">
   {% if tb %}
   <div class="cijfers rooster-3">
@@ -22,7 +22,7 @@
   {% endfor %}
 
   <h2>Vals alarm op schone apps</h2>
-  <p class="zacht">Een schone app is geen bewust lekke app. Een kritieke of hoge melding die we bekeken en terecht vonden, telt niet als vals alarm; die staat hieronder ook.</p>
+  <p class="zacht">Apps die niet bewust lek gemaakt zijn. Een melding die we nagekeken hebben en die klopt, telt niet als vals alarm.</p>
   {% for a in tb.apps if a.soort == 'schoon' %}
   <h3>{{ a.naam }}{% if a.letter %} <span class="chip zelf l-{{ a.letter }}">{{ a.letter }}</span>{% endif %}</h3>
   <p class="zacht">{{ a.over }}</p>

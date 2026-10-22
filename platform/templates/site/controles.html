@@ -1,7 +1,7 @@
 {% extends "site/basis.html" %}
 {% import "site/macros.html" as m %}
 {% block inhoud %}
-{% call m.kop("Alle checks", "Wat we controleren", "Alle " ~ checks|length ~ " checks van CheckMijn.AI, uitgeschreven: wat we controleren, hoe, op welk niveau, en uit welke norm of wet het komt. De lijst is open (CC BY 4.0) en dezelfde voor iedereen. Ze beoordeelt je hele softwareproduct, niet alleen de code die AI schreef; hoe je app gebouwd is, bepaalt welke risico's we extra nakijken.") %}
+{% call m.kop("Alle checks", "Wat we controleren", "Alle checks, uitgeschreven: wat we nakijken, hoe, op welk niveau, en uit welke wet of norm het komt. De lijst is openbaar en voor iedereen hetzelfde.") %}
 <div class="niveautellers">
   {% for k, naam in [("n1", "Niveau 1 · Basisscan"), ("n2", "Niveau 2 · Gekeurd"), ("n3", "Niveau 3 · Gekeurd Plus"), ("n4", "Niveau 4 · Kritiek")] %}
   <div><b>{{ tel[k] }}</b><span class="zacht klein">verplicht op {{ naam }}</span></div>
