@@ -1,7 +1,7 @@
 {% extends "site/basis.html" %}
 {% import "site/macros.html" as m %}
 {% block inhoud %}
-{{ m.kop("Wat je krijgt", "Meer dan een tool, goedkoper dan een pentest", "De scanner is gratis en open source. Je betaalt voor het uitvoeren: een partner die scant en uitlegt, een keurder die meekijkt, een pentester die aanvalt. Per niveau zie je hier wat je krijgt en wat het ongeveer kost.") }}
+{{ m.kop("Wat je krijgt", "Wat het kost", "De scanner is gratis. Je betaalt pas als iemand iets voor je doet: een partner die scant en uitlegt, een keurder die meekijkt, een pentester die probeert in te breken.") }}
 <section class="wrap sectie">
   <h2 class="mt0">Scannen</h2>
   <div class="pakketten twee">
@@ -10,12 +10,11 @@
       <h2 class="mt0">Basisscan</h2>
       <p class="prijs">Gratis</p>
       <ul>
-        <li>De 46 checks van niveau 1, automatisch (van de 292 in de volledige norm)</li>
-        <li>Opgemaakt rapport met grafieken, versleuteld via je persoonlijke link</li>
-        <li>Herstelhint bij elke bevinding</li>
-        <li>Verloop van je scores bij elke wijziging</li>
-        <li>Scorepagina en badge (30 dagen actueel)</li>
-        <li>Hoogste letter: C (zelfscan)</li>
+        <li>46 automatische checks</li>
+        <li>Een rapport met uitleg bij elke bevinding</li>
+        <li>Je scores door de tijd</li>
+        <li>Een scorepagina en badge</li>
+        <li>Hoogstens een C</li>
       </ul>
       <a class="knop licht" href="/hoe-het-werkt">Zelf scannen</a>
     </article>
@@ -24,10 +23,10 @@
       <h2 class="mt0">Basisscan-abonnement</h2>
       <p class="prijs">€750 <span>per app per jaar</span></p>
       <ul>
-        <li>Alles van de gratis basisscan</li>
-        <li>Een regiopartner zet de scan voor je op en draait hem</li>
-        <li>Een uitleggesprek over de uitslag, in gewone taal</li>
-        <li>Scorepagina die het hele jaar actueel blijft</li>
+        <li>Alles van de gratis scan</li>
+        <li>Een partner bij jou in de buurt zet alles op</li>
+        <li>Een gesprek waarin hij de uitslag uitlegt</li>
+        <li>Een scorepagina die het hele jaar actueel blijft</li>
         <li>Optioneel: <b>herstelpakket "Van G naar C"</b>, vanaf €2.500</li>
       </ul>
       <a class="knop licht" href="/contact">Vraag een partner</a>
@@ -40,14 +39,13 @@
       <h2 class="mt0">Gekeurd</h2>
       <p class="prijs">vanaf €5.700 <span>per app, 12 maanden geldig</span></p>
       <ul>
-        <li>106 verplichte checks, plus optionele</li>
-        <li>Een erkende keurder: ±16 tot 29 uur werk</li>
-        <li>Testen of de app echt werkt: de kritieke functies, foute invoer, rechten</li>
-        <li>14 gerichte aanvalstests en een scan van de draaiende app</li>
-        <li>Rapport voor het management en voor je IT, met bewijs per check</li>
-        <li>Beslissing door een tweede persoon (vier ogen)</li>
-        <li>Scorepagina "Gekeurd", een A is mogelijk</li>
-        <li>Automatische scan bij elke release</li>
+        <li>Ongeveer 100 checks</li>
+        <li>Een keurder werkt er 2 tot 4 dagen aan</li>
+        <li>Hij test of de app doet wat hij belooft</li>
+        <li>14 gerichte aanvalstests</li>
+        <li>Een rapport voor de directie en een voor je IT</li>
+        <li>Een tweede keurder controleert de uitslag</li>
+        <li>Een A is mogelijk</li>
       </ul>
       <a class="knop" href="/contact">Word pilotklant</a>
     </article>
@@ -56,11 +54,10 @@
       <h2 class="mt0">Gekeurd Plus</h2>
       <p class="prijs">vanaf €24.000 <span>per app, 12 maanden geldig</span></p>
       <ul>
-        <li>Alles van niveau 2, met 258 verplichte checks</li>
-        <li>Handmatige pentest op afstand, vanaf 4 dagen, plus hertest, door een pentestbedrijf met het <b>CCV Keurmerk Pentesten</b>; op locatie met een toeslag</li>
-        <li>Steekproef in de code en een interview met het team</li>
-        <li>Dreigingsmodel en architectuur nagekeken</li>
-        <li>Voor aanbestedingen, NIS2-klanten en veel persoonsgegevens</li>
+        <li>Alles van niveau 2, en meer checks</li>
+        <li>Een pentest van minstens 4 dagen, met hertest, door een bedrijf met het <b>CCV Keurmerk Pentesten</b></li>
+        <li>De keurder leest een deel van de code en praat met je team</li>
+        <li>Voor aanbestedingen, klanten onder NIS2 en apps met veel persoonsgegevens</li>
       </ul>
       <a class="knop licht" href="/contact">Plan een gesprek</a>
     </article>
@@ -69,12 +66,11 @@
       <h2 class="mt0">Kritiek</h2>
       <p class="prijs">vanaf €50.000 <span>per app, 12 maanden geldig</span></p>
       <ul>
-        <li>Alles van niveau 3, met 280 verplichte checks</li>
-        <li>Volledige review van de kritieke code</li>
-        <li>Pentest op aanvalsscenario's, vanaf 8 dagen, na elke grote release, door een pentestbedrijf met het <b>CCV Keurmerk Pentesten</b>; op afstand, of op locatie met een toeslag</li>
-        <li>Twee senior keurders, halfjaarlijkse steekproef</li>
-        <li>Versie-abonnement verplicht</li>
-        <li>Voor zorg, overheid, financiële sector (DORA) en hoog-risico-AI</li>
+        <li>Alles van niveau 3, met de strengste eisen</li>
+        <li>De belangrijkste code wordt helemaal nagelezen</li>
+        <li>Een pentest van minstens 8 dagen, na elke grote release</li>
+        <li>Twee ervaren keurders, met een controle elk halfjaar</li>
+        <li>Voor zorg, overheid, banken en verzekeraars, en AI met een hoog risico</li>
       </ul>
       <a class="knop licht" href="/contact">Neem contact op</a>
     </article>
@@ -83,16 +79,16 @@
   <h2>Extra</h2>
   <div class="scroll"><table class="tabel">
     <tbody>
-      <tr><th scope="row">Versie-abonnement</th><td>€149 per app per maand</td><td class="zacht">Automatische check bij elke release, een kwartaalrapport en bewaking van nieuwe lekken.</td></tr>
-      <tr><th scope="row">Herstelpakket "Van G naar C"</th><td>vanaf €2.500</td><td class="zacht">Een partner herstelt de bevindingen tot er geen kritieke of hoge meer zijn: een C, het hoogste wat een zelfscan geeft. Klaar voor een keuring.</td></tr>
+      <tr><th scope="row">Versie-abonnement</th><td>€149 per app per maand</td><td class="zacht">Een check bij elke nieuwe versie, een rapport per kwartaal en een seintje bij nieuwe lekken.</td></tr>
+      <tr><th scope="row">Herstelpakket "Van G naar C"</th><td>vanaf €2.500</td><td class="zacht">Een partner lost de problemen op tot je op een C staat. Daarna ben je klaar voor een keuring.</td></tr>
       <tr><th scope="row">Workshop "Veilig bouwen met AI"</th><td>€1.250 tot €2.500</td><td class="zacht">Voor teams en bureaus die met AI bouwen.</td></tr>
-      <tr><th scope="row">Intake en scoping (niveau 3 en 4)</th><td>€550</td><td class="zacht">Een halve dag: we brengen je app, rollen, koppelingen en risico's in kaart en maken een offerte met de berekening. Het bedrag gaat af van de keuring als je ze bestelt.</td></tr>
-      <tr><th scope="row">Pentest op afstand</th><td>inbegrepen in niveau 3 en 4; los op offerte</td><td class="zacht">Een pentestbedrijf met het CCV Keurmerk Pentesten test je draaiende app via het internet of een beveiligde verbinding. De omvang hangt af van het aantal rollen, koppelingen en endpoints; we leggen de berekening vooraf vast.</td></tr>
-      <tr><th scope="row">Pentest op locatie</th><td>+€350 per pentestdag, plus reis- en verblijfskosten</td><td class="zacht">De pentester werkt bij jou, op een laptop of in een omgeving die jij beheert. Voor wie de app of de code niet via het internet wil laten testen.</td></tr>
-      <tr><th scope="row">Code review bij jou</th><td>reis- en verblijfskosten</td><td class="zacht">Vanaf niveau 3 kijkt de keurder een steekproef van de code na, altijd bij jou: je code verlaat je bedrijf nooit.</td></tr>
+      <tr><th scope="row">Intake en scoping (niveau 3 en 4)</th><td>€550</td><td class="zacht">Een halve dag waarin we je app in kaart brengen en een offerte maken. Bestel je de keuring, dan gaat dit bedrag ervan af.</td></tr>
+      <tr><th scope="row">Pentest op afstand</th><td>inbegrepen in niveau 3 en 4; los op offerte</td><td class="zacht">Een pentester probeert via internet in je app in te breken. Hoe lang dat duurt, hangt af van hoe groot je app is. Dat spreken we vooraf af.</td></tr>
+      <tr><th scope="row">Pentest op locatie</th><td>+€350 per pentestdag, plus reis- en verblijfskosten</td><td class="zacht">De pentester komt bij je langs en werkt op jouw computers.</td></tr>
+      <tr><th scope="row">Code review bij jou</th><td>reis- en verblijfskosten</td><td class="zacht">Vanaf niveau 3 leest de keurder een deel van de code, altijd bij jou.</td></tr>
     </tbody>
   </table></div>
-  <p class="zacht klein mt2">Alle prijzen zijn indicatief en exclusief btw. Ze gelden tijdens de pilots, en hangen af van de omvang van je app. Je krijgt altijd eerst een offerte met de vaste prijs. Wat elke check inhoudt, staat bij <a href="/wat-we-controleren">alle checks</a>.</p>
+  <p class="zacht klein mt2">Alle prijzen zijn exclusief btw en gelden tijdens de pilots. Je krijgt altijd eerst een offerte met een vaste prijs. Wat elke check inhoudt, staat bij <a href="/wat-we-controleren">alle checks</a>.</p>
   {{ m.let_op(DISCLAIMER) }}
 </section>
 {% endblock %}

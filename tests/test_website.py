@@ -16,7 +16,7 @@ import api  # noqa: E402
 c = api.app.test_client()
 paginas = ["/", "/hoe-het-werkt", "/niveaus", "/wat-we-controleren", "/score-uitleg", "/waarom", "/bureaus",
            "/opdrachtgevers", "/vertrouwen", "/framework", "/vragen", "/contact", "/scan", "/rapport/x",
-           "/wat-je-krijgt", "/open-source", "/check/E-05", "/check/W-13", "/voorbeeldrapport", "/voorbeeldrapport/na", "/nieuws", "/cra", "/crosswalk"]
+           "/wat-je-krijgt", "/open-source", "/check/E-05", "/check/W-13", "/voorbeeldrapport", "/voorbeeldrapport/na", "/nieuws", "/cra", "/crosswalk", "/over-ons"]
 links = set()
 for p in paginas:
     r = c.get(p)

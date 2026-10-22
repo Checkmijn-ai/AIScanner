@@ -1,36 +1,36 @@
 {% extends "site/basis.html" %}
 {% import "site/macros.html" as m %}
 {% block inhoud %}
-{% call m.kop("Open source", "Je hoeft ons niet te vertrouwen. Je kunt het nakijken.", "De scanner is open source onder de Europese licentie EUPL-1.2. Iedereen kan lezen wat hij doet, hem zelf draaien en elke dagversie zelf controleren. De lijst van checks is open onder CC BY 4.0.") %}
+{% call m.kop("Open source", "Je hoeft ons niet op ons woord te geloven", "De code van de scanner is openbaar. Iedereen kan lezen wat hij doet en hem zelf gebruiken. De lijst met checks ook.") %}
 <div class="knoppenrij"><a class="knop" href="{{ BRONCODE }}">Broncode op GitHub</a><a class="knop licht" href="/wat-we-controleren">Alle {{ n_checks }} checks</a></div>
 {% endcall %}
 
 <section class="wrap sectie">
   <h2 class="mt0">Wat de scanner doet, stap voor stap</h2>
   <ol class="stappen">
-    <li><span><b>Hij haalt de dagversie op.</b> Eén bestand, <code>checkmijn-JJJJ-MM-DD.pyz</code>, met de scanner, de regels en de lijst van bekende lekken van die dag. Er wordt niets geïnstalleerd.</span></li>
-    <li><span><b>Hij controleert dat het bestand echt van ons komt.</b> Het controlegetal (SHA-256) moet kloppen met het manifest, en het manifest is ondertekend met onze sleutel (Ed25519).</span></li>
-    <li><span><b>Hij scant zonder netwerk.</b> Met <code>--offline</code> maakt de scanner geen enkele verbinding. Hij leest de bestanden van je project en de git-geschiedenis, en verder niets.</span></li>
-    <li><span><b>Hij schrijft het rapport lokaal.</b> In je eigen omgeving: <code>rapport.html</code>, <code>rapport.json</code> en een SBOM. Geheimen worden altijd gemaskeerd.</span></li>
-    <li><span><b>Alleen als jij het wilt, gaat er iets naar buiten.</b> Zie hieronder precies wat.</span></li>
+    <li><span><b>Hij haalt de scanner van vandaag op.</b> Eén bestand met de regels en de lijst met bekende lekken van die dag. Er wordt niets geïnstalleerd.</span></li>
+    <li><span><b>Hij controleert of die echt van ons komt.</b> Elke scanner is ondertekend met onze sleutel.</span></li>
+    <li><span><b>Hij scant zonder internet.</b> Hij leest alleen de bestanden van je project.</span></li>
+    <li><span><b>Hij schrijft het rapport bij jou.</b> Wachtwoorden worden altijd afgeschermd.</span></li>
+    <li><span><b>Er gaat alleen iets naar buiten als jij dat wilt.</b> Hieronder staat precies wat.</span></li>
   </ol>
 
-  <h2>Wat er wel en niet naar buiten gaat</h2>
+  <h2>Wat er naar ons gaat, en wat niet</h2>
   <div class="scroll"><table class="tabel">
-    <thead><tr><th scope="col">Wat</th><th scope="col">Gaat naar CheckMijn.AI?</th><th scope="col">Toelichting</th></tr></thead>
+    <thead><tr><th scope="col">Wat</th><th scope="col">Naar ons?</th><th scope="col">Uitleg</th></tr></thead>
     <tbody>
-      <tr><th scope="row">Je broncode</th><td><b>Nooit</b></td><td class="zacht">De scanner draait bij jou: op je machine of in je eigen GitHub.</td></tr>
-      <tr><th scope="row">Geheimen, wachtwoorden, sleutels</th><td><b>Nooit</b></td><td class="zacht">Ook in het rapport zijn ze gemaskeerd.</td></tr>
-      <tr><th scope="row">Bewijsbestand (<code>bewijs.json</code>)</th><td>Alleen na jouw "ja"</td><td class="zacht">Per check alleen de uitkomst en het aantal bevindingen. Geen code, geen paden, geen bestandsnamen. Nodig voor een scorepagina en badge.</td></tr>
-      <tr><th scope="row">Opgemaakt rapport</th><td>Versleuteld, als je de rapportlink aanzet</td><td class="zacht">Versleuteld met AES-256-GCM vóór het vertrekt. De sleutel zit alleen in jouw link, na het #-teken, en een browser stuurt dat deel nooit naar een server. Wij kunnen het niet lezen. Zonder account wissen we het na 90 dagen.</td></tr>
-      <tr><th scope="row">De letter van je score</th><td>Alleen als <code>meetellen</code> aan staat</td><td class="zacht">Alleen bij scans via GitHub. Alleen de letter (A–G), voor de openbare <a href="/resultaten">resultaten</a>. Geen naam van de repository: per project bewaren we een onomkeerbare code. In ons voorbeeldbestand staat het aan; zet het op "false" om niet mee te tellen.</td></tr>
-      <tr><th scope="row">Je IP-adres</th><td>Alleen kort in het geheugen</td><td class="zacht">Om misbruik te beperken (maximaal aantal aanvragen per uur). We bewaren het niet.</td></tr>
+      <tr><th scope="row">Je broncode</th><td><b>Nooit</b></td><td class="zacht">De scanner draait bij jou.</td></tr>
+      <tr><th scope="row">Geheimen, wachtwoorden, sleutels</th><td><b>Nooit</b></td><td class="zacht">Ook in het rapport zijn ze afgeschermd.</td></tr>
+      <tr><th scope="row">Bewijsbestand (<code>bewijs.json</code>)</th><td>Alleen na jouw "ja"</td><td class="zacht">Per check alleen de uitslag. Geen code en geen bestandsnamen. Dit is nodig voor een scorepagina.</td></tr>
+      <tr><th scope="row">Opgemaakt rapport</th><td>Versleuteld, als je de rapportlink aanzet</td><td class="zacht">Het wordt versleuteld voor het vertrekt. De sleutel zit alleen in jouw link, en die stuurt je browser nooit naar ons. Wij kunnen het dus niet lezen. Na 90 dagen wissen we het.</td></tr>
+      <tr><th scope="row">De letter van je score</th><td>Alleen als <code>meetellen</code> aan staat</td><td class="zacht">Alleen de letter, voor de openbare <a href="/resultaten">resultaten</a>. Niet de naam van je project. Zet het op "false" als je niet wilt meetellen.</td></tr>
+      <tr><th scope="row">Je IP-adres</th><td>Alleen kort in het geheugen</td><td class="zacht">Om misbruik tegen te gaan. We bewaren het niet.</td></tr>
     </tbody>
   </table></div>
 
-  <h2 id="elke-nacht">Elke nacht nagekeken, in het openbaar</h2>
-  <p class="zacht">Of de scanner ook vindt wat hij moet vinden, zie je op de <a href="/testbank">testbank</a>: elke nacht een scan van bewust lekke en schone apps, met wat hij vond, miste en vals meldde.</p>
-  <p class="zacht">Dit beloven is één ding; we laten het ook elke nacht nakijken, in GitHub, op een demo-app vol nepsleutels. Iedereen kan de run en de code van de controle (<a href="{{ BRONCODE }}/blob/main/tools/bewijs_geen_code.py">tools/bewijs_geen_code.py</a>) bekijken.</p>
+  <h2 id="elke-nacht">Elke nacht getest</h2>
+  <p>Beloven is makkelijk. Daarom testen we het elke nacht, in het openbaar, op een demo-app vol nepwachtwoorden. Hieronder de uitslag van de laatste keer. Je kunt de test zelf nalezen in <a href="{{ BRONCODE }}/blob/main/tools/bewijs_geen_code.py">tools/bewijs_geen_code.py</a>.</p>
+  <p class="zacht">Of de scanner ook vindt wat hij moet vinden, zie je op de <a href="/testbank">testbank</a>.</p>
   {% if geen_code %}
   <div class="scroll"><table class="tabel">
     <caption class="sr">Uitkomst van de controle van {{ geen_code.datum[:10] }}</caption>
@@ -42,13 +42,13 @@
   <p class="zacht klein">De eerste uitslag verschijnt hier na de volgende nachtelijke run.</p>
   {% endif %}
 
-  <h2>Controleer de dagversie zelf</h2>
-  <p class="zacht">Elke nacht bouwt GitHub een nieuwe dagversie uit de broncode, in een openbare workflow. Het manifest vermeldt uit welke commit ze gebouwd is.</p>
+  <h2>Zelf nakijken</h2>
+  <p class="zacht">Elke nacht bouwt GitHub een nieuwe scanner uit de openbare code. Voor wie het wil controleren:</p>
   {{ m.code("controle", "# 1. Het manifest en de scanner van vandaag ophalen\ncurl -sO https://checkmijn.ai/latest.json\ncurl -sO https://checkmijn.ai/public-key.pem\ncurl -sO \"$(python3 -c 'import json;print(json.load(open(\"latest.json\"))[\"url\"])')\"\n\n# 2. Het controlegetal vergelijken met het manifest\nsha256sum checkmijn-*.pyz\ngrep sha256 latest.json\n\n# 3. Kijken wat erin zit: het is een gewoon zip-bestand\nunzip -l checkmijn-*.pyz | head -40", "Zelf nakijken (Linux of macOS)") }}
   <p class="zacht klein">De handtekening controleren kan met het script <a href="{{ BRONCODE }}/blob/main/action/scan_ci.py">action/scan_ci.py</a>, dat de GitHub Action ook gebruikt.</p>
 
-  <h2>Waar de code van elke check staat</h2>
-  <p class="zacht">Bij elke check die de scanner automatisch uitvoert, linken we naar de regel code die het doet. Een paar voorbeelden:</p>
+  <h2>De code achter een check</h2>
+  <p class="zacht">Bij elke automatische check staat een link naar de code die hem uitvoert. Een paar voorbeelden:</p>
   <ul>
     {% for cid in ["E-05", "F-01", "B-06", "U-01", "O-04"] %}{% if cid in bron %}
     <li><a href="/check/{{ cid }}">{{ cid }}</a>: <a href="{{ BRONCODE }}/blob/main/{{ bron[cid][0] }}#L{{ bron[cid][1] }}">{{ bron[cid][0] }}</a></li>
@@ -57,19 +57,19 @@
 
   <h2>Waarom open source</h2>
   <div class="rooster-3">
-    <div class="kaart"><h3>Geen zwarte doos</h3><p class="zacht">Een keurmerk dat niemand kan nakijken, verdient geen vertrouwen. Bij ons kan iedereen zien hoe de score tot stand komt.</p></div>
-    <div class="kaart"><h3>Iedereen meet hetzelfde</h3><p class="zacht">Een bouwer, een koper en een keurder gebruiken dezelfde meetlat. Een uitslag is daardoor vergelijkbaar en reproduceerbaar.</p></div>
-    <div class="kaart"><h3>Beter door meer ogen</h3><p class="zacht">Vind je een fout of een gemiste check? Meld het op GitHub. Elke wijziging van de meetlat staat publiek in de changelog.</p></div>
+    <div class="kaart"><h3>Je kunt het controleren</h3><p class="zacht">Een score die niemand kan nakijken, is niet veel waard.</p></div>
+    <div class="kaart"><h3>Iedereen meet hetzelfde</h3><p class="zacht">De bouwer, de koper en de keurder gebruiken dezelfde scanner.</p></div>
+    <div class="kaart"><h3>Meer mensen zien meer</h3><p class="zacht">Zie je een fout of mis je een check? Meld het op GitHub.</p></div>
   </div>
 
   <h2>Waar we wel geld voor vragen</h2>
-  <p class="zacht">De scanner is gratis en blijft gratis. We verdienen aan het <b>uitvoeren</b> van scans en keuringen: een partner die de scan voor je draait en uitlegt, een erkende keurder die meekijkt, een pentester die aanvalt. <a href="/wat-je-krijgt">Bekijk wat je per niveau krijgt</a>.</p>
+  <p class="zacht">De scanner is gratis en blijft gratis. We verdienen aan keuringen en hulp: een keurder die meekijkt, een pentester, een partner die je helpt. <a href="/wat-je-krijgt">Wat het kost</a>.</p>
 
   <h2>Licenties</h2>
   <ul class="zacht">
-    <li><b>Scanner en website:</b> <a href="https://interoperable-europe.ec.europa.eu/collection/eupl/eupl-text-eupl-12">EUPL-1.2</a>. Wie de scanner aanpast en verspreidt of als dienst aanbiedt, deelt die aanpassingen ook.</li>
-    <li><b>Lijst van checks (de norm):</b> CC BY 4.0. Vrij te gebruiken, met bronvermelding.</li>
-    <li><b>Naam en logo CheckMijn.AI:</b> niet vrij. Alleen erkende partners mogen ze gebruiken.</li>
+    <li><b>Scanner en website:</b> <a href="https://interoperable-europe.ec.europa.eu/collection/eupl/eupl-text-eupl-12">EUPL-1.2</a>. Pas je de scanner aan en deel je hem, dan deel je je aanpassingen ook.</li>
+    <li><b>Lijst met checks:</b> CC BY 4.0. Vrij te gebruiken, met vermelding van de bron.</li>
+    <li><b>Naam en logo:</b> niet vrij. Alleen onze partners mogen ze gebruiken.</li>
   </ul>
   <p class="zacht klein">Deze website en de API draaien op onze eigen server bij {{ HOSTING }}.</p>
 </section>
