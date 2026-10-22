@@ -23,7 +23,7 @@ CONTACT = os.environ.get("CHECKMIJN_CONTACT", "hallo@checkmijn.ai")
 TEST = os.environ.get("CHECKMIJN_OMGEVING", "") == "test"
 # Bedrijfsgegevens (E-commercerichtlijn art. 5; onze eigen check O-01). Leeg = de pagina en de link verschijnen nog niet.
 BEDRIJF = {
-    "naam": os.environ.get("BEDRIJF_NAAM", ""),        # statutaire naam, bv. "CheckMijn.AI B.V."
+    "naam": os.environ.get("BEDRIJF_NAAM", "Silbador Commv"),        # statutaire naam, bv. "CheckMijn.AI B.V."
     "adres": os.environ.get("BEDRIJF_ADRES", ""),      # vestigingsadres (geen postbus)
     "kvk": os.environ.get("BEDRIJF_KVK", ""),          # KvK-nummer (of KBO-nummer in België)
     "btw": os.environ.get("BEDRIJF_BTW", ""),          # btw-identificatienummer
@@ -306,6 +306,16 @@ def framework_csv():
 @site.get("/vragen")
 def vragen():
     return pagina("vragen.html", "Veelgestelde vragen", "Antwoorden over code, rapporten, de score en de niveaus.", faq=FAQ)
+
+
+@site.get("/privacy")
+def privacy():
+    return pagina("privacy.html", "Privacyverklaring", "Welke gegevens CheckMijn.AI verwerkt, waarom en hoe lang. Je code komt nooit bij ons.")
+
+
+@site.get("/voorwaarden")
+def voorwaarden():
+    return pagina("voorwaarden.html", "Algemene voorwaarden", "De voorwaarden voor de scan, de scorepagina, de keuring en de pentest.")
 
 
 @site.get("/bedrijfsgegevens")

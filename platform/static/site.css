@@ -529,3 +529,6 @@ html, body { overflow-x: clip; }
 .held .rooster > div, .held-sub .rooster > div { min-width: 0; }
 .nieuwsband-rooster > *, .nieuwsband-items > * { min-width: 0; }
 .nieuwsitem { overflow-wrap: anywhere; }
+.sectie.tekst { max-width: 860px; }
+.sectie.tekst h2 { margin-top: 1.6em; }
+ol.voorwaarden { padding-left: 1.3em; display: grid; gap: 12px; }

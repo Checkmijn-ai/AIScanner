@@ -1,0 +1,21 @@
+{% extends "site/basis.html" %}
+{% import "site/macros.html" as m %}
+{% block inhoud %}
+{{ m.kop("Voorwaarden", "Algemene voorwaarden", "Deze voorwaarden gelden voor de gratis scan, de scorepagina en de betaalde diensten van CheckMijn.AI. Voor een keuring en voor partners komt er een aparte overeenkomst bovenop.") }}
+<section class="wrap sectie tekst">
+  <p class="zacht klein">Versie van 22 oktober 2026. CheckMijn.AI is een dienst van {{ BEDRIJF.naam or "Silbador Commv" }}.</p>
+  <ol class="voorwaarden">
+    <li><b>Wat de scan is.</b> De scanner meet je software met vaste, publieke checks op het moment van de scan. De scanscore is een uitslag van die meting, geen keurmerk, certificaat of garantie dat de software veilig is. Een zelfscan haalt hoogstens een C; A en B zijn er alleen na een keuring door een erkende keurder.</li>
+    <li><b>Je code blijft bij jou.</b> De scanner draait in je eigen omgeving (je GitHub of je eigen machine). Wij ontvangen hoogstens een bewijsbestand zonder code en, als je dat kiest, een versleuteld rapport dat wij niet kunnen lezen.</li>
+    <li><b>Toestemming voor een live-scan.</b> Scan je een draaiende site of app, dan verklaar je dat je eigenaar bent of schriftelijke toestemming hebt van de eigenaar. De live-scan bezoekt alleen publieke adressen van die site en misbruikt niets.</li>
+    <li><b>Scorepagina en badge.</b> Een scorepagina toont de score, de datum, de soort scan en de dekking. Een zelfscan blijft 30 dagen actueel; daarna wordt de badge grijs. Je mag de badge alleen tonen voor de software en de versie die gescand is. Wij mogen een scorepagina offline halen bij misbruik, bijvoorbeeld bij geknoei met het bewijs.</li>
+    <li><b>Keuring.</b> Een keuring (vanaf niveau 2) gebeurt door een erkende keurder, volgens de norm die op dat moment geldt, en is 12 maanden geldig voor de gekeurde versie. Wie je app herstelde of je als klant aanbracht, keurt ze niet. De voorwaarden van de keuring en de prijs staan in de offerte.</li>
+    <li><b>Pentest.</b> Op niveau 3 en 4 voert een pentestbedrijf met het CCV Keurmerk Pentesten de pentest uit, in onderaanneming. Je geeft vooraf schriftelijk toestemming en maakt afspraken over wat getest wordt.</li>
+    <li><b>Prijzen.</b> De prijzen op de site zijn indicatief en exclusief btw. Je krijgt altijd eerst een offerte met een vaste prijs.</li>
+    <li><b>Aansprakelijkheid.</b> We doen ons werk zorgvuldig, maar geen scan of keuring vindt alles. We zijn niet aansprakelijk voor schade door lekken die we niet vonden, of die na de scan ontstaan. Onze aansprakelijkheid is in elk geval beperkt tot het bedrag dat je in de 12 maanden ervoor aan ons betaalde, met een minimum van €500, behalve bij opzet of grove fout.</li>
+    <li><b>Open source.</b> De scanner valt onder de EUPL-1.2 en de norm onder CC BY 4.0. De naam CheckMijn.AI, het logo, de score en de badge mag je alleen gebruiken zoals in deze voorwaarden staat, of met een licentie van ons.</li>
+    <li><b>Wijzigingen.</b> We kunnen deze voorwaarden wijzigen. De versie op het moment van je opdracht geldt voor die opdracht.</li>
+    <li><b>Recht.</b> Op deze voorwaarden is Belgisch recht van toepassing. Geschillen gaan naar de bevoegde rechtbank van de zetel van {{ BEDRIJF.naam or "Silbador Commv" }}.</li>
+  </ol>
+</section>
+{% endblock %}

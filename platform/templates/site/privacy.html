@@ -1,0 +1,39 @@
+{% extends "site/basis.html" %}
+{% import "site/macros.html" as m %}
+{% block inhoud %}
+{{ m.kop("Privacy", "Privacyverklaring", "We verzamelen zo weinig mogelijk. Je code komt nooit bij ons, de site plaatst geen cookies van derden en gebruikt geen trackers.") }}
+<section class="wrap sectie tekst">
+  <p class="zacht klein">Versie van 22 oktober 2026.</p>
+  <h2>Wie we zijn</h2>
+  <p>CheckMijn.AI is een dienst van {{ BEDRIJF.naam or "Silbador Commv" }}{% if BEDRIJF.adres %}, {{ BEDRIJF.adres }}{% endif %}{% if BEDRIJF.kvk %}, ondernemingsnummer {{ BEDRIJF.kvk }}{% endif %}. Vragen over privacy: <a href="mailto:{{ CONTACT }}">{{ CONTACT }}</a>.</p>
+
+  <h2>Wat we verwerken, waarom en hoe lang</h2>
+  <div class="tabel-scroll"><table class="tabel">
+    <caption class="sr">Welke gegevens, waarom en hoe lang</caption>
+    <thead><tr><th scope="col">Wanneer</th><th scope="col">Wat we krijgen</th><th scope="col">Waarom</th><th scope="col">Hoe lang</th></tr></thead>
+    <tbody>
+      <tr><td>Je bezoekt de site</td><td>Je IP-adres, alleen kort in het geheugen, om misbruik te beperken</td><td>Gerechtvaardigd belang: de site veilig en bereikbaar houden</td><td>Niet bewaard</td></tr>
+      <tr><td>Je scant met je AI-agent</td><td>Een sessiecode, zonder IP-adres</td><td>Bewijzen dat de scan nu gedaan wordt</td><td>7 dagen</td></tr>
+      <tr><td>Je vraagt een scorepagina aan</td><td>Het bewijsbestand: per check alleen de uitkomst, de naam van je project, de commit en een controlegetal van je code. Geen code, geen bestanden, geen bevindingen</td><td>Je scorepagina en badge tonen</td><td>Zolang de pagina bestaat; op verzoek verwijderd</td></tr>
+      <tr><td>Je scant via GitHub en kiest een rapportlink</td><td>Het rapport, versleuteld; de sleutel zit alleen in jouw link, wij kunnen het niet lezen. Plus het nummer van je GitHub-repository</td><td>Je rapport via je persoonlijke link tonen</td><td>90 dagen</td></tr>
+      <tr><td>Je laat je score meetellen</td><td>Alleen de letter en een onomkeerbare code van je project, geen naam</td><td>De openbare statistiek op <a href="/resultaten">/resultaten</a></td><td>Zolang de statistiek bestaat</td></tr>
+      <tr><td>Je abonneert je op de nieuwsbrief</td><td>Je e-mailadres, na bevestiging via een link</td><td>Je toestemming</td><td>Tot je je afmeldt (link onder elke nieuwsbrief)</td></tr>
+      <tr><td>Je mailt ons</td><td>Je e-mailadres en wat je schrijft</td><td>Je vraag beantwoorden</td><td>2 jaar</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>Wie het voor ons verwerkt</h2>
+  <ul>
+    <li><b>Hetzner</b> (Duitsland): onze server in Helsinki (Finland, EU). Hier draaien de site, de API en de versleutelde rapporten.</li>
+    <li><b>Brevo</b> (Frankrijk, EU): verstuurt de nieuwsbrief en bewaart alleen het e-mailadres van wie zich aanmeldt.</li>
+    <li><b>Anthropic</b> (VS): maakt korte Nederlandse samenvattingen van openbare nieuwsberichten. Daar gaat alleen openbare tekst uit nieuwsfeeds heen, nooit gegevens van klanten of bezoekers.</li>
+    <li><b>GitHub</b> (VS): bewaart de broncode van de scanner en publiceert de dagversie. Scan je via GitHub, dan gebeurt dat in je eigen GitHub-account, onder de voorwaarden van GitHub.</li>
+  </ul>
+
+  <h2>Je rechten</h2>
+  <p>Je kunt ons vragen welke gegevens we van je hebben, ze laten verbeteren of verwijderen, de verwerking laten beperken of je gegevens meenemen. Je kunt ook bezwaar maken. Mail naar <a href="mailto:{{ CONTACT }}">{{ CONTACT }}</a>; we antwoorden binnen een maand. Ben je het niet met ons eens, dan kun je een klacht indienen bij de Gegevensbeschermingsautoriteit (België) of de Autoriteit Persoonsgegevens (Nederland).</p>
+
+  <h2>Beveiliging</h2>
+  <p>Alles gaat over HTTPS. De server werkt zichzelf elke nacht bij. Rapporten zijn versleuteld met een sleutel die wij niet hebben. Een kwetsbaarheid melden kan via <a href="mailto:security@checkmijn.ai">security@checkmijn.ai</a>. Meer over hoe we werken: <a href="/vertrouwen">Vertrouwen en veiligheid</a>.</p>
+</section>
+{% endblock %}
