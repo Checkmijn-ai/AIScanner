@@ -26,7 +26,7 @@ AI_IMPORT = re.compile(r"""(from\s+['"](openai|@anthropic-ai/sdk|ai|@ai-sdk/[\w-
                        r"""langchain[\w.]*|llama_index|google\.generativeai|google\.genai|ollama|litellm|mistralai|groq|cohere)\b)""", re.M)
 
 
-CODE_ONLY = {"C-01", "E-06"}  # regels over code die draait: een treffer in een tekst tussen aanhalingstekens telt niet
+CODE_ONLY = {"C-01", "E-06", "C-13"}  # regels over code die draait: een treffer in een tekst tussen aanhalingstekens telt niet
 
 
 def in_tekst(line: str, pos: int) -> bool:

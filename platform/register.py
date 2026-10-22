@@ -29,9 +29,10 @@ def main(argv=None) -> int:
     a = p.parse_args(argv)
     c = sqlite3.connect(DB)
     c.row_factory = sqlite3.Row
-    for kolom in ("status TEXT", "status_reden TEXT", "status_op TEXT"):
+    for sql in ("ALTER TABLE scores ADD COLUMN status TEXT", "ALTER TABLE scores ADD COLUMN status_reden TEXT",
+                "ALTER TABLE scores ADD COLUMN status_op TEXT"):
         try:
-            c.execute(f"ALTER TABLE scores ADD COLUMN {kolom}")
+            c.execute(sql)
         except sqlite3.OperationalError:
             pass
     c.execute("CREATE TABLE IF NOT EXISTS register_log (op TEXT, id TEXT, actie TEXT, reden TEXT)")
