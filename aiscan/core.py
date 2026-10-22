@@ -52,6 +52,7 @@ class Result:
     reden: str = ""
     findings: list = field(default_factory=list)
     info: list = field(default_factory=list)  # wat de scan bekeek, voor het rapport
+    onterecht: list = field(default_factory=list)  # (Finding, reden): door de bouwer als onterecht gemeld, telt niet mee
 
     def add(self, f: Finding):
         self.findings.append(f)

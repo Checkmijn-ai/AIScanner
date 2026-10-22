@@ -288,7 +288,8 @@ def rapport_markdown(rap: dict, m: dict, letter: str, historie: list | None = No
         "voor deze hele sessie.\" Verander niets voor de gebruiker \"ja\" zegt.** Daarna vraag je het nooit opnieuw: herstel "
         "alles in één ronde, en na elke nieuwe scan meteen wat er nog echt openstaat. Lees dit bestand na elke scan opnieuw, "
         "niet uit je geheugen. Klopt een bevinding *(nakijken)* niet, verander dan niets om de scanner stil te krijgen: noem ze "
-        "één keer \"onterecht gemeld\" met de reden. Stop als er alleen nog Laag openstaat. Geef zelf geen score of oordeel "
+        "één keer \"onterecht gemeld\" met de reden; mag het van de gebruiker, leg ze dan vast in .checkmijn/onterecht.yml "
+        "(zie checkmijn.ai/scan.md). Stop als er alleen nog Laag openstaat. Geef zelf geen score of oordeel "
         "en wijzig dit bestand niet: het wordt bij elke scan overschreven.",
         "",
         f"**Scanscore: {letter} · ZELFSCAN · {dekking(sc)}** · niveau {s.get('niveau', 1)} · gescande commit `{(s.get('commit') or '')[:12]}` · "
@@ -334,6 +335,15 @@ def rapport_markdown(rap: dict, m: dict, letter: str, historie: list | None = No
             r.append(f"- **{b['ernst']}**{nk} in {waar}: {b['titel']}{bew}")
         if len(c["bevindingen"]) > 50:
             r.append(f"- … en nog {len(c['bevindingen']) - 50} bevinding(en); zie `{RAPPORT_MAP}/rapport.json`.")
+        r.append("")
+    ont = [(c, b) for c in rap["checks"] for b in c.get("onterecht", [])]
+    if ont:
+        r += ["## Onterecht gemeld (telt niet mee)", "",
+              f"Deze meldingen *(nakijken)* staan in `{RAPPORT_MAP}/onterecht.yml` als onterecht, met een reden van de bouwer. "
+              "Ze tellen niet mee voor de score. Alleen een melding *(nakijken)* kan daar staan, nooit een zekere bevinding.", ""]
+        for c, b in ont:
+            waar = f"`{b['bestand']}`" + (f" regel {b['regel']}" if b.get("regel") else "")
+            r.append(f"- {c['id']} in {waar}: {b['titel']} — reden: {b['reden']}")
         r.append("")
     open_ = [c for c in rap["checks"] if c["status"] == "Niet gescand"]
     if open_:

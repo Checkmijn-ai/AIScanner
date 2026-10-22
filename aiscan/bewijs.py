@@ -49,7 +49,7 @@ def maak(proj, results, summary, nonce: str | None):
     for c, r in results:
         zw = max((effectief(f) for f in r.findings), default=None)
         res.append({"id": c["id"], "status": r.status, "zwaarste": NAAM[zw] if zw is not None else None,
-                     "aantal": len(r.findings)})
+                     "aantal": len(r.findings), "onterecht": len(r.onterecht)})
     sc = summary["score"]
     return {
         "formaat": FORMAAT,

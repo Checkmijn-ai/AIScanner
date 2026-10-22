@@ -71,15 +71,63 @@ def run(target: str, niveau: int = 1, url=None, offline=True, github_token=None,
         res.findings = sorted(uniq, key=lambda f: (-ERNST_ORDE.get(f.ernst, 0), f.bestand, f.regel))
         if res.status == "Geen bevinding" and any(f.ernst != "Info" for f in res.findings):
             res.status = "Bevinding"
-        log(f"  {c['id']:5} {res.status:20} {len(res.findings)} bevinding(en)")
         results.append((c, res))
+    toegepast = onterecht_toepassen(proj, results)
+    for c, res in results:
+        log(f"  {c['id']:5} {res.status:20} {len(res.findings)} bevinding(en)")
+    if toegepast:
+        log(f"  {toegepast} melding(en) als onterecht vastgelegd in {ONTERECHT}; ze tellen niet mee en staan apart in het rapport")
     return proj, results
+
+
+ONTERECHT = ".checkmijn/onterecht.yml"
+MAX_ONTERECHT = 50
+
+
+def onterecht_toepassen(proj, results) -> int:
+    """Leest .checkmijn/onterecht.yml van de bouwer. Alleen meldingen 'nakijken' (bevestigen) kunnen onterecht zijn;
+    een zekere bevinding blijft altijd staan. Elke regel vraagt een reden, en alles staat zichtbaar in het rapport.
+
+    - check: U-07
+      bestand: src/i18n/teksten.ts
+      regel: 12            # optioneel; zonder regel geldt het voor alle meldingen van die check in dat bestand
+      reden: HTML komt uit onze eigen vertalingen, niet van gebruikers
+    """
+    pad = Path(proj.root) / ONTERECHT
+    if not pad.is_file():
+        return 0
+    try:
+        lijst = yaml.safe_load(pad.read_text(encoding="utf-8")) or []
+    except yaml.YAMLError:
+        lijst = []
+    if not isinstance(lijst, list):
+        lijst = []
+    regels = []
+    for x in lijst[:MAX_ONTERECHT]:
+        if isinstance(x, dict) and x.get("check") and x.get("bestand") and str(x.get("reden") or "").strip():
+            regels.append((str(x["check"]), str(x["bestand"]).lstrip("./"), int(x.get("regel") or 0), str(x["reden"]).strip()[:300]))
+    n = 0
+    for c, res in results:
+        houden = []
+        for f in res.findings:
+            r = next((r for r in regels if f.bevestigen and r[0] == f.check and r[1] == (f.bestand or "").lstrip("./")
+                      and (not r[2] or r[2] == f.regel)), None)
+            if r:
+                res.onterecht.append((f, r[3]))
+                n += 1
+            else:
+                houden.append(f)
+        res.findings = houden
+        if res.status == "Bevinding" and not any(f.ernst != "Info" for f in res.findings):
+            res.status = "Geen bevinding"
+    return n
 
 
 def summarize(proj, results, meta: dict):
     status = {"Geen bevinding": 0, "Bevinding": 0, "Niet van toepassing": 0, "Niet gescand": 0}
     ernst = {"Kritiek": 0, "Hoog": 0, "Middel": 0, "Laag": 0}
     bevestigen = 0
+    onterecht = sum(len(r.onterecht) for _, r in results)
     for c, r in results:
         status[r.status] = status.get(r.status, 0) + 1
         for f in r.findings:
@@ -107,7 +155,7 @@ def summarize(proj, results, meta: dict):
         "regelset": ruleset_hash(),
         "datum": dt.date.today().isoformat(),
         "commit": proj.git_head(),
-        "status": status, "ernst": ernst, "gescand": gescand, "totaal": len(results), "bevestigen": bevestigen,
+        "status": status, "ernst": ernst, "gescand": gescand, "totaal": len(results), "bevestigen": bevestigen, "onterecht": onterecht,
         "uitslag": "Geen open kritieke of hoge bevindingen" if open_hoog == 0 else f"{open_hoog} kritieke of hoge bevinding(en) open",
         "ai": getattr(proj, "ai", {"gebruikt": None}),
         "wetten": wetten, "normen": normen,
@@ -121,4 +169,5 @@ def to_json(summary, results):
     return {"samenvatting": summary,
             "checks": [{**{k: c[k] for k in ("id", "domein", "scan", "normen", "methode", "ernst")},
                         "status": r.status, "reden": r.reden, "info": r.info, "hint": c.get("hint", ""),
-                        "bevindingen": [to_dict(f) for f in r.findings]} for c, r in results]}
+                        "bevindingen": [to_dict(f) for f in r.findings],
+                        "onterecht": [{**to_dict(f), "reden": reden} for f, reden in r.onterecht]} for c, r in results]}

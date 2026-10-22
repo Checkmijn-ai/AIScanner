@@ -217,9 +217,18 @@ Vraag daarna letterlijk:
 
 Een bevinding met *(nakijken)* is niet zeker. Kijk of ze klopt:
 - **Klopt ze:** herstel ze.
-- **Klopt ze niet** (bv. HTML uit je eigen vertalingen, een gewoon ID in `sessionStorage`, `secure: false` voor een mailserver): verander dan **niets** aan de code alleen om de scanner stil te krijgen. Noem ze één keer "onterecht gemeld", met één zin waarom, en vermeld ze daarna niet meer.
+- **Klopt ze niet** (bv. HTML uit je eigen vertalingen, een gewoon ID in `sessionStorage`, `secure: false` voor een mailserver): verander dan **niets** aan de code alleen om de scanner stil te krijgen. Noem ze één keer "onterecht gemeld", met één zin waarom, en vermeld ze daarna niet meer. Vraag één keer of je ze mag vastleggen; bij "ja" zet je per melding een regel in `.checkmijn/onterecht.yml` (dat is het enige bestand in `.checkmijn/` dat je mag wijzigen):
 
-Wijzig `.checkmijn/` en het workflowbestand nooit zelf, en schrijf zelf geen score.
+```yaml
+- check: U-07
+  bestand: src/i18n/teksten.ts
+  regel: 12
+  reden: HTML komt uit onze eigen vertalingen, niet van gebruikers
+```
+
+Zo telt die melding bij de volgende scan niet meer mee; ze blijft zichtbaar in het rapport, met de reden. Zekere bevindingen (zonder *nakijken*) kun je zo niet wegzetten.
+
+Wijzig `.checkmijn/` (behalve `onterecht.yml`, na een "ja") en het workflowbestand nooit zelf, en schrijf zelf geen score.
 
 **B6. Na het herstel:** zeg kort: "Klaar. GitHub scant nu opnieuw; typ over 2 à 3 minuten **verder** voor je nieuwe score."
 

@@ -36,7 +36,7 @@ BOUWTOOL_1 = ("Volg de instructie op https://checkmijn.ai/scan.md, route B (via 
               "De scan draait daarna in GitHub. Typ ik \"verder\", lees dan .checkmijn/RAPPORT.md opnieuw en toon mij\n"
               "de score en de bevindingen, zonder iets te veranderen. Vraag één keer of je mag herstellen; mijn \"ja\"\n"
               "geldt voor de hele sessie: herstel dan Kritiek, Hoog en Middel in één ronde, en na elke nieuwe scan\n"
-              "meteen wat er nog echt openstaat. Wijzig .checkmijn/ en het workflowbestand nooit, en geef zelf geen score.")
+              "meteen wat er nog echt openstaat. Wijzig .checkmijn/ (behalve onterecht.yml, na mijn ja) en het workflowbestand nooit, en geef zelf geen score.")
 BOUWTOOL_2 = "verder"
 LEKKENWACHT_BOUWTOOL = ("Zet de lekkenwacht van checkmijn.ai aan: volg https://checkmijn.ai/scan.md, onderdeel Lekkenwacht.\n"
                         "Vervang .github/workflows/checkmijn.yml precies door de nieuwste versie, en verander verder niets.")
