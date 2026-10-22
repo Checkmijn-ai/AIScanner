@@ -127,6 +127,9 @@ def main() -> int:
     doel.write_text(json.dumps(uit, indent=1, ensure_ascii=False))
     for c in controles:
         print(("OK   " if c["ok"] else "FOUT ") + c["controle"] + " — " + c["uitleg"])
+    if os.environ.get("GITHUB_ACTIONS"):
+        print(f"::notice title=Bewijs geen code::{'alles in orde' if alles else 'FOUT'}: "
+              + " | ".join(("OK " if c["ok"] else "FOUT ") + c["controle"] for c in controles))
     samen = os.environ.get("GITHUB_STEP_SUMMARY")
     if samen:
         with open(samen, "a") as f:

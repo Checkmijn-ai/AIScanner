@@ -111,6 +111,10 @@ def main() -> int:
     for a in sc:
         for v in a["vals_alarm"]:
             print(f"  VALS? {a['naam']}: {v['check']} {v['ernst']} {v['titel']} ({v['bestand']})")
+    if os.environ.get("GITHUB_ACTIONS"):
+        gemist = [f"{a['naam']}: {x['wat']}" for a in kw for x in a["lekken"] if not x["gevonden"]]
+        print(f"::notice title=Testbank::gevonden {totaal['gevonden']} van {totaal['lekken']}; vals alarm {totaal['vals_alarm']}; "
+              f"fouten {totaal['fouten']}; gemist: {' | '.join(gemist) or 'niets'}")
     samen = os.environ.get("GITHUB_STEP_SUMMARY")
     if samen:
         with open(samen, "a") as f:
