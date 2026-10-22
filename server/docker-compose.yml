@@ -3,8 +3,12 @@
 #   test  → test.checkmijn.ai                                    (code uit /opt/checkmijn-test, tak test)
 #   caddy → HTTPS met automatische certificaten
 # Uitrollen gebeurt vanuit GitHub (workflow "Uitrollen"); met de hand: cd /opt/checkmijn/server && docker compose up -d --build
+x-logs: &logs
+  driver: json-file
+  options: {max-size: "10m", max-file: "3"}   # logs van de containers nooit groter dan 30 MB
 x-app: &app
   restart: unless-stopped
+  logging: *logs
   read_only: true
   tmpfs:
     - /tmp
@@ -42,6 +46,7 @@ services:
   caddy:
     image: caddy:2   # elke zondag de nieuwste 2.x (server/uitrol.sh → checkmijn-vernieuw)
     restart: unless-stopped
+    logging: *logs
     ports:
       - "80:80"
       - "443:443"

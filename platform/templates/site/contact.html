@@ -17,6 +17,7 @@
   </div>
   <p class="mt2">Of mail rechtstreeks naar <a href="mailto:{{ CONTACT }}">{{ CONTACT }}</a>. Vertel wie je bent, welke software het betreft en hoeveel apps.</p>
   <p class="zacht klein">Stuur geen code of bestanden mee: die hebben we niet nodig.</p>
+  {% if BEDRIJF_KLAAR %}<p class="zacht klein">{{ BEDRIJF.naam }} · {{ BEDRIJF.adres }} · KvK {{ BEDRIJF.kvk }} · btw {{ BEDRIJF.btw }} · <a href="/bedrijfsgegevens">bedrijfsgegevens</a></p>{% endif %}
   <h2>Partner worden?</h2>
   <p class="zacht">We zoeken regiopartners in Nederland en Vlaanderen: zwaargewichten met minstens 10 jaar ervaring in de IT, waarvan 5 jaar in cybersecurity. <a href="mailto:{{ CONTACT }}?subject={{ 'CheckMijn.AI: regiopartner'|urlencode }}">Laat het ons weten</a>.</p>
   <h2>Een kwetsbaarheid melden</h2>

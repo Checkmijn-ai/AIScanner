@@ -21,6 +21,15 @@ site = Blueprint("site", __name__, template_folder="templates", static_folder="s
 SITE_URL = os.environ.get("AISCAN_SITE_ORIGIN", "https://checkmijn.ai").rstrip("/")
 CONTACT = os.environ.get("CHECKMIJN_CONTACT", "hallo@checkmijn.ai")
 TEST = os.environ.get("CHECKMIJN_OMGEVING", "") == "test"
+# Bedrijfsgegevens (E-commercerichtlijn art. 5; onze eigen check O-01). Leeg = de pagina en de link verschijnen nog niet.
+BEDRIJF = {
+    "naam": os.environ.get("BEDRIJF_NAAM", ""),        # statutaire naam, bv. "CheckMijn.AI B.V."
+    "adres": os.environ.get("BEDRIJF_ADRES", ""),      # vestigingsadres (geen postbus)
+    "kvk": os.environ.get("BEDRIJF_KVK", ""),          # KvK-nummer (of KBO-nummer in België)
+    "btw": os.environ.get("BEDRIJF_BTW", ""),          # btw-identificatienummer
+    "email": CONTACT,
+}
+BEDRIJF_KLAAR = all(BEDRIJF[k] for k in ("naam", "adres", "kvk", "btw"))
 AGENT_ZIN = "Volg de instructie op checkmijn.ai/scan.md voor dit project."
 BOUWTOOL_1 = ("Volg de instructie op https://checkmijn.ai/scan.md, route B (via GitHub), voor dit project.\n"
               "Maak het bestand .github/workflows/checkmijn.yml precies zoals daar staat, en verander verder niets.\n"
@@ -171,7 +180,7 @@ def workflow() -> str:
 @site.app_context_processor
 def _algemeen():
     return {"NAV": NAV, "DISCLAIMER": DISCLAIMER, "CONTACT": CONTACT, "SITE_URL": SITE_URL, "TEST": TEST,
-            "pad": request.path, "BRONCODE": BRONCODE, "HOSTING": HOSTING, "dagkop": dagkop,
+            "pad": request.path, "BRONCODE": BRONCODE, "BEDRIJF": BEDRIJF, "BEDRIJF_KLAAR": BEDRIJF_KLAAR, "HOSTING": HOSTING, "dagkop": dagkop,
             "nieuws_vers": nieuws_vandaag(), "NB_ACTIEF": _nb_actief(), "getal": getal, "datum_nl": datum_nl}
 
 
@@ -297,6 +306,13 @@ def framework_csv():
 @site.get("/vragen")
 def vragen():
     return pagina("vragen.html", "Veelgestelde vragen", "Antwoorden over code, rapporten, de score en de niveaus.", faq=FAQ)
+
+
+@site.get("/bedrijfsgegevens")
+def bedrijfsgegevens():
+    if not BEDRIJF_KLAAR:
+        abort(404)
+    return pagina("bedrijfsgegevens.html", "Bedrijfsgegevens", "Wie achter CheckMijn.AI zit: naam, adres, KvK- en btw-nummer.")
 
 
 @site.get("/contact")
