@@ -25,6 +25,9 @@ ORDE = {"Kritiek": 4, "Hoog": 3, "Middel": 2, "Laag": 1, "Info": 0}
 NAAM = {4: "Kritiek", 3: "Hoog", 2: "Middel", 1: "Laag", 0: "Info"}
 LETTERS = "ABCDEFG"
 MIN_DEKKING = 0.70
+# Zonder deze checks geen hoogste letter: geheimen in de code (E-05) en pakketten met bekende lekken (F-01).
+KERNCHECKS = ("E-05", "F-01")
+GESCAND = ("Geen bevinding", "Gehaald", "Bevinding")
 HOOGSTE_ZELFSCAN = "C"
 GRENZEN_KEURING = [
     ("A", "geen kritieke of hoge bevindingen, hoogstens 2 scans met een middelzware bevinding"),
@@ -51,6 +54,18 @@ def zelfscan(niveau: int) -> bool:
 
 def grenzen(niveau: int = 1):
     return GRENZEN_ZELFSCAN if zelfscan(niveau) else GRENZEN_KEURING
+
+
+def zonder_kern(letter: str, ontbreekt: list, niveau: int = 1) -> str:
+    """Ontbreekt een kerncheck, dan geen hoogste letter: hoogstens één letter lager."""
+    if not ontbreekt or not letter:
+        return letter
+    plafond = "D" if zelfscan(niveau) else "C"
+    return max(letter, plafond)  # verder in het alfabet = lager
+
+
+def dekking_tekst(dekking) -> str:
+    return f"{round((dekking or 0) * 100)}% gecontroleerd"
 
 
 def letter_uit(k: int, h: int, m: int, niveau: int = 1) -> str:
@@ -102,7 +117,9 @@ def bereken(results, niveau: int = 1, deel: bool | None = None):
     k = sum(1 for v in per_scan.values() if v == 4)
     h = sum(1 for v in per_scan.values() if v == 3)
     m = sum(1 for v in per_scan.values() if v == 2)
-    letter = letter_uit(k, h, m, niveau)
+    status = {c["id"]: r.status for c, r in results}
+    ontbreekt = [x for x in KERNCHECKS if x in status and status[x] not in GESCAND]
+    letter = zonder_kern(letter_uit(k, h, m, niveau), ontbreekt, niveau)
     zelf = zelfscan(niveau)
     begrensd = zelf and letter == HOOGSTE_ZELFSCAN
     toepasselijk = [r for _, r in results if r.status != "Niet van toepassing"]
@@ -121,10 +138,13 @@ def bereken(results, niveau: int = 1, deel: bool | None = None):
         "begrensd_door_niveau": begrensd,
         "zelfscan": zelf,
         "hoogste": HOOGSTE_ZELFSCAN if zelf else "A",
+        "kern_ontbreekt": ontbreekt,
+        "dekking_tekst": dekking_tekst(dekking),
         "scans_kritiek": k, "scans_hoog": h, "scans_middel": m,
         "grenzen": grenzen(niveau),
         "uitleg": (f"{k} scan(s) met een kritieke, {h} met een hoge en {m} met een middelzware bevinding als zwaarste."
                    + (" Een zelfscan haalt hoogstens een C; een keuring gaat tot A." if begrensd else "")
+                   + (f" Geen hoogste letter: de kerncheck(s) {', '.join(ontbreekt)} zijn niet gescand." if ontbreekt else "")
                    + (f" Geen score: maar {len(results)} scans gedraaid, niet de volledige set." if deel else "")
                    + ("" if voldoende or deel else f" Geen score: maar {round(dekking * 100)}% van de scans die van toepassing zijn, "
                       f"is gescand (minimum {round(MIN_DEKKING * 100)}%). Scan met --url en --github-token voor een volledige score.")),
@@ -145,9 +165,12 @@ def uit_bewijs(resultaten: list, niveau: int = 1):
         uniek.setdefault(r.get("id"), r)
     resultaten = list(uniek.values())
     toep = [r for r in resultaten if r.get("status") != "Niet van toepassing"]
-    gescand = [r for r in toep if r.get("status") in ("Geen bevinding", "Gehaald", "Bevinding")]
+    gescand = [r for r in toep if r.get("status") in GESCAND]
     dekking = len(gescand) / len(toep) if toep else 0.0
-    letter = letter_uit(k, h, m, niveau)
+    status = {r.get("id"): r.get("status") for r in resultaten}
+    ontbreekt = [x for x in KERNCHECKS if x in status and status[x] not in GESCAND]
+    letter = zonder_kern(letter_uit(k, h, m, niveau), ontbreekt, niveau)
     return {"letter": letter if dekking >= MIN_DEKKING else None, "dekking": round(dekking, 2),
             "oude_letter": (oude_letter(k, h, m) if dekking >= MIN_DEKKING else None) if zelfscan(niveau) else None,
+            "kern_ontbreekt": ontbreekt, "dekking_tekst": dekking_tekst(dekking),
             "zelfscan": zelfscan(niveau), "scans_kritiek": k, "scans_hoog": h, "scans_middel": m}

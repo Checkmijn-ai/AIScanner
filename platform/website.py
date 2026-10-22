@@ -83,6 +83,12 @@ LEVELS = [
      "aanval": "Pentest op aanvalsscenario's (vanaf 8 dagen), door een CCV-gecertificeerd pentestbedrijf", "hoogste": "A", "geldig": "12 maanden, doorlopend toezicht"},
 ]
 
+ERKEND = ("Een erkende keurder is een IT-securityspecialist die door CheckMijn.AI erkend is: hij volgde onze opleiding, "
+          "slaagde voor het examen, volgt elk jaar bijscholing en werkt volgens ons keurhandboek, met steekproeven op zijn werk. "
+          "Hij keurt nooit een app die hij zelf herstelde of als klant aanbracht, en zijn vergoeding hangt nooit af van de uitslag. "
+          "\"Erkend\" betekent erkend door CheckMijn.AI. Het is (nog) geen accreditatie door een overheidsinstantie zoals de RvA of "
+          "BELAC. Later beheert een onafhankelijke organisatie de erkenning.")
+
 FAQ = [
     ("Krijgen jullie mijn code?", "Nee. De scanner draait in je eigen GitHub of op je eigen machine. Wil je een "
      "scorepagina, dan stuur je alleen een bewijsbestand met per check de uitkomst, zonder code, paden of geheimen."),
@@ -101,6 +107,15 @@ FAQ = [
      "wil, kiest een keuring."),
     ("Is dit een certificaat?", "Nee, het is een onafhankelijke scanscore. Een officieel keurmerk komt er later, via een "
      "onafhankelijke organisatie, met deze scan als basis."),
+    ("Wat is een erkende keurder?", ERKEND),
+    ("Hoe echt is een zelfscan?", "We controleren dat het een echte, ondertekende scanner van die dag was, met een sessiecode "
+     "die maar één keer werkt, en we rekenen de letter zelf na uit de resultaten. De uitvoering zelf zien we niet: wie zijn eigen "
+     "omgeving beheert, kan een uitslag vervalsen. Daarom staat er ZELFSCAN op de badge en gaat de score hoogstens tot C. "
+     "Vanaf niveau 2 draait een erkende keurder de scanner zelf, in jouw omgeving."),
+    ("Wat betekent het percentage naast de letter?", "Hoeveel van de checks die op je app van toepassing zijn, echt gescand is, "
+     "bv. \"C · zelfscan · 74% gecontroleerd\". Zonder URL van je live site kan de scanner bv. de headers en het certificaat niet "
+     "nakijken. Onder 70% komt er geen letter. En zonder de kernchecks (geheimen in de code en pakketten met bekende lekken) "
+     "geen hoogste letter."),
     ("Waarom haalt een zelfscan hoogstens een C?", "Een automatische scan ziet niet alles, en een zelfscan draait op een "
      "machine die wij niet zien. Zo verwart niemand een gratis C met een gekeurde C. Voor een A of B moet een erkende "
      "keurder hebben meegekeken."),
@@ -180,7 +195,7 @@ def workflow() -> str:
 @site.app_context_processor
 def _algemeen():
     return {"NAV": NAV, "DISCLAIMER": DISCLAIMER, "CONTACT": CONTACT, "SITE_URL": SITE_URL, "TEST": TEST,
-            "pad": request.path, "BRONCODE": BRONCODE, "BEDRIJF": BEDRIJF, "BEDRIJF_KLAAR": BEDRIJF_KLAAR, "HOSTING": HOSTING, "dagkop": dagkop,
+            "pad": request.path, "BRONCODE": BRONCODE, "ERKEND": ERKEND, "BEDRIJF": BEDRIJF, "BEDRIJF_KLAAR": BEDRIJF_KLAAR, "HOSTING": HOSTING, "dagkop": dagkop,
             "nieuws_vers": nieuws_vandaag(), "NB_ACTIEF": _nb_actief(), "getal": getal, "datum_nl": datum_nl}
 
 

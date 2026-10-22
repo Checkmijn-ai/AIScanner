@@ -122,7 +122,7 @@ def tool_scan(args):
     n = int(args.get("max_bevindingen") or 30)
     lines = [
         f"# aiscan — {pad.name}",
-        f"Scanscore: **{sc['letter'] or 'geen (te weinig gescand)'}** (zelfscan, niveau 1; hoogstens C, een keuring gaat tot A). {sc['uitleg']}",
+        f"Scanscore: **{sc['letter'] or 'geen (te weinig gescand)'}** (zelfscan, niveau 1, {sc.get('dekking_tekst', '')}; hoogstens C, een keuring gaat tot A). {sc['uitleg']}",
         f"Bevindingen: {summary['ernst']['Kritiek']} kritiek, {summary['ernst']['Hoog']} hoog, {summary['ernst']['Middel']} middel, "
         f"{summary['ernst']['Laag']} laag · {summary['status']['Geen bevinding']} scans zonder bevinding, {summary['status']['Bevinding']} met bevinding, "
         f"{summary['status']['Niet gescand']} niet gescand, {summary['status']['Niet van toepassing']} niet van toepassing.",

@@ -20,4 +20,11 @@ res = [{"id": "A-01", "status": "Bevinding", "zwaarste": "Hoog"}, {"id": "A-01",
        {"id": "A-03", "status": "Geen bevinding", "zwaarste": None}]
 s = uit_bewijs(res)
 assert (s["scans_kritiek"], s["scans_hoog"], s["scans_middel"]) == (1, 1, 0) and s["letter"] == "F" and s["dekking"] == 1.0, s
+# zonder de kernchecks (geheimen, bekende lekken) geen hoogste letter
+schoon = [{"id": f"X-{i:02d}", "status": "Geen bevinding", "zwaarste": None} for i in range(20)]
+kern = [{"id": "E-05", "status": "Geen bevinding", "zwaarste": None}, {"id": "F-01", "status": "Niet gescand", "zwaarste": None}]
+s = uit_bewijs(schoon + kern)
+assert s["letter"] == "D" and s["kern_ontbreekt"] == ["F-01"] and s["dekking_tekst"] == "95% gecontroleerd", s
+kern[1]["status"] = "Geen bevinding"
+assert uit_bewijs(schoon + kern)["letter"] == "C"
 print("ok: score")

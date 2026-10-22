@@ -91,7 +91,7 @@ footer{margin-top:50px;color:var(--muted);font-size:12px;border-top:1px solid va
 <div class="scorebox">
   <div class="scale">{% for L in 'ABCDEFG' %}<span class="l-{{ L }}{% if sc.letter == L %} on{% endif %}{% if sc.zelfscan and L in 'AB' %} dicht{% endif %}"{% if sc.zelfscan and L in 'AB' %} title="Alleen na een keuring"{% endif %}>{{ L }}</span>{% endfor %}</div>
   <div class="scoretext">
-    <div class="big">{% if sc.letter %}Scanscore {{ sc.letter }}{% else %}Geen scanscore{% endif %} · {{ s.soort }}</div>
+    <div class="big">{% if sc.letter %}Scanscore {{ sc.letter }}{% else %}Geen scanscore{% endif %} · {{ s.soort }} · {{ sc.dekking_tekst or ((sc.dekking * 100)|round|int ~ '% gecontroleerd') }}</div>
     <div class="note">{{ sc.uitleg }} Grenzen: zie achteraan. Dit is een score van deze scan, geen keurmerk of certificaat.</div>
   </div>
 </div>

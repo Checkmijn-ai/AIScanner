@@ -337,11 +337,12 @@ def score_json(sid):
 @app.get("/score/<sid>.svg")
 def badge(sid):
     r = _score(sid)
-    return Response(badge_svg(r["letter"], r["soort"], nu().isoformat() > r["geldig_tot"], r["project"], r["aangemaakt"][:10]),
+    dekking = uit_bewijs(json.loads(r["bewijs"]).get("resultaten", []), 1)["dekking"]
+    return Response(badge_svg(r["letter"], r["soort"], nu().isoformat() > r["geldig_tot"], r["project"], r["aangemaakt"][:10], dekking),
                     mimetype="image/svg+xml", headers={"Cache-Control": "max-age=3600"})
 
 
-def badge_svg(letter, soort: str, verlopen: bool, project: str = "", datum: str = "") -> str:
+def badge_svg(letter, soort: str, verlopen: bool, project: str = "", datum: str = "", dekking: float | None = None) -> str:
     """Twee vormen, zodat niemand een zelfscan verwart met een keuring:
     zelfscan = gestippelde rand, letter als omlijning, het woord ZELFSCAN; keuring = volle kleur, gevulde letter."""
     zelf = soort in ("Zelfscan", "Zelfcontrole")
@@ -349,9 +350,10 @@ def badge_svg(letter, soort: str, verlopen: bool, project: str = "", datum: str 
     staat = " · verlopen" if verlopen else ""
     kleur = "#8a94a6" if verlopen or not letter else KLEUR[letter]
     L = html.escape(letter or "–")
-    tekst = woord + staat
+    tekst = woord + (staat or (f" · {round(dekking * 100)}%" if dekking is not None else ""))
     wl, wr = 74, 34 + int(7.6 * len(tekst))
-    titel = html.escape(f"Scanscore {letter or '–'} · {woord.lower()}{staat} · {project} · {datum}")
+    titel = html.escape(f"Scanscore {letter or '–'} · {woord.lower()}{staat}"
+                        + (f" · {round(dekking * 100)}% van de checks gecontroleerd" if dekking is not None else "") + f" · {project} · {datum}")
     kop = (f'<svg xmlns="http://www.w3.org/2000/svg" width="{wl + wr}" height="22" role="img" aria-label="{titel}">'
            f'<title>{titel}</title><rect width="{wl}" height="22" rx="3" fill="#15203a"/>')
     if zelf:
@@ -378,7 +380,7 @@ def pagina(sid):
         dname = cat.get(x["id"], {}).get("domein", x["id"][0])
         d = domeinen.setdefault(dname, {"Geen bevinding": 0, "Bevinding": 0, "Niet van toepassing": 0, "Niet gescand": 0})
         d["Geen bevinding" if x["status"] == "Gehaald" else x["status"]] += 1
-    return render_template("score.html", r=r, b=b, domeinen=sorted(domeinen.items()), kleur=KLEUR,
+    return render_template("score.html", r=r, b=b, domeinen=sorted(domeinen.items()), kleur=KLEUR, eigen=uit_bewijs(b["resultaten"], 1),
                            verlopen=nu().isoformat() > r["geldig_tot"], site=SITE)
 
 

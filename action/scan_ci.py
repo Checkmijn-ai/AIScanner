@@ -291,7 +291,7 @@ def rapport_markdown(rap: dict, m: dict, letter: str, historie: list | None = No
         "één keer \"onterecht gemeld\" met de reden. Stop als er alleen nog Laag openstaat. Geef zelf geen score of oordeel "
         "en wijzig dit bestand niet: het wordt bij elke scan overschreven.",
         "",
-        f"**Scanscore: {letter} · ZELFSCAN** · niveau {s.get('niveau', 1)} · gescande commit `{(s.get('commit') or '')[:12]}` · "
+        f"**Scanscore: {letter} · ZELFSCAN · {dekking(sc)}** · niveau {s.get('niveau', 1)} · gescande commit `{(s.get('commit') or '')[:12]}` · "
         f"dagversie {m['dagversie']}",
         "",
         "Een zelfscan haalt hoogstens een C: zonder kritieke of hoge bevindingen sta je op C. A en B zijn er alleen na een "
@@ -363,6 +363,11 @@ def ongewijzigd_bij_dagscan(rap: dict) -> bool:
 
 # Scanners van vóór 22 oktober 2026 gaven een zelfscan hoogstens een B. De grenzen schoven één letter op.
 OUD_NAAR_NIEUW = {"A": "C", "B": "C", "C": "D", "D": "E", "E": "F", "F": "G", "G": "G"}
+
+
+def dekking(sc: dict) -> str:
+    """Hoeveel van de checks die van toepassing zijn, echt gescand is: altijd naast de letter."""
+    return sc.get("dekking_tekst") or f"{round((sc.get('dekking') or 0) * 100)}% gecontroleerd"
 
 
 def nieuwe_letter(sc: dict) -> str:
@@ -489,7 +494,7 @@ def main() -> int:
     regels = [
         "## checkmijn.ai — scanscore",
         "",
-        f"**Score: {letter} · zelfscan** (hoogstens C; een keuring gaat tot A) · niveau {s.get('niveau', 1)} · dagversie {m['dagversie']} · commit `{(s.get('commit') or '')[:12]}`",
+        f"**Score: {letter} · zelfscan · {dekking(sc)}** (hoogstens C; een keuring gaat tot A) · niveau {s.get('niveau', 1)} · dagversie {m['dagversie']} · commit `{(s.get('commit') or '')[:12]}`",
         "",
         f"{sc.get('uitleg', '')}",
         "",

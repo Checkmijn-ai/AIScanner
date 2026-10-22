@@ -45,7 +45,7 @@ ul{margin:6px 0 0;padding-left:18px}
     <div class="hero" style="margin-top:16px">
       {% if zelf %}<div class="big zelf" style="--letter:{{ kl }};color:{{ kl }}"><span>{{ r.letter or '–' }}</span></div>{% else %}<div class="big" style="background:{{ kl }}">{{ r.letter or '–' }}</div>{% endif %}
       <div>
-        <div>{% if zelf %}<span class="zelfwoord">ZELFSCAN</span>{% else %}<span class="pill">{{ r.soort }}</span>{% endif %} {% if verlopen %}<span class="pill warn">Verlopen</span>{% endif %}</div>
+        <div>{% if zelf %}<span class="zelfwoord">ZELFSCAN</span>{% else %}<span class="pill">{{ r.soort }}</span>{% endif %} <span class="pill">{{ eigen.dekking_tekst }}</span> {% if verlopen %}<span class="pill warn">Verlopen</span>{% endif %}</div>
         <div class="scale" aria-label="Scanscore van A tot G">{% for L in 'ABCDEFG' %}<span style="background:{{ kleur[L] }}" class="{{ 'on' if L == r.letter }}{{ ' dicht' if zelf and L in 'AB' }}"{% if zelf and L in 'AB' %} title="Alleen na een keuring"{% endif %}>{{ L }}</span>{% endfor %}</div>
         <p class="note" style="margin:10px 0 0">{% if zelf %}Een zelfscan haalt hoogstens een C; A en B zijn er alleen na een keuring. {% endif %}{% if r.letter == ('C' if zelf else 'B') %}Geen kritieke of hoge bevindingen op de controles van deze scan.{% elif r.letter %}{{ b.ernst.Kritiek }} kritieke en {{ b.ernst.Hoog }} hoge bevindingen op het moment van de scan.{% else %}Geen score: te weinig controles gescand.{% endif %}</p>
       </div>
@@ -77,7 +77,9 @@ ul{margin:6px 0 0;padding-left:18px}
       <li>De scanner was een gepubliceerde, ondertekende dagversie.</li></ul></div>
     <div><b>Wat ze niet zegt</b>
       <ul><li>Geen keurmerk, certificaat of garantie dat de software veilig is.</li>
-      <li>{% if zelf %}<b>Zelfscan:</b> de eigenaar of zijn AI-agent draaide de scan op een eigen machine. Wij hebben de uitvoering niet zelf gezien.{% else %}Geverifieerde scan.{% endif %}</li>
+      <li>{{ eigen.dekking_tekst|capitalize }}: van de checks die op deze app van toepassing zijn, is dat deel echt gescand. De rest kon de scanner niet nakijken (bv. zonder URL van de live site).</li>
+      {% if eigen.kern_ontbreekt %}<li>Geen hoogste letter: de kerncheck(s) {{ eigen.kern_ontbreekt|join(', ') }} zijn niet gescand.</li>{% endif %}
+      <li>{% if zelf %}<b>Zelfscan:</b> de eigenaar of zijn AI-agent draaide de scan op een eigen machine. We controleren dat het een echte, ondertekende scanner van die dag was, met een sessiecode die maar één keer werkt, en we rekenen de letter zelf na. De uitvoering zelf zien we niet: wie zijn eigen omgeving beheert, kan een uitslag vervalsen. Daarom gaat een zelfscan hoogstens tot C. Vanaf niveau 2 draait een erkende keurder de scanner zelf.{% else %}Geverifieerde scan.{% endif %}</li>
       <li>Geen handmatige pentest en geen oordeel over de organisatie.</li></ul></div>
   </div>
 
