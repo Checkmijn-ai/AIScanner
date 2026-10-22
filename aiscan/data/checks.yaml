@@ -267,7 +267,7 @@
   status: actief
 - id: F-13
   domein: F. Afhankelijkheden en supply chain
-  scan: Indirecte (transitieve) afhankelijkheden worden mee gescand; bij Plus staan ze ook in de SBOM
+  scan: Indirecte (transitieve) afhankelijkheden worden mee gescand; vanaf niveau 2 staan ze ook in de SBOM
   normen: CRA I deel II (1)
   ernst: Hoog
   modus: auto
@@ -275,7 +275,7 @@
   methode: scan
   hint: Commit een lockfile zodat ook indirecte afhankelijkheden vastliggen en gescand kunnen worden.
   sinds: '0.1'
-  versie: 1
+  versie: 2
   status: actief
 - id: G-08
   domein: G. Kwetsbaarheden en updates (CRA)

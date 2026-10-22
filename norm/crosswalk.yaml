@@ -1,0 +1,142 @@
+# Crosswalk: welke controls uit ISO/IEC 27001:2022 bijlage A (en NIS2, BIO2) de keuring dekt, en met welke checks.
+# Zo kan een auditor per control zien wat hij zelf nog moet toetsen.
+#
+# Dekking (altijd voor de gekeurde software en de omgeving waarin ze draait, niet voor de hele organisatie):
+#   volledig     – de checks dekken alle onderdelen van de control voor het product.
+#   gedeeltelijk – de checks dekken een deel; wat ontbreekt staat bij 'buiten'.
+#   niet         – valt buiten de keuring; de organisatie regelt en toont dit zelf.
+# 'Vanaf niveau' rekent de site zelf uit: het laagste niveau waarop de genoemde checks verplicht zijn.
+# De omschrijvingen zijn onze eigen korte samenvattingen, niet de tekst van de norm (die is auteursrechtelijk beschermd).
+# Status: concept, hoort bij keuringsnorm 0.2. Nog niet beoordeeld door een externe auditor.
+versie: "0.1 (concept)"
+stand: "2026-10-22"
+norm: "ISO/IEC 27001:2022 bijlage A (= ISO/IEC 27002:2022)"
+iso27001:
+  # 5. Organisatorische maatregelen
+  - {id: "5.1", titel: "Beleid voor informatiebeveiliging", dekking: niet, checks: [B-01], buiten: "Het algemene beveiligingsbeleid van de organisatie. B-01 dekt alleen het beleid voor AI bij het ontwikkelen."}
+  - {id: "5.2", titel: "Rollen en verantwoordelijkheden", dekking: gedeeltelijk, checks: [Q-01, A-07], buiten: "Rollen buiten het product en de ontwikkeling."}
+  - {id: "5.3", titel: "Functiescheiding", dekking: gedeeltelijk, checks: [B-03, Q-03, R-08, K-01], buiten: "Functiescheiding buiten ontwikkeling en uitrol (bv. financiën, HR)."}
+  - {id: "5.4", titel: "Verantwoordelijkheden van het management", dekking: gedeeltelijk, checks: [Q-06], buiten: "Betrokkenheid van de directie buiten het product."}
+  - {id: "5.5", titel: "Contact met autoriteiten", dekking: gedeeltelijk, checks: [G-07, H-25], buiten: "Contact met autoriteiten buiten meldingen over het product."}
+  - {id: "5.6", titel: "Contact met vakgroepen", dekking: niet, checks: [], buiten: "Lidmaatschap van vakgroepen en informatiedeling."}
+  - {id: "5.7", titel: "Informatie over dreigingen", dekking: gedeeltelijk, checks: [E-12, F-01, G-08], buiten: "Dreigingsinformatie als proces voor de hele organisatie; de keuring dekt dreigingen voor het product en zijn afhankelijkheden."}
+  - {id: "5.8", titel: "Informatiebeveiliging in projecten", dekking: gedeeltelijk, checks: [T-01, T-02, T-04, E-12], buiten: "Projecten buiten de ontwikkeling van het product."}
+  - {id: "5.9", titel: "Inventaris van informatie en bedrijfsmiddelen", dekking: gedeeltelijk, checks: [A-02, A-03, A-04, H-20, I-01, X-01, Y-08, Z-07], buiten: "Bedrijfsmiddelen buiten het product (laptops, kantoortoepassingen)."}
+  - {id: "5.10", titel: "Aanvaardbaar gebruik van informatie en middelen", dekking: gedeeltelijk, checks: [B-01, B-09], buiten: "Regels voor aanvaardbaar gebruik voor alle medewerkers."}
+  - {id: "5.11", titel: "Teruggave van bedrijfsmiddelen", dekking: niet, checks: [], buiten: "Teruggave bij vertrek van medewerkers."}
+  - {id: "5.12", titel: "Classificatie van informatie", dekking: niet, checks: [], buiten: "Classificatieschema. I-01 brengt wel de persoonsgegevens van het product in kaart."}
+  - {id: "5.13", titel: "Labelen van informatie", dekking: niet, checks: [], buiten: "Labelen volgens het classificatieschema."}
+  - {id: "5.14", titel: "Overdracht van informatie", dekking: gedeeltelijk, checks: [P-01, P-08, P-13, Y-02], buiten: "Overdracht buiten de koppelingen van het product (e-mail, papier, mondeling)."}
+  - {id: "5.15", titel: "Toegangsbeveiliging", dekking: gedeeltelijk, checks: [K-07, E-02, W-01, X-04], buiten: "Toegangsbeleid voor de hele organisatie."}
+  - {id: "5.16", titel: "Identiteitsbeheer", dekking: gedeeltelijk, checks: [K-07, R-02, E-16], buiten: "Identiteitsbeheer van medewerkers buiten code en infrastructuur."}
+  - {id: "5.17", titel: "Authenticatie-informatie", dekking: gedeeltelijk, checks: [E-01, E-05, P-02, P-03, W-09], buiten: "Wachtwoordbeleid en uitgifte voor medewerkers in het algemeen."}
+  - {id: "5.18", titel: "Toegangsrechten", dekking: gedeeltelijk, checks: [K-07, R-02], buiten: "Toegangsrechten op systemen buiten het product."}
+  - {id: "5.19", titel: "Beveiliging in relaties met leveranciers", dekking: gedeeltelijk, checks: [Q-05, F-08, X-02], buiten: "Leveranciers buiten het product."}
+  - {id: "5.20", titel: "Beveiliging in overeenkomsten met leveranciers", dekking: gedeeltelijk, checks: [F-08, I-08, H-23, B-09], buiten: "Contracten met leveranciers buiten het product; de inhoud van de contracten zelf."}
+  - {id: "5.21", titel: "Beveiliging in de ICT-toeleveringsketen", dekking: gedeeltelijk, checks: [A-03, B-06, F-01, F-02, F-03, F-04, F-06, F-13, R-05, R-09], buiten: "Hardware en ICT-diensten buiten de softwareketen van het product."}
+  - {id: "5.22", titel: "Bewaken en beoordelen van leveranciersdiensten", dekking: gedeeltelijk, checks: [Q-05, K-20, X-02], buiten: "Leveranciers buiten het product."}
+  - {id: "5.23", titel: "Beveiliging bij gebruik van clouddiensten", dekking: volledig, checks: [X-01, X-02, X-03, X-04, X-05, X-07]}
+  - {id: "5.24", titel: "Voorbereiding op incidentbeheer", dekking: gedeeltelijk, checks: [K-05], buiten: "Incidentbeheer voor de hele organisatie."}
+  - {id: "5.25", titel: "Beoordelen van beveiligingsgebeurtenissen", dekking: gedeeltelijk, checks: [K-11, G-02], buiten: "Gebeurtenissen buiten het product."}
+  - {id: "5.26", titel: "Reageren op incidenten", dekking: gedeeltelijk, checks: [K-05, K-11, G-07], buiten: "Incidenten buiten het product."}
+  - {id: "5.27", titel: "Leren van incidenten", dekking: gedeeltelijk, checks: [T-07], buiten: "Incidenten buiten het product."}
+  - {id: "5.28", titel: "Verzamelen van bewijs", dekking: niet, checks: [], buiten: "Forensische paraatheid: bewijs veilig verzamelen en bewaren bij een incident."}
+  - {id: "5.29", titel: "Beveiliging tijdens een verstoring", dekking: gedeeltelijk, checks: [K-15], buiten: "Bedrijfscontinuïteit buiten het product."}
+  - {id: "5.30", titel: "ICT-gereedheid voor bedrijfscontinuïteit", dekking: volledig, checks: [K-04, K-15, K-16, K-18, K-19, K-20, K-22]}
+  - {id: "5.31", titel: "Wettelijke en contractuele eisen", dekking: gedeeltelijk, checks: [A-08], buiten: "Wetten en contracten buiten het product."}
+  - {id: "5.32", titel: "Intellectuele eigendomsrechten", dekking: volledig, checks: [F-05, B-08, Z-08]}
+  - {id: "5.33", titel: "Bescherming van registraties", dekking: gedeeltelijk, checks: [K-09, D-09, H-14], buiten: "Bedrijfsregistraties buiten het product (boekhouding, personeelsdossiers)."}
+  - {id: "5.34", titel: "Privacy en bescherming van persoonsgegevens", dekking: gedeeltelijk, checks: [I-01, I-02, I-04, I-05, I-07, I-08, I-12, O-03, D-08], buiten: "Privacy-organisatie (verwerkingsregister, FG, verzoeken van betrokkenen): zie module N voor de klant."}
+  - {id: "5.35", titel: "Onafhankelijke beoordeling van informatiebeveiliging", dekking: gedeeltelijk, checks: [D-10, D-13], buiten: "Onafhankelijke beoordeling van het managementsysteem. De keuring zelf is een onafhankelijke beoordeling van het product."}
+  - {id: "5.36", titel: "Naleving van beleid, regels en normen", dekking: niet, checks: [], buiten: "Toezicht op naleving binnen de organisatie."}
+  - {id: "5.37", titel: "Gedocumenteerde bedieningsprocedures", dekking: volledig, checks: [J-02, T-08, Z-01, Z-03]}
+  # 6. Mensgerichte maatregelen
+  - {id: "6.1", titel: "Screening", dekking: niet, checks: [], buiten: "Screening van wie bij productie of klantgegevens kan."}
+  - {id: "6.2", titel: "Arbeidsvoorwaarden", dekking: niet, checks: [], buiten: "Beveiligingsafspraken in arbeidscontracten."}
+  - {id: "6.3", titel: "Bewustwording, opleiding en training", dekking: gedeeltelijk, checks: [Q-07], buiten: "Bewustwording voor medewerkers buiten de ontwikkeling."}
+  - {id: "6.4", titel: "Disciplinaire procedure", dekking: niet, checks: [], buiten: "Disciplinaire procedure."}
+  - {id: "6.5", titel: "Verantwoordelijkheden na beëindiging of wijziging van het dienstverband", dekking: niet, checks: [], buiten: "Afspraken die doorlopen na vertrek. Het intrekken van toegang zit wel in K-07 en R-02."}
+  - {id: "6.6", titel: "Geheimhoudingsovereenkomsten", dekking: niet, checks: [], buiten: "Geheimhouding voor medewerkers en derden."}
+  - {id: "6.7", titel: "Werken op afstand", dekking: niet, checks: [], buiten: "Regels voor thuiswerken en werken onderweg."}
+  - {id: "6.8", titel: "Melden van beveiligingsgebeurtenissen", dekking: gedeeltelijk, checks: [G-01], buiten: "Interne meldroute voor medewerkers. G-01 dekt het melden van kwetsbaarheden door buitenstaanders."}
+  # 7. Fysieke maatregelen. Bij cloudhosting steunt de keuring op het certificaat van de hostingaanbieder (X-02);
+  #    bij eigen servers toetst X-09 de fysieke beveiliging. Kantoren en werkplekken vallen erbuiten.
+  - {id: "7.1", titel: "Fysieke beveiligingszones", dekking: gedeeltelijk, checks: [X-02, X-09], buiten: "Kantoren en andere ruimtes van de organisatie."}
+  - {id: "7.2", titel: "Fysieke toegangsbeveiliging", dekking: gedeeltelijk, checks: [X-02, X-09], buiten: "Kantoren en andere ruimtes van de organisatie."}
+  - {id: "7.3", titel: "Beveiligen van kantoren, ruimtes en faciliteiten", dekking: gedeeltelijk, checks: [X-02, X-09], buiten: "Kantoren en andere ruimtes van de organisatie."}
+  - {id: "7.4", titel: "Bewaken van de fysieke beveiliging", dekking: gedeeltelijk, checks: [X-02, X-09], buiten: "Kantoren en andere ruimtes van de organisatie."}
+  - {id: "7.5", titel: "Bescherming tegen fysieke en omgevingsdreigingen", dekking: gedeeltelijk, checks: [X-02, X-09, X-06], buiten: "Kantoren en andere ruimtes van de organisatie."}
+  - {id: "7.6", titel: "Werken in beveiligde zones", dekking: gedeeltelijk, checks: [X-02, X-09], buiten: "Kantoren en andere ruimtes van de organisatie."}
+  - {id: "7.7", titel: "Clear desk en clear screen", dekking: niet, checks: [], buiten: "Werkplekken van medewerkers."}
+  - {id: "7.8", titel: "Plaatsing en bescherming van apparatuur", dekking: gedeeltelijk, checks: [X-02, X-09], buiten: "Apparatuur buiten het datacenter."}
+  - {id: "7.9", titel: "Beveiliging van middelen buiten het terrein", dekking: niet, checks: [], buiten: "Laptops en andere middelen onderweg."}
+  - {id: "7.10", titel: "Opslagmedia", dekking: niet, checks: [], buiten: "USB-sticks, schijven en andere opslagmedia."}
+  - {id: "7.11", titel: "Nutsvoorzieningen", dekking: gedeeltelijk, checks: [X-02, X-09], buiten: "Kantoren en andere ruimtes van de organisatie."}
+  - {id: "7.12", titel: "Beveiliging van bekabeling", dekking: gedeeltelijk, checks: [X-02, X-09], buiten: "Kantoren en andere ruimtes van de organisatie."}
+  - {id: "7.13", titel: "Onderhoud van apparatuur", dekking: gedeeltelijk, checks: [X-02, X-09], buiten: "Apparatuur buiten het datacenter."}
+  - {id: "7.14", titel: "Veilig verwijderen of hergebruiken van apparatuur", dekking: niet, checks: [], buiten: "Afvoeren van laptops, schijven en andere apparatuur."}
+  # 8. Technologische maatregelen
+  - {id: "8.1", titel: "Eindpuntapparaten van gebruikers", dekking: niet, checks: [], buiten: "Werkplekken van ontwikkelaars en medewerkers: schijfversleuteling, beveiligingssoftware, codeeragents in een afgeschermde omgeving."}
+  - {id: "8.2", titel: "Speciale toegangsrechten", dekking: volledig, checks: [E-01, W-01, W-09, X-04, B-04]}
+  - {id: "8.3", titel: "Beperking van toegang tot informatie", dekking: volledig, checks: [E-02, I-03, W-01, W-03, W-13, P-04]}
+  - {id: "8.4", titel: "Toegang tot broncode", dekking: volledig, checks: [R-01, R-02, R-06, C-20]}
+  - {id: "8.5", titel: "Veilige authenticatie", dekking: volledig, checks: [E-01, E-03, E-09, E-16, P-02, U-03]}
+  - {id: "8.6", titel: "Capaciteitsbeheer", dekking: volledig, checks: [K-12, W-06, X-08]}
+  - {id: "8.7", titel: "Bescherming tegen malware", dekking: gedeeltelijk, checks: [B-06, F-01, F-04, W-03], buiten: "Beveiligingssoftware op werkplekken en servers buiten het product."}
+  - {id: "8.8", titel: "Beheer van technische kwetsbaarheden", dekking: volledig, checks: [F-01, F-02, F-11, F-12, D-10, D-12, G-02, G-03, G-08]}
+  - {id: "8.9", titel: "Configuratiebeheer", dekking: volledig, checks: [E-07, K-06, K-14, W-07, W-08]}
+  - {id: "8.10", titel: "Verwijderen van informatie", dekking: gedeeltelijk, checks: [I-04, I-12, Z-23], buiten: "Aantoonbaar wissen van gegevens op apparatuur en media."}
+  - {id: "8.11", titel: "Maskeren van gegevens", dekking: gedeeltelijk, checks: [D-08], buiten: "Maskeren in productie, bv. in schermen en exports."}
+  - {id: "8.12", titel: "Voorkomen van datalekken", dekking: gedeeltelijk, checks: [E-05, H-04, S-02, U-01, W-12], buiten: "Maatregelen tegen datalekken via e-mail, werkplekken en kantoortoepassingen."}
+  - {id: "8.13", titel: "Back-up van informatie", dekking: volledig, checks: [I-06, K-16, K-18, K-19, W-11]}
+  - {id: "8.14", titel: "Redundantie van informatieverwerkende faciliteiten", dekking: volledig, checks: [X-06]}
+  - {id: "8.15", titel: "Logging", dekking: volledig, checks: [E-13, K-09, K-10, K-13, W-12, X-05]}
+  - {id: "8.16", titel: "Monitoring", dekking: volledig, checks: [E-13, K-03, K-11, W-04]}
+  - {id: "8.17", titel: "Kloksynchronisatie", dekking: volledig, checks: [K-10]}
+  - {id: "8.18", titel: "Gebruik van speciale hulpprogramma's", dekking: niet, checks: [], buiten: "Beheer van hulpprogramma's die beveiliging kunnen omzeilen."}
+  - {id: "8.19", titel: "Software installeren op operationele systemen", dekking: volledig, checks: [K-02, R-09, F-04]}
+  - {id: "8.20", titel: "Netwerkbeveiliging", dekking: volledig, checks: [E-10, E-15, P-10, Y-03, Y-04]}
+  - {id: "8.21", titel: "Beveiliging van netwerkdiensten", dekking: volledig, checks: [Y-01, Y-02, Y-06, P-13]}
+  - {id: "8.22", titel: "Scheiding van netwerken", dekking: volledig, checks: [E-15, K-01]}
+  - {id: "8.23", titel: "Webfilters", dekking: niet, checks: [], buiten: "Filteren van websites voor medewerkers."}
+  - {id: "8.24", titel: "Gebruik van cryptografie", dekking: volledig, checks: [E-06, E-14, P-03, W-10, Y-01, Y-07, Y-08, K-19]}
+  - {id: "8.25", titel: "Veilige ontwikkelcyclus", dekking: volledig, checks: [B-01, B-03, C-15, D-06, T-02, T-09]}
+  - {id: "8.26", titel: "Beveiligingseisen voor applicaties", dekking: volledig, checks: [T-02, D-15, E-12]}
+  - {id: "8.27", titel: "Veilige architectuur en ontwerpprincipes", dekking: volledig, checks: [A-02, E-12, J-03, T-04, Z-10]}
+  - {id: "8.28", titel: "Veilig programmeren", dekking: volledig, checks: [C-01, C-05, C-06, C-17, E-04, H-02, U-07]}
+  - {id: "8.29", titel: "Beveiligingstesten bij ontwikkeling en acceptatie", dekking: volledig, checks: [D-02, D-05, D-06, D-07, D-10, D-13, D-16, T-05]}
+  - {id: "8.30", titel: "Uitbestede ontwikkeling", dekking: gedeeltelijk, checks: [Z-07, Z-08, B-09], buiten: "Beveiligingseisen in het contract met de bouwer. De keuring zelf is wel de controle op wat de bouwer oplevert."}
+  - {id: "8.31", titel: "Scheiding van ontwikkel-, test- en productieomgevingen", dekking: volledig, checks: [K-01, T-05, D-08]}
+  - {id: "8.32", titel: "Wijzigingsbeheer", dekking: volledig, checks: [B-03, K-02, Q-03, R-03, R-04, R-08, R-10]}
+  - {id: "8.33", titel: "Testgegevens", dekking: volledig, checks: [D-08]}
+  - {id: "8.34", titel: "Bescherming van systemen tijdens audits", dekking: niet, checks: [], buiten: "Afspraken over audits op productiesystemen."}
+
+# NIS2-uitvoeringsverordening (EU) 2024/2690, bijlage: per onderdeel de ISO-controls hierboven die erbij horen.
+# De dekking volgt uit die controls; de verordening geldt voor de organisatie, de keuring levert bewijs voor het product.
+nis2:
+  - {id: "1", titel: "Beleid voor de beveiliging van netwerk- en informatiesystemen", iso: ["5.1", "5.2", "5.4"]}
+  - {id: "2", titel: "Risicobeheer", iso: ["5.7", "5.8", "5.35", "5.36"], checks: [Q-02]}
+  - {id: "3", titel: "Incidentbehandeling", iso: ["5.24", "5.25", "5.26", "5.27", "5.28", "6.8", "8.15", "8.16"]}
+  - {id: "4", titel: "Bedrijfscontinuïteit en crisisbeheer", iso: ["5.29", "5.30", "8.13", "8.14"]}
+  - {id: "5", titel: "Beveiliging van de toeleveringsketen", iso: ["5.19", "5.20", "5.21", "5.22", "5.23"]}
+  - {id: "6.1", titel: "Beveiliging bij aanschaf van ICT", iso: ["5.21", "5.23"]}
+  - {id: "6.2", titel: "Veilige ontwikkelcyclus", iso: ["8.25", "8.26", "8.27", "8.28", "8.31", "8.33"]}
+  - {id: "6.3", titel: "Configuratiebeheer", iso: ["8.9"]}
+  - {id: "6.4", titel: "Wijzigingsbeheer, reparatie en onderhoud", iso: ["8.32"]}
+  - {id: "6.5", titel: "Beveiligingstesten", iso: ["8.29"]}
+  - {id: "6.6", titel: "Beheer van beveiligingspatches", iso: ["8.8"], checks: [F-11, F-12]}
+  - {id: "6.7", titel: "Netwerkbeveiliging", iso: ["8.20", "8.21"]}
+  - {id: "6.8", titel: "Netwerksegmentatie", iso: ["8.22"]}
+  - {id: "6.9", titel: "Bescherming tegen kwaadaardige en ongeautoriseerde software", iso: ["8.7", "8.19"]}
+  - {id: "6.10", titel: "Behandeling en openbaarmaking van kwetsbaarheden", iso: ["8.8"], checks: [G-01, G-02, G-06]}
+  - {id: "7", titel: "Beoordelen van de doeltreffendheid van maatregelen", iso: ["5.35", "5.36"], checks: [Q-06]}
+  - {id: "8", titel: "Basispraktijken voor cyberhygiëne en opleiding", iso: ["6.3", "8.1"], checks: [O-06, O-08, Q-07]}
+  - {id: "9", titel: "Cryptografie", iso: ["8.24"]}
+  - {id: "10", titel: "Beveiliging van personeel", iso: ["6.1", "6.2", "6.4", "6.5", "6.6"]}
+  - {id: "11", titel: "Toegangsbeheer", iso: ["5.15", "5.16", "5.17", "5.18", "8.2", "8.3", "8.5"]}
+  - {id: "12", titel: "Beheer van bedrijfsmiddelen", iso: ["5.9", "5.10", "5.11", "5.12", "5.13", "7.10", "7.14"]}
+  - {id: "13", titel: "Fysieke en omgevingsbeveiliging", iso: ["7.1", "7.2", "7.3", "7.4", "7.5", "7.8", "7.11", "7.12"]}
+
+# BIO2 volgt de indeling en nummering van ISO/IEC 27002:2022. De dekking per control is dus die van de ISO-tabel.
+# De aanvullende overheidsmaatregelen van de BIO2 zijn nog niet apart beoordeeld.
+bio2: "Zelfde nummering als ISO/IEC 27002:2022; dekking per control zoals in de ISO-tabel. Overheidsmaatregelen nog niet apart beoordeeld."

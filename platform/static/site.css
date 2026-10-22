@@ -534,3 +534,7 @@ html, body { overflow-x: clip; }
 .sectie.tekst { max-width: 860px; }
 .sectie.tekst h2 { margin-top: 1.6em; }
 ol.voorwaarden { padding-left: 1.3em; display: grid; gap: 12px; }
+/* crosswalk */
+.label.dek-volledig { background: #dff3e4; color: #135c2a; }
+.label.dek-gedeeltelijk { background: #fdf2d0; color: #6b5200; }
+.label.dek-niet { background: var(--vlak); color: var(--zacht); }

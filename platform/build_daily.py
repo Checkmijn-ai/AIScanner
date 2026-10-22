@@ -32,6 +32,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "platform"))
 import catalogus  # noqa: E402
+import yaml  # noqa: E402
 
 VENDOR = ["yaml", "jinja2", "markupsafe", "packaging", "requests", "urllib3", "idna", "certifi", "charset_normalizer"]
 
@@ -224,7 +225,10 @@ def main(argv=None):
     versies_pad = pub / "versies.json"
     versies = json.loads(versies_pad.read_text()) if versies_pad.exists() else {}
     versies[dag] = {"sha256": sha, "bestand": naam, "catalogus_sha256": pub_cat["sha256"], "regelset": regelset,
-                    "checks": [c["id"] for c in pub_cat["checks"] if c["status"] == "actief"], "scanner_versie": __version__}
+                    "checks": [c["id"] for c in pub_cat["checks"] if c["status"] == "actief"], "scanner_versie": __version__,
+                    # Welke versie van elke check en van de norm gold op deze dag: zo toont een scorepagina later precies wat getoetst is.
+                    "checkversies": {c["id"]: c["versie"] for c in pub_cat["checks"] if c["status"] == "actief"},
+                    "normversie": str(yaml.safe_load((ROOT / "norm" / "checks.yaml").read_text(encoding="utf-8"))["versie"])}
     # 7. opruimen
     for oude in sorted(versies)[:-a.bewaar]:
         f = pub / versies[oude]["bestand"]

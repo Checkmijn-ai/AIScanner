@@ -94,7 +94,8 @@ def db():
             CREATE TABLE IF NOT EXISTS tel_dagen (dag TEXT PRIMARY KEY, scans INTEGER DEFAULT 0);
         """)
         for tabel, kolom in (("sessies", "geteld INTEGER DEFAULT 0"), ("tel_projecten", "bron TEXT DEFAULT 'github'"),
-                             ("tel_dagen", "zelf INTEGER DEFAULT 0")):
+                             ("tel_dagen", "zelf INTEGER DEFAULT 0"), ("scores", "status TEXT"), ("scores", "status_reden TEXT"),
+                             ("scores", "status_op TEXT")):
             try:
                 g.db.execute(f"ALTER TABLE {tabel} ADD COLUMN {kolom}")
             except sqlite3.OperationalError:
@@ -308,7 +309,8 @@ def resultaat():
     geldig = nu() + SCORE_GELDIG
     pr = b["project"]
     db().execute("UPDATE sessies SET gebruikt = 1 WHERE nonce = ?", (b["nonce"],))
-    db().execute("INSERT INTO scores VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+    db().execute("INSERT INTO scores (id, aangemaakt, geldig_tot, letter, soort, project, commit_hash, boom, dagversie, databank, bewijs) "
+                 "VALUES (?,?,?,?,?,?,?,?,?,?,?)",
                  (sid, nu().isoformat(timespec="seconds"), geldig.isoformat(timespec="seconds"), eigen["letter"], soort,
                   str(pr.get("naam") or "")[:120], str(pr.get("commit") or "")[:64], str(pr.get("boom_sha256") or "")[:64],
                   dag, str(sc.get("databank") or ""), json.dumps(b)))
@@ -325,13 +327,69 @@ def _score(sid):
     return row
 
 
+def registerstatus(r) -> tuple[str, str]:
+    """Status in het publieke register: (status, uitleg). Ingetrokken of geschorst gaat voor verlopen."""
+    st = r["status"] if "status" in r.keys() else None
+    if st in ("ingetrokken", "geschorst"):
+        return st.capitalize(), (r["status_reden"] or "") + (f" (sinds {r['status_op'][:10]})" if r["status_op"] else "")
+    if nu().isoformat() > r["geldig_tot"]:
+        return "Verlopen", f"De score gold tot {r['geldig_tot'][:10]}. Een nieuwe scan geeft een nieuwe score."
+    return "Geldig", f"Geldig tot {r['geldig_tot'][:10]}."
+
+
+def auditgegevens(r, b) -> dict:
+    """Wat een auditor nodig heeft om de score in zijn dossier op te nemen: status, periode, normversie,
+    versie per check, koppeling met ISO 27001 en wat erbuiten valt."""
+    try:
+        dagv = lees("versies.json").get(r["dagversie"], {})
+    except Exception:  # noqa: BLE001  (dagversie niet bereikbaar: de pagina werkt dan zonder versie per check)
+        dagv = {}
+    cat = {c["id"]: c for c in lees("checks.json")["checks"]}
+    n = _site_mod.norm()
+    normtekst = {c["id"]: c["wat"] for c in n["checks"]}
+    versies = dagv.get("checkversies")
+    status, uitleg = registerstatus(r)
+    checks = []
+    for x in sorted(b["resultaten"], key=lambda x: x["id"]):
+        c = cat.get(x["id"], {})
+        checks.append({"id": x["id"], "wat": c.get("scan", ""), "status": "Geen bevinding" if x["status"] == "Gehaald" else x["status"],
+                       "versie": (versies or {}).get(x["id"], c.get("versie")),
+                       "drempel": "voorstel" if "voorstel" in normtekst.get(x["id"], "").lower() else "vast"})
+    per = {c["id"]: c for c in checks}
+    cw = _site_mod.crosswalk()
+    annex = []
+    for x in cw["iso27001"]:
+        hier = [per[c] for c in x["checks"] if c in per]
+        if not hier:
+            continue
+        st = ("bevinding" if any(c["status"] == "Bevinding" for c in hier)
+              else "geen bevinding" if any(c["status"] == "Geen bevinding" for c in hier) else "niet gescand")
+        annex.append({"id": x["id"], "titel": x["titel"], "dekking": x["dekking"], "checks": [c["id"] for c in hier],
+                      "uitslag": st, "alle_checks": len(x["checks"])})
+    return {
+        "status": status, "status_uitleg": uitleg,
+        "periode": {"van": r["aangemaakt"][:10], "tot": r["aangemaakt"][:10], "soort": "momentopname"},
+        "normversie": dagv.get("normversie") or str(n["versie"]), "normversie_bekend": bool(dagv.get("normversie")),
+        "versie_per_check_bekend": bool(versies),
+        "regelset": (b.get("scanner") or {}).get("regelset") or dagv.get("regelset"),
+        "crosswalkversie": cw["versie"],
+        "checks": checks, "iso27001": annex,
+        "buiten": [{"id": x["id"], "titel": x["titel"]} for x in cw["iso27001"] if x["dekking"] == "niet"],
+    }
+
+
 @app.get("/api/v1/score/<sid>")
 def score_json(sid):
     r = _score(sid)
     b = json.loads(r["bewijs"])
+    a = auditgegevens(r, b)
     return jsonify({"id": r["id"], "score": r["letter"], "soort": r["soort"], "project": r["project"],
                     "commit": r["commit_hash"], "dagversie": r["dagversie"], "databank": r["databank"],
                     "aangemaakt": r["aangemaakt"], "geldig_tot": r["geldig_tot"], "verlopen": nu().isoformat() > r["geldig_tot"],
+                    "status": a["status"], "status_uitleg": a["status_uitleg"], "periode": a["periode"],
+                    "normversie": a["normversie"], "regelset": a["regelset"], "crosswalkversie": a["crosswalkversie"],
+                    "checks": [{k: c[k] for k in ("id", "status", "versie", "drempel")} for c in a["checks"]],
+                    "iso27001": [{k: x[k] for k in ("id", "dekking", "checks", "uitslag")} for x in a["iso27001"]],
                     "ernst": b.get("ernst"), "resultaten": b.get("resultaten")})
 
 
@@ -339,16 +397,19 @@ def score_json(sid):
 def badge(sid):
     r = _score(sid)
     dekking = uit_bewijs(json.loads(r["bewijs"]).get("resultaten", []), 1)["dekking"]
-    return Response(badge_svg(r["letter"], r["soort"], nu().isoformat() > r["geldig_tot"], r["project"], r["aangemaakt"][:10], dekking),
+    status, _ = registerstatus(r)
+    return Response(badge_svg(r["letter"], r["soort"], status != "Geldig", r["project"], r["aangemaakt"][:10], dekking,
+                              staat=status.lower()),
                     mimetype="image/svg+xml", headers={"Cache-Control": "max-age=3600"})
 
 
-def badge_svg(letter, soort: str, verlopen: bool, project: str = "", datum: str = "", dekking: float | None = None) -> str:
+def badge_svg(letter, soort: str, verlopen: bool, project: str = "", datum: str = "", dekking: float | None = None,
+              staat: str = "verlopen") -> str:
     """Twee vormen, zodat niemand een zelfscan verwart met een keuring:
     zelfscan = gestippelde rand, letter als omlijning, het woord ZELFSCAN; keuring = volle kleur, gevulde letter."""
     zelf = soort in ("Zelfscan", "Zelfcontrole")
     woord = "ZELFSCAN" if zelf else "GEKEURD"
-    staat = " · verlopen" if verlopen else ""
+    staat = f" · {staat}" if verlopen else ""
     kleur = "#8a94a6" if verlopen or not letter else KLEUR[letter]
     L = html.escape(letter or "–")
     tekst = woord + (staat or (f" · {round(dekking * 100)}%" if dekking is not None else ""))
@@ -381,8 +442,18 @@ def pagina(sid):
         dname = cat.get(x["id"], {}).get("domein", x["id"][0])
         d = domeinen.setdefault(dname, {"Geen bevinding": 0, "Bevinding": 0, "Niet van toepassing": 0, "Niet gescand": 0})
         d["Geen bevinding" if x["status"] == "Gehaald" else x["status"]] += 1
+    a = auditgegevens(r, b)
     return render_template("score.html", r=r, b=b, domeinen=sorted(domeinen.items()), kleur=KLEUR, eigen=uit_bewijs(b["resultaten"], 1),
-                           verlopen=nu().isoformat() > r["geldig_tot"], site=SITE)
+                           verlopen=a["status"] != "Geldig", site=SITE, a=a)
+
+
+@app.get("/score/<sid>/verklaring")
+def verklaring(sid):
+    """Sjabloon voor een overbruggingsverklaring (bridge letter): de eigenaar verklaart wat er sinds de scan veranderde.
+    CheckMijn.AI geeft deze verklaring niet af; ze is ingevuld met de gegevens van de score."""
+    r = _score(sid)
+    b = json.loads(r["bewijs"])
+    return render_template("verklaring.html", r=r, b=b, a=auditgegevens(r, b), site=SITE, vandaag=nu().date().isoformat())
 
 
 # ------------------------------------------------------------------ versleutelde rapporten

@@ -110,7 +110,26 @@ def test_platform():
             assert b"Scanscore" in opener.open(r["badge"]).read()
             svg = opener.open(r["badge"]).read()
             assert b"ZELFSCAN" in svg and b"stroke-dasharray" in svg
-            assert b"ZELFSCAN" in opener.open(r["pagina"]).read()
+            pag = opener.open(r["pagina"]).read().decode()
+            assert "ZELFSCAN" in pag and "Auditgegevens" in pag and "Momentopname op" in pag and "Valt buiten de scanscore" in pag
+            assert "8.28" in pag and "Geldig" in pag, "koppeling met ISO 27001 en registerstatus op de scorepagina"
+            sj = json.loads(opener.open(r["pagina"].replace("/score/", "/api/v1/score/")).read())
+            assert sj["status"] == "Geldig" and sj["periode"]["soort"] == "momentopname" and sj["checks"] and sj["iso27001"]
+            assert all(c["versie"] for c in sj["checks"]), "versie per check"
+            ver = opener.open(r["pagina"] + "/verklaring").read().decode()
+            assert "Overbruggingsverklaring" in ver and "niet CheckMijn.AI" in ver
+            if os.environ.get("CM_DUMP"):
+                Path(os.environ["CM_DUMP"], "score.html").write_text(pag); Path(os.environ["CM_DUMP"], "verklaring.html").write_text(ver)
+            # register: intrekken met reden, dan toont alles 'Ingetrokken'; herstellen zet het terug
+            reg = [sys.executable, str(ROOT / "platform" / "register.py")]
+            omg = {**os.environ, "AISCAN_DB": str(tmp / "db.sqlite")}
+            assert subprocess.run(reg + ["intrekken", r["id"]], env=omg, capture_output=True).returncode == 1, "reden verplicht"
+            subprocess.run(reg + ["intrekken", r["id"], "--reden", "Test"], env=omg, check=True, capture_output=True)
+            sj = json.loads(opener.open(r["pagina"].replace("/score/", "/api/v1/score/")).read())
+            assert sj["status"] == "Ingetrokken" and "Test" in sj["status_uitleg"]
+            assert b"ingetrokken" in opener.open(r["badge"]).read()
+            subprocess.run(reg + ["herstellen", r["id"]], env=omg, check=True, capture_output=True)
+            assert json.loads(opener.open(r["pagina"].replace("/score/", "/api/v1/score/")).read())["status"] == "Geldig"
         finally:
             web.terminate(); api.terminate()
 

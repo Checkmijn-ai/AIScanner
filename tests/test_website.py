@@ -16,7 +16,7 @@ import api  # noqa: E402
 c = api.app.test_client()
 paginas = ["/", "/hoe-het-werkt", "/niveaus", "/wat-we-controleren", "/score-uitleg", "/waarom", "/bureaus",
            "/opdrachtgevers", "/vertrouwen", "/framework", "/vragen", "/contact", "/scan", "/rapport/x",
-           "/wat-je-krijgt", "/open-source", "/check/E-05", "/check/W-13", "/voorbeeldrapport", "/nieuws", "/cra"]
+           "/wat-je-krijgt", "/open-source", "/check/E-05", "/check/W-13", "/voorbeeldrapport", "/nieuws", "/cra", "/crosswalk"]
 links = set()
 for p in paginas:
     r = c.get(p)
@@ -35,4 +35,7 @@ assert not kapot, kapot
 assert c.get("/bestaat-niet").status_code == 404
 assert "Disallow: /rapport/" in c.get("/robots.txt").get_data(as_text=True)
 assert c.get("/framework.csv").get_data(as_text=True).count("\n") >= 46
+cw = c.get("/crosswalk.csv").get_data(as_text=True)
+assert cw.count("ISO/IEC 27001:2022") == 93, "alle 93 controls van bijlage A"
+assert "8.28" in c.get("/check/C-01").get_data(as_text=True), "checkpagina toont de ISO-controls"
 print(f"ok: website, {len(paginas)} pagina's, {len(links)} interne links")

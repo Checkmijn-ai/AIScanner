@@ -1,0 +1,55 @@
+{% extends "site/basis.html" %}
+{% import "site/macros.html" as m %}
+{% block inhoud %}
+{% call m.kop("Crosswalk", "Wat de keuring dekt, per control", "Een auditor denkt per control: is die gedekt, door welke checks, en wat moet ik zelf nog toetsen? Deze tabel zet alle 93 controls uit ISO/IEC 27001:2022 bijlage A naast onze checks. Ook wat we niet dekken, staat erin.") %}
+<div class="niveautellers">
+  <div><b>{{ cw.tel.volledig }}</b><span class="zacht klein">volledig gedekt voor het product</span></div>
+  <div><b>{{ cw.tel.gedeeltelijk }}</b><span class="zacht klein">gedeeltelijk gedekt</span></div>
+  <div><b>{{ cw.tel.niet }}</b><span class="zacht klein">niet gedekt: de organisatie regelt dit zelf</span></div>
+</div>
+<div class="knoppenrij"><a class="knop licht klein" href="/crosswalk.csv">Als CSV voor je dossier</a><a class="knop licht klein" href="/norm/crosswalk.yaml">Als bestand (YAML)</a><a class="knop licht klein" href="/wat-we-controleren">Alle checks</a></div>
+{% endcall %}
+<section class="wrap sectie">
+  {{ m.let_op("Versie " ~ cw.versie ~ " (stand " ~ datum_nl(cw.stand) ~ "), bij keuringsnorm 0.2. Nog niet beoordeeld door een externe auditor, en de keuring is nog niet geaccrediteerd. Gebruik de tabel om te zien wat er getoetst wordt; of je erop steunt, beslist je auditor.") }}
+  <h2>Hoe je de tabel leest</h2>
+  <ul>
+    <li><b>Volledig:</b> voor de gekeurde software en de omgeving waarin ze draait, dekken de checks alle onderdelen van de control.</li>
+    <li><b>Gedeeltelijk:</b> een deel is gedekt. Wat erbuiten valt, staat in de laatste kolom.</li>
+    <li><b>Niet gedekt:</b> een maatregel van de organisatie (beleid, personeel, kantoren, werkplekken). Die toetst de auditor zelf, of hij steunt op een ISO 27001-certificaat van de organisatie.</li>
+    <li><b>Vanaf niveau:</b> het laagste niveau waarop de genoemde checks verplicht zijn. <b>Zelfscan:</b> de checks die de gratis zelfscan (niveau 1) al automatisch uitvoert. Een zelfscan is een momentopname die de eigenaar zelf draaide.</li>
+  </ul>
+  <p class="zacht klein">De omschrijvingen zijn onze eigen korte samenvattingen, niet de tekst van de norm. De keuring beoordeelt een product, geen managementsysteem: ze vervangt geen ISO 27001-certificering van de organisatie.</p>
+
+  {% for hoofd, naam in [("5", "5. Organisatorische maatregelen"), ("6", "6. Mensgerichte maatregelen"), ("7", "7. Fysieke maatregelen"), ("8", "8. Technologische maatregelen")] %}
+  <h2>{{ naam }}</h2>
+  {% if hoofd == "7" %}<p class="zacht">Bij hosting in de cloud steunt de keuring op het certificaat van de hostingaanbieder (X-02); bij eigen servers toetst X-09 het datacenter. Kantoren en werkplekken vallen erbuiten.</p>{% endif %}
+  <div class="scroll"><table class="tabel">
+    <thead><tr><th scope="col">Control</th><th scope="col">Dekking</th><th scope="col">Checks</th><th scope="col">Vanaf niveau</th><th scope="col">Buiten de keuring</th></tr></thead>
+    <tbody>
+    {% for x in cw.iso27001 if x.id.split('.')[0] == hoofd %}
+      <tr id="iso-{{ x.id }}"><td><b>{{ x.id }}</b> {{ x.titel }}</td>
+        <td><span class="label dek-{{ x.dekking }}">{{ dekking[x.dekking] }}</span></td>
+        <td class="klein">{% for c in x.checks %}<a href="/check/{{ c }}">{{ c }}</a>{% if c in x.zelfscan %}<sup title="Ook in de zelfscan">z</sup>{% endif %}{{ ' ' if not loop.last }}{% else %}–{% endfor %}</td>
+        <td>{{ x.vanaf or '–' }}</td>
+        <td class="zacht klein">{{ x.buiten or '' }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+  {% endfor %}
+  <p class="zacht klein"><sup>z</sup> = deze check voert de zelfscan al automatisch uit.</p>
+
+  <h2 id="nis2">NIS2-uitvoeringsverordening (EU) 2024/2690</h2>
+  <p class="zacht">Per onderdeel van de bijlage de ISO-controls die erbij horen. De verordening geldt voor de organisatie; de keuring levert bewijs voor het product dat die organisatie maakt of inkoopt.</p>
+  <div class="scroll"><table class="tabel">
+    <thead><tr><th scope="col">Onderdeel</th><th scope="col">Dekking</th><th scope="col">ISO-controls</th></tr></thead>
+    <tbody>{% for x in cw.nis2 %}<tr><td><b>{{ x.id }}</b> {{ x.titel }}</td><td><span class="label dek-{{ x.dekking }}">{{ dekking[x.dekking] }}</span></td>
+      <td class="klein">{% for i in x.iso %}<a href="#iso-{{ i }}">{{ i }}</a>{{ ', ' if not loop.last }}{% endfor %}{% if x.checks %} · ook {{ x.checks|join(', ') }}{% endif %}</td></tr>{% endfor %}</tbody>
+  </table></div>
+
+  <h2 id="bio2">BIO2</h2>
+  <p>{{ cw.bio2 }}</p>
+
+  <h2>Wat de klant zelf regelt</h2>
+  <p>Wie de software gebruikt, heeft eigen taken: verwerkingsregister, verwerkersovereenkomst, incidentprocedure, toegang bij de klant. Die staan in de klantmodule N, op de pagina <a href="/wat-we-controleren">Alle checks</a>. Ze maken geen deel uit van de score.</p>
+</section>
+{% endblock %}

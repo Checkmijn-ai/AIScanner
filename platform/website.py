@@ -207,7 +207,7 @@ def pagina(sjabloon: str, titel: str, beschrijving: str, **kw):
 def home():
     return pagina("home.html", "Onafhankelijke controle van software die met AI gebouwd is",
                   "Check je AI-software voor je ze lanceert, koopt of oplevert. Een meetlat, geen mening: 45 vaste "
-                  "checks, Europese normen en een score van A tot G.", nieuws_kort=laatste_nieuws(),
+                  f"checks in de gratis zelfscan, {len(norm()['checks'])} in de volledige norm, Europese normen en een score van A tot G.", nieuws_kort=laatste_nieuws(),
                   teller=(lambda st: st if st.get("scans", 0) >= TOON_TELLER_VANAF else None)(statistiek()),
                   lekken=lekkendatabank())
 
@@ -247,7 +247,8 @@ def check_detail(cid):
         from flask import redirect
         return redirect(url_for("site.check_detail", cid=c["id"]), 301)
     return pagina("check.html", f"{c['id']} · {c['wat'][:60]}", c["wat"], c=c, waarom=WAAROM.get(c["id"][0], ""),
-                  bron=bron_per_check().get(c["id"]), label=NIVEAU_LABEL, levels=LEVELS)
+                  bron=bron_per_check().get(c["id"]), label=NIVEAU_LABEL, levels=LEVELS,
+                  annex=[crosswalk()["per_iso"][i] for i in crosswalk()["per_check"].get(c["id"], [])])
 
 
 @site.get("/open-source")
@@ -304,7 +305,7 @@ def vertrouwen():
 
 @site.get("/framework")
 def framework():
-    return pagina("framework.html", "Gratis framework", "De 45 checks als checklist, CSV of JSON, onder CC BY 4.0.",
+    return pagina("framework.html", "Gratis framework", f"De 45 checks van de zelfscan (niveau 1) als checklist, CSV of JSON, onder CC BY 4.0. De volledige norm telt {len(norm()['checks'])} checks.",
                   checks=checks())
 
 
@@ -379,6 +380,72 @@ def voorbeeldrapport():
 @site.get("/norm/checks.yaml")
 def norm_bestand():
     return send_from_directory(ROOT / "norm", "checks.yaml", mimetype="text/plain; charset=utf-8")
+
+
+# --- Crosswalk naar ISO 27001, NIS2 en BIO2 ------------------------------------------------------------------
+DEKKING = {"volledig": "Volledig", "gedeeltelijk": "Gedeeltelijk", "niet": "Niet gedekt"}
+
+
+@lru_cache(maxsize=1)
+def crosswalk() -> dict:
+    """norm/crosswalk.yaml, aangevuld met wat we uit de checks afleiden: vanaf welk niveau de control gedekt is
+    (het laagste niveau waarop een van de checks verplicht is) en of de zelfscan er al bewijs voor levert."""
+    cw = yaml.safe_load((ROOT / "norm" / "crosswalk.yaml").read_text(encoding="utf-8"))
+    cs = {c["id"]: c for c in norm()["checks"]}
+
+    def vanaf(ids):
+        for i, k in enumerate(("n1", "n2", "n3", "n4"), 1):
+            if any(cs[c]["niveaus"][k] in ("verplicht", "als van toepassing") for c in ids if c in cs):
+                return i
+        return None
+
+    for x in cw["iso27001"]:
+        x["vanaf"] = vanaf(x["checks"]) if x["dekking"] != "niet" else None
+        x["zelfscan"] = [c for c in x["checks"] if c in cs and cs[c]["in_scanner"]
+                         and cs[c]["niveaus"]["n1"] in ("verplicht", "als van toepassing")]
+    per_iso = {x["id"]: x for x in cw["iso27001"]}
+    for x in cw["nis2"]:
+        d = [per_iso[i]["dekking"] for i in x["iso"]]
+        x["dekking"] = "volledig" if set(d) == {"volledig"} else "niet" if set(d) == {"niet"} and not x.get("checks") else "gedeeltelijk"
+        x["alle_checks"] = sorted({c for i in x["iso"] for c in per_iso[i]["checks"]} | set(x.get("checks", [])))
+    tel = {k: sum(1 for x in cw["iso27001"] if x["dekking"] == k) for k in DEKKING}
+    cw["tel"] = tel
+    cw["per_iso"] = per_iso
+    cw["per_check"] = {}
+    for x in cw["iso27001"]:
+        for c in x["checks"]:
+            cw["per_check"].setdefault(c, []).append(x["id"])
+    return cw
+
+
+@site.get("/crosswalk")
+def crosswalk_pagina():
+    return pagina("crosswalk.html", "Crosswalk ISO 27001, NIS2 en BIO2",
+                  "Per control uit ISO/IEC 27001:2022 bijlage A: volledig, gedeeltelijk of niet gedekt door de keuring, "
+                  "met welke checks en vanaf welk niveau. Plus NIS2 (2024/2690) en BIO2.", cw=crosswalk(), dekking=DEKKING)
+
+
+@site.get("/norm/crosswalk.yaml")
+def crosswalk_bestand():
+    return send_from_directory(ROOT / "norm", "crosswalk.yaml", mimetype="text/plain; charset=utf-8")
+
+
+@site.get("/crosswalk.csv")
+def crosswalk_csv():
+    """Voor het dossier van de auditor: één regel per control."""
+    buf = io.StringIO()
+    w = csv.writer(buf, delimiter=";")
+    cw = crosswalk()
+    w.writerow(["Norm", "Control", "Omschrijving (eigen samenvatting)", "Dekking", "Checks", "Vanaf niveau",
+                "Bewijs in zelfscan", "Buiten de keuring", "Crosswalkversie"])
+    for x in cw["iso27001"]:
+        w.writerow(["ISO/IEC 27001:2022 bijlage A", x["id"], x["titel"], DEKKING[x["dekking"]], ", ".join(x["checks"]),
+                    x["vanaf"] or "", ", ".join(x["zelfscan"]), x.get("buiten", ""), cw["versie"]])
+    for x in cw["nis2"]:
+        w.writerow(["NIS2-uitvoeringsverordening 2024/2690", x["id"], x["titel"], DEKKING[x["dekking"]],
+                    ", ".join(x["alle_checks"]), "", "", "Zie ISO " + ", ".join(x["iso"]), cw["versie"]])
+    return Response("﻿" + buf.getvalue(), mimetype="text/csv; charset=utf-8",
+                    headers={"Content-Disposition": 'attachment; filename="checkmijn-crosswalk.csv"'})
 
 
 @site.get("/.well-known/security.txt")
@@ -648,7 +715,7 @@ def robots():
 @site.get("/sitemap.xml")
 def sitemap():
     paden = ["/", "/hoe-het-werkt", "/niveaus", "/wat-we-controleren", "/wat-je-krijgt", "/open-source", "/score-uitleg", "/waarom", "/bureaus",
-             "/opdrachtgevers", "/vertrouwen", "/framework", "/vragen", "/contact", "/scan", "/nieuws", "/nieuwsbrief", "/resultaten", "/cra"]
+             "/opdrachtgevers", "/vertrouwen", "/framework", "/vragen", "/contact", "/scan", "/nieuws", "/nieuwsbrief", "/resultaten", "/cra", "/crosswalk"]
     xml = ('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
            + "".join(f"  <url><loc>{SITE_URL}{p}</loc></url>\n" for p in paden)
            + "".join(f"  <url><loc>{SITE_URL}/check/{c['id']}</loc></url>\n" for c in norm()["checks"]) + "</urlset>\n")
