@@ -1,0 +1,50 @@
+# Scant de scanner en checkmijn.ai met zichzelf: de code van deze repository plus de live site.
+# Het rapport komt als artifact bij de run; de samenvatting als melding.
+name: Eigen scan
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "Live site"
+        default: "https://checkmijn.ai"
+permissions:
+  contents: read
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt "cryptography>=42"
+      - name: Scannen
+        env:
+          GH_TOKEN: ${{ github.token }}
+          URL: ${{ inputs.url }}
+        run: |
+          python -m aiscan . --url "$URL" --github-token "$GH_TOKEN" --klant "CheckMijn.AI" --app "checkmijn.ai" \
+            --scope "broncode van de scanner en de site; live site $URL" --out uit || true
+          python - <<'PY'
+          import json
+          d = json.load(open("uit/rapport.json"))
+          s = d["samenvatting"]
+          print(f"::notice title=Eigen scan::Score {s['score']['letter']} · {round(s['score']['dekking']*100)}% gecontroleerd · "
+                f"Kritiek {s['ernst']['Kritiek']} · Hoog {s['ernst']['Hoog']} · Middel {s['ernst']['Middel']} · Laag {s['ernst']['Laag']}")
+          regels = []
+          for c in d["checks"]:
+              for f in c["bevindingen"]:
+                  if f["ernst"] in ("Kritiek", "Hoog", "Middel"):
+                      regels.append(f"{f['ernst']} {c['id']}{' (nakijken)' if f['bevestigen'] else ''}: {f['titel'][:90]} [{f.get('bestand','')}:{f.get('regel','')}]")
+          for i in range(0, len(regels), 12):
+              print("::notice title=Bevindingen " + str(i // 12 + 1) + "::" + " | ".join(regels[i:i + 12])[:3800])
+          ng = [f"{c['id']}: {c['reden'][:70]}" for c in d["checks"] if c["status"] == "Niet gescand"]
+          print("::notice title=Niet gescand::" + " | ".join(ng)[:3800])
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: eigen-scan
+          path: uit/
