@@ -1,10 +1,10 @@
 # Zet de versies van alle Python-afhankelijkheden vast, met hashes (requirements.txt, requirements-server.txt, uv.lock).
-# De bestanden komen als artifact bij de run; daarna in de repository zetten.
+# De bestanden komen op de branch 'vastgezet' (alleen die branch; daarna gewoon samenvoegen via test).
 name: Afhankelijkheden vastzetten
 on:
   workflow_dispatch: {}
 permissions:
-  contents: read
+  contents: write   # alleen om de branch 'vastgezet' te pushen
 jobs:
   vastzetten:
     runs-on: ubuntu-latest
@@ -20,10 +20,11 @@ jobs:
           uv pip compile requirements-server.in --universal --python-version 3.12 --generate-hashes -o requirements-server.txt
           uv lock
           echo "::notice title=Vastgezet::$(grep -E '^[a-z]' requirements-server.txt | tr '\n' ' ')"
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
-        with:
-          name: vastgezet
-          path: |
-            requirements.txt
-            requirements-server.txt
-            uv.lock
+      - name: Op de branch 'vastgezet' zetten
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B vastgezet
+          git add requirements.txt requirements-server.txt uv.lock
+          git commit -m "Afhankelijkheden vastgezet met hashes" || echo "niets veranderd"
+          git push -f origin vastgezet
