@@ -531,3 +531,6 @@ html, body { overflow-x: clip; }
 .nieuwsitem { overflow-wrap: anywhere; }
 .beginstappen { margin: 8px 0 20px; padding-left: 1.3em; display: grid; gap: 10px; }
 .beginstappen li::marker { font-weight: 700; color: var(--turq-d); }
+.sectie.tekst { max-width: 860px; }
+.sectie.tekst h2 { margin-top: 1.6em; }
+ol.voorwaarden { padding-left: 1.3em; display: grid; gap: 12px; }
