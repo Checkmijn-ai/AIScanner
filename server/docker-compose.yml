@@ -31,6 +31,7 @@ services:
       AISCAN_SITE: https://api.checkmijn.ai
       AISCAN_SITE_ORIGIN: https://checkmijn.ai
       CHECKMIJN_OMGEVING: live
+      CHECKMIJN_BINNENKORT: "1"   # wachtpagina tot alles juridisch nagekeken is; weghalen om de site weer te tonen
   test:
     <<: *app
     build:
