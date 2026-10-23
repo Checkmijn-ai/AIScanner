@@ -1,5 +1,5 @@
-versie: 0.2 (concept)
-stand: '2026-10-21'
+versie: 0.3 (concept)
+stand: '2026-10-23'
 licentie: CC BY 4.0
 checks:
 - id: A-01
@@ -1228,7 +1228,7 @@ checks:
   domein: H. AI in het product
   wat: Prompt injection getest, direct en indirect (via documenten, webpagina's, toolresultaten)
   hoe: scan + aanvalstest
-  normen: LLM01; OWASP AISVS; ETSI EN 304 223
+  normen: LLM01; OWASP AISVS; ETSI EN 304 223; ISO/IEC TR 24028
   niveaus:
     n1: niet
     n2: verplicht
@@ -1267,7 +1267,7 @@ checks:
   domein: H. AI in het product
   wat: 'Geen lekken: geen geheimen in de systeemprompt, gegevens van klanten gescheiden in zoek- en vectoropslag'
   hoe: scan + aanvalstest
-  normen: LLM02, LLM07, LLM08
+  normen: LLM02, LLM07, LLM08; ISO/IEC TR 24028
   niveaus:
     n1: niet
     n2: verplicht
@@ -1303,7 +1303,7 @@ checks:
   domein: H. AI in het product
   wat: Kwaliteit gemeten met een testset van verwachte antwoorden; regressietest bij elke modelwissel
   hoe: document + keurder
-  normen: ISO/IEC 25059; ISO/IEC TR 29119-11
+  normen: ISO/IEC 25059; ISO/IEC TR 29119-11; ISO/IEC TR 24028; ISO/IEC 23053
   niveaus:
     n1: niet
     n2: niet
@@ -1354,7 +1354,7 @@ checks:
   domein: H. AI in het product
   wat: 'Bij eigen training of finetuning: herkomst van de data, rechten en persoonsgegevens gedocumenteerd'
   hoe: document
-  normen: ISO/IEC 42001 bijlage A; AI Act art. 10
+  normen: ISO/IEC 42001 bijlage A; AI Act art. 10; ISO/IEC 23053
   niveaus:
     n1: niet
     n2: niet
@@ -1366,7 +1366,7 @@ checks:
   domein: H. AI in het product
   wat: 'Agents: bescherming tegen vergiftigd geheugen en context, veilige communicatie tussen agents, een noodstop'
   hoe: keurder + pentest
-  normen: ASI06, ASI07, ASI10
+  normen: ASI06, ASI07, ASI10; ISO/IEC TR 24028
   niveaus:
     n1: niet
     n2: niet
@@ -1376,9 +1376,9 @@ checks:
   status: actief
 - id: H-13
   domein: H. AI in het product
-  wat: 'AI-kaart, publiek: per AI-functie wat ze doet, welke beslissingen of adviezen ze geeft, welke gegevens ze gebruikt, aanbieder en model, bekende beperkingen en foutsoorten'
+  wat: 'AI-kaart, publiek: per AI-functie wat ze doet, welke beslissingen of adviezen ze geeft, welke gegevens ze gebruikt, aanbieder en model, bekende beperkingen en foutsoorten, onbedoeld gebruik, en wie door de AI geraakt wordt (gebruikers, klanten, derden)'
   hoe: document
-  normen: AI Act art. 13, 50; ISO/IEC 42001; ISO/IEC 22989
+  normen: AI Act art. 13, 50; ISO/IEC 42001; ISO/IEC 22989; ISO/IEC 42005 6.3, 6.7
   niveaus:
     n1: niet
     n2: niet
@@ -1403,7 +1403,7 @@ checks:
   domein: H. AI in het product
   wat: 'Vieroogenprincipe: beslissingen met rechtsgevolg of grote financiële gevolgen worden door een mens bevestigd voor ze uitgevoerd worden; ook de bevestiging wordt gelogd'
   hoe: keurder
-  normen: AI Act art. 14; AVG art. 22
+  normen: AI Act art. 14; AVG art. 22; ISO/IEC TR 24028
   niveaus:
     n1: niet
     n2: niet
@@ -1427,7 +1427,7 @@ checks:
   domein: H. AI in het product
   wat: 'AI in productie bewaakt: foutpercentage, klachten, afwijkingen in de invoer en hoe vaak mensen de AI overrulen (te vaak of nooit is een signaal)'
   hoe: scan + document
-  normen: AI Act art. 72; ISO/IEC 42001
+  normen: AI Act art. 72; ISO/IEC 42001; ISO/IEC TR 24028
   niveaus:
     n1: niet
     n2: optioneel
@@ -1439,7 +1439,7 @@ checks:
   domein: H. AI in het product
   wat: Getest op oneerlijke uitkomsten (bias) bij beslissingen over personen, met vastgelegde testset en uitslag
   hoe: document + keurder
-  normen: AI Act art. 10, 15; ISO/IEC TR 24027
+  normen: AI Act art. 10, 15; ISO/IEC TR 24027; ISO/IEC TR 24028
   niveaus:
     n1: niet
     n2: niet
@@ -1451,7 +1451,7 @@ checks:
   domein: H. AI in het product
   wat: 'AI uitschakelbaar: elke AI-functie kan apart uitgezet worden en de app blijft dan bruikbaar of valt veilig terug'
   hoe: keurder
-  normen: AI Act art. 14(4)(e); ISO/IEC 25010:2023
+  normen: AI Act art. 14(4)(e); ISO/IEC 25010:2023; ISO/IEC TR 24028
   niveaus:
     n1: niet
     n2: niet
@@ -1464,7 +1464,7 @@ checks:
   wat: 'Herkomst van modellen (AI-BOM): modellen en datasets in een machineleesbare lijst met herkomst, licentie en hash of handtekening; modelbestanden in een veilig formaat, geen uitvoerbare formaten
     uit onbekende bron'
   hoe: scan + document
-  normen: OWASP LLM03; CycloneDX ML-BOM; ISO/IEC 42001
+  normen: OWASP LLM03; CycloneDX ML-BOM; ISO/IEC 42001; ISO/IEC TR 24028; ISO/IEC 23053
   niveaus:
     n1: niet
     n2: verplicht
@@ -1532,6 +1532,45 @@ checks:
     n4: als van toepassing
   in_scanner: false
   status: actief
+- id: H-26
+  domein: H. AI in het product
+  wat: 'AI-impactbeoordeling: per AI-systeem een beoordeling met de onderdelen van ISO/IEC 42005 hoofdstuk 6 (doel, beoogd en onbedoeld gebruik, gegevens, model, omgeving, wie geraakt wordt, voordelen en schade, falen en misbruik, maatregelen), goedgekeurd en opnieuw beoordeeld bij een ander model of ander gebruik'
+  hoe: document + keurder
+  normen: ISO/IEC 42005; ISO/IEC 42001 6.1.4; AI Act art. 27
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: als van toepassing
+    n4: verplicht
+  ernst: Hoog
+  in_scanner: false
+  status: voorstel
+- id: H-27
+  domein: H. AI in het product
+  wat: 'Robuustheid van eigen modellen: een zelf getraind of bijgesteld model is getest met gerichte, misleidende invoer (kleine aanpassingen die het model doen falen), met vastgelegde uitslag'
+  hoe: test + keurder
+  normen: ISO/IEC TR 24028; ISO/IEC 23053
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Middel
+  in_scanner: false
+  status: voorstel
+- id: H-28
+  domein: H. AI in het product
+  wat: 'Bescherming tegen het stelen van een model: een eigen model achter een API heeft limieten en bewaking tegen massaal bevragen om het na te bouwen'
+  hoe: document + test
+  normen: ISO/IEC TR 24028
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Middel
+  in_scanner: false
+  status: voorstel
 - id: I-01
   domein: I. Data en privacy
   wat: 'Overzicht van de gegevens: welke persoonsgegevens, waar opgeslagen, hoe lang en waarvoor'

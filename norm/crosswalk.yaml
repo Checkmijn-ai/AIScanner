@@ -8,8 +8,8 @@
 # 'Vanaf niveau' rekent de site zelf uit: het laagste niveau waarop de genoemde checks verplicht zijn.
 # De omschrijvingen zijn onze eigen korte samenvattingen, niet de tekst van de norm (die is auteursrechtelijk beschermd).
 # Status: concept, hoort bij keuringsnorm 0.2. Nog niet beoordeeld door een externe auditor.
-versie: "0.1 (concept)"
-stand: "2026-10-22"
+versie: "0.2 (concept)"
+stand: "2026-10-23"
 norm: "ISO/IEC 27001:2022 bijlage A (= ISO/IEC 27002:2022)"
 iso27001:
   # 5. Organisatorische maatregelen
@@ -136,6 +136,18 @@ nis2:
   - {id: "11", titel: "Toegangsbeheer", iso: ["5.15", "5.16", "5.17", "5.18", "8.2", "8.3", "8.5"]}
   - {id: "12", titel: "Beheer van bedrijfsmiddelen", iso: ["5.9", "5.10", "5.11", "5.12", "5.13", "7.10", "7.14"]}
   - {id: "13", titel: "Fysieke en omgevingsbeveiliging", iso: ["7.1", "7.2", "7.3", "7.4", "7.5", "7.8", "7.11", "7.12"]}
+
+# ISO/IEC 42005:2025 (impactbeoordeling van een AI-systeem): per onderdeel welke checks het dekken. Nummers en eigen
+# korte omschrijvingen, niet de tekst van de norm.
+iso42005:
+  - {id: "5", titel: "Het proces: timing, verantwoordelijken, drempels, goedkeuring, herbeoordeling", dekking: gedeeltelijk, checks: [H-26, Q-01, Q-02, H-10, H-06], buiten: "Het proces van de hele organisatie; de keuring toetst het alleen voor dit product."}
+  - {id: "6.3", titel: "Het AI-systeem: beschrijving, doel, beoogd en onbedoeld gebruik", dekking: volledig, checks: [A-09, A-04, H-13, H-09, H-26]}
+  - {id: "6.4", titel: "Gegevens en hun kwaliteit", dekking: gedeeltelijk, checks: [H-11, H-20, I-01, H-26], buiten: "Datakwaliteit toetsen we alleen bij zelf getrainde modellen."}
+  - {id: "6.5", titel: "Algoritme en model", dekking: volledig, checks: [H-06, H-07, H-20]}
+  - {id: "6.6", titel: "De omgeving waarin het systeem draait", dekking: gedeeltelijk, checks: [X-01, I-05, H-26], buiten: "Talen en complexiteit van de omgeving alleen zoals beschreven in H-26."}
+  - {id: "6.7", titel: "Wie geraakt wordt", dekking: volledig, checks: [H-13, H-16, H-26]}
+  - {id: "6.8", titel: "Voordelen en schade, falen en voorzienbaar misbruik", dekking: volledig, checks: [H-01, H-18, H-22, H-17, H-26, H-27], buiten: "Gevolgen voor de samenleving alleen zoals beschreven in H-26."}
+  - {id: "6.9", titel: "Maatregelen tegen schade", dekking: volledig, checks: [H-03, H-15, H-19, H-25, H-28]}
 
 # BIO2 volgt de indeling en nummering van ISO/IEC 27002:2022. De dekking per control is dus die van de ISO-tabel.
 # De aanvullende overheidsmaatregelen van de BIO2 zijn nog niet apart beoordeeld.

@@ -37,5 +37,6 @@ assert "Disallow: /rapport/" in c.get("/robots.txt").get_data(as_text=True)
 assert c.get("/framework.csv").get_data(as_text=True).count("\n") >= 46
 cw = c.get("/crosswalk.csv").get_data(as_text=True)
 assert cw.count("ISO/IEC 27001:2022") == 93, "alle 93 controls van bijlage A"
+assert cw.count("ISO/IEC 42005:2025") == 8, "de onderdelen van ISO 42005"
 assert "8.28" in c.get("/check/C-01").get_data(as_text=True), "checkpagina toont de ISO-controls"
 print(f"ok: website, {len(paginas)} pagina's, {len(links)} interne links")

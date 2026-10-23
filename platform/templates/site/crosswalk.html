@@ -1,7 +1,7 @@
 {% extends "site/basis.html" %}
 {% import "site/macros.html" as m %}
 {% block inhoud %}
-{% call m.kop("Crosswalk", "Wat de keuring dekt, per control", "Een auditor denkt per control: is die gedekt, door welke checks, en wat moet ik zelf nog toetsen? Deze tabel zet alle 93 controls uit ISO/IEC 27001:2022 bijlage A naast onze checks. Ook wat we niet dekken, staat erin.") %}
+{% call m.kop("Crosswalk", "Wat de keuring dekt, per control", "Een auditor denkt per control: is die gedekt, door welke checks, en wat moet ik zelf nog toetsen? Deze tabel zet alle 93 controls uit ISO/IEC 27001:2022 bijlage A naast onze checks. Ook wat we niet dekken, staat erin. Verderop: ISO 42005 (de impact van AI op mensen), NIS2 en BIO2.") %}
 <div class="niveautellers">
   <div><b>{{ cw.tel.volledig }}</b><span class="zacht klein">volledig gedekt voor het product</span></div>
   <div><b>{{ cw.tel.gedeeltelijk }}</b><span class="zacht klein">gedeeltelijk gedekt</span></div>
@@ -37,6 +37,14 @@
   </table></div>
   {% endfor %}
   <p class="zacht klein"><sup>z</sup> = deze check voert de zelfscan al automatisch uit.</p>
+
+  <h2 id="iso42005">ISO/IEC 42005: impactbeoordeling van een AI-systeem</h2>
+  <p class="zacht">Wat de keuring toetst van een impactbeoordeling: wat doet de AI met mensen, en wat is eraan gedaan. Alleen voor apps met AI, vooral als die over mensen beslist of adviseert.</p>
+  <div class="scroll"><table class="tabel">
+    <thead><tr><th scope="col">Onderdeel</th><th scope="col">Dekking</th><th scope="col">Checks</th><th scope="col">Vanaf niveau</th><th scope="col">Buiten de keuring</th></tr></thead>
+    <tbody>{% for x in cw.iso42005 %}<tr id="iso42005-{{ x.id }}"><td><b>{{ x.id }}</b> {{ x.titel }}</td><td><span class="label dek-{{ x.dekking }}">{{ dekking[x.dekking] }}</span></td>
+      <td class="klein">{% for c in x.checks %}<a href="/check/{{ c }}">{{ c }}</a>{{ ' ' if not loop.last }}{% endfor %}</td><td>{{ x.vanaf or '–' }}</td><td class="zacht klein">{{ x.buiten or '' }}</td></tr>{% endfor %}</tbody>
+  </table></div>
 
   <h2 id="nis2">NIS2-uitvoeringsverordening (EU) 2024/2690</h2>
   <p class="zacht">Per onderdeel van de bijlage de ISO-controls die erbij horen. De verordening geldt voor de organisatie; de keuring levert bewijs voor het product dat die organisatie maakt of inkoopt.</p>
