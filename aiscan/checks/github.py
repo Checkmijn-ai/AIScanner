@@ -88,10 +88,15 @@ def repo_settings(proj, meta):
             r.status, r.reden = "Niet gescand", f"Repository niet leesbaar met dit token (HTTP {code})."
             return r
         sa = repo.get("security_and_analysis") or {}
-        if (sa.get("secret_scanning") or {}).get("status") != "enabled":
-            r.add(Finding("R-13", meta["ernst"], "Geheimenscanning staat niet aan", f"github.com/{o}/{n}", bevestigen=not sa))
-        if (sa.get("secret_scanning_push_protection") or {}).get("status") != "enabled":
-            r.add(Finding("R-13", "Laag", "Push protection voor geheimen staat niet aan", f"github.com/{o}/{n}", bevestigen=not sa))
+        if not sa:
+            # Dit token mag de beveiligingsinstellingen niet zien (bv. het standaardtoken van GitHub Actions): onbekend, geen bevinding.
+            r.info.append("Of geheimenscanning en push protection aanstaan, kon dit token niet zien. Kijk het na bij "
+                          "Settings → Advanced Security.")
+        else:
+            if (sa.get("secret_scanning") or {}).get("status") != "enabled":
+                r.add(Finding("R-13", meta["ernst"], "Geheimenscanning staat niet aan", f"github.com/{o}/{n}"))
+            if (sa.get("secret_scanning_push_protection") or {}).get("status") != "enabled":
+                r.add(Finding("R-13", "Laag", "Push protection voor geheimen staat niet aan", f"github.com/{o}/{n}"))
         code, _ = _api(proj, f"/repos/{o}/{n}/vulnerability-alerts")
         if code == 404:
             r.add(Finding("R-13", meta["ernst"], "Waarschuwingen voor kwetsbare afhankelijkheden staan niet aan", f"github.com/{o}/{n}"))
