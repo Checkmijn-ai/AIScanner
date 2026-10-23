@@ -21,6 +21,10 @@ site = Blueprint("site", __name__, template_folder="templates", static_folder="s
 SITE_URL = os.environ.get("AISCAN_SITE_ORIGIN", "https://checkmijn.ai").rstrip("/")
 CONTACT = os.environ.get("CHECKMIJN_CONTACT", "hallo@checkmijn.ai")
 TEST = os.environ.get("CHECKMIJN_OMGEVING", "") == "test"
+# "Binnenkort": de site toont alleen een wachtpagina (bv. tot alles juridisch nagekeken is). De API, rapportlinks en
+# scorepagina's blijven werken, zodat bestaande scans in GitHub niet stukgaan. Aan te zetten per omgeving in docker-compose.
+BINNENKORT = os.environ.get("CHECKMIJN_BINNENKORT", "") == "1"
+BINNENKORT_OPEN = {"site.static", "site.favicon", "site.robots", "site.security_txt", "site.rapport"}  # rapport: persoonlijke links blijven werken
 # Bedrijfsgegevens (E-commercerichtlijn art. 5; onze eigen check O-01). Leeg = de pagina en de link verschijnen nog niet.
 BEDRIJF = {
     "naam": os.environ.get("BEDRIJF_NAAM", "Silbador Commv"),        # statutaire naam, bv. "CheckMijn.AI B.V."
@@ -703,8 +707,18 @@ def post_van_de_dag():
                   deel=lambda t: "https://www.linkedin.com/feed/?shareActive=true&text=" + quote(t))
 
 
+@site.before_request
+def _binnenkort():
+    if BINNENKORT and request.endpoint not in BINNENKORT_OPEN:
+        return Response(render_template("site/binnenkort.html"), 200, headers={"X-Robots-Tag": "noindex, nofollow",
+                                                                                 "Cache-Control": "no-store"})
+    return None
+
+
 @site.get("/robots.txt")
 def robots():
+    if BINNENKORT:
+        return Response("User-agent: *\nDisallow: /\n", mimetype="text/plain")
     if TEST:
         # Testomgeving: niet indexeren (elke pagina heeft ook noindex). /nieuws mag gelezen worden om de feeds te controleren.
         return Response("User-agent: *\nAllow: /nieuws\nDisallow: /\n", mimetype="text/plain")
