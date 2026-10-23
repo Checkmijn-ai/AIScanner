@@ -66,7 +66,7 @@ GRADES = [
 
 LEVELS = [
     {"n": 1, "naam": "Basisscan", "status": "Nu, gratis", "voor": "Interne tools, kleine apps, een eerste meting",
-     "wie": "Volledig automatisch", "checks": "46", "werkt": "—", "aanval": "—", "hoogste": "C",
+     "wie": "Volledig automatisch", "checks": str(len([c for c in yaml.safe_load((ROOT / "aiscan" / "data" / "checks.yaml").read_text(encoding="utf-8")) if c.get("status", "actief") == "actief"])), "werkt": "—", "aanval": "—", "hoogste": "C",
      "geldig": "Zolang de scan actueel is"},
     {"n": 2, "naam": "Gekeurd", "status": "In voorbereiding (pilots)", "voor": "De meeste zakelijke apps",
      "wie": "Automatisch + erkende keurder", "checks": "±100, plus checks die je erbij kiest",
@@ -185,7 +185,7 @@ def workflow() -> str:
 @site.app_context_processor
 def _algemeen():
     return {"NAV": NAV, "DISCLAIMER": DISCLAIMER, "CONTACT": CONTACT, "SITE_URL": SITE_URL, "TEST": TEST,
-            "pad": request.path, "BRONCODE": BRONCODE, "ERKEND": ERKEND, "BEDRIJF": BEDRIJF, "BEDRIJF_KLAAR": BEDRIJF_KLAAR, "HOSTING": HOSTING, "dagkop": dagkop,
+            "pad": request.path, "N_ZELFSCAN": len(checks()), "BRONCODE": BRONCODE, "ERKEND": ERKEND, "BEDRIJF": BEDRIJF, "BEDRIJF_KLAAR": BEDRIJF_KLAAR, "HOSTING": HOSTING, "dagkop": dagkop,
             "nieuws_vers": nieuws_vandaag(), "NB_ACTIEF": _nb_actief(), "getal": getal, "datum_nl": datum_nl}
 
 
@@ -196,8 +196,8 @@ def pagina(sjabloon: str, titel: str, beschrijving: str, **kw):
 @site.get("/")
 def home():
     return pagina("home.html", "Onafhankelijke controle van software die met AI gebouwd is",
-                  "Check je AI-software voor je ze lanceert, koopt of oplevert. Een meetlat, geen mening: 46 vaste "
-                  f"checks in de gratis zelfscan, {len(norm()['checks'])} in de volledige norm, Europese normen en een score van A tot G.", nieuws_kort=laatste_nieuws(),
+                  "Is je AI-software veilig? Scan je app gratis, je code blijft bij jou. Je krijgt een score van A tot G en "
+                  "een lijst met wat je moet oplossen. Voor bewijs aan een klant of auditor is er een keuring.", nieuws_kort=laatste_nieuws(),
                   teller=(lambda st: st if st.get("scans", 0) >= TOON_TELLER_VANAF else None)(statistiek()),
                   lekken=lekkendatabank(), n_norm=len(norm()["checks"]))
 
@@ -300,7 +300,7 @@ def vertrouwen():
 
 @site.get("/framework")
 def framework():
-    return pagina("framework.html", "Gratis framework", f"De 46 checks van de zelfscan (niveau 1) als checklist, CSV of JSON, onder CC BY 4.0. De volledige norm telt {len(norm()['checks'])} checks.",
+    return pagina("framework.html", "Gratis framework", f"De {len(checks())} checks van de zelfscan (niveau 1) als checklist, CSV of JSON, onder CC BY 4.0. De volledige norm telt {len(norm()['checks'])} checks.",
                   checks=checks())
 
 

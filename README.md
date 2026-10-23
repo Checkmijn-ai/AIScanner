@@ -29,7 +29,7 @@ De uitslag staat in de samenvatting van de run. Het volledige rapport is een art
 
 | Map | Wat |
 | --- | --- |
-| `aiscan/` | De scanner: 46 checks van niveau 1, regels voor geheimen, lekkenindex (GitHub Advisory Database) |
+| `aiscan/` | De scanner: 47 checks van niveau 1, regels voor geheimen, lekkenindex (GitHub Advisory Database) |
 | `action.yml`, `action/` | De GitHub Action |
 | `voorbeelden/checkmijn.yml` | De workflow om in je project te zetten |
 | `platform/` | Nachtelijke bouw van de dagversie, catalogus van checks, API voor bewijs en scorepagina's |

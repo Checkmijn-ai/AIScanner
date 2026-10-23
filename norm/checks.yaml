@@ -2597,6 +2597,21 @@ checks:
   module: github
   in_scanner: true
   status: actief
+- id: R-14
+  domein: R. Versiebeheer en releases
+  wat: 'OTAP-route: elke wijziging gaat eerst naar een test- of acceptatieomgeving en wordt daar bekeken voor dezelfde versie naar productie gaat; niets rechtstreeks naar productie (afgedwongen met een beveiligde productiebranch)'
+  hoe: scan + keurder
+  normen: ISO/IEC 27002 8.31, 8.32; NIS2 art. 21(2)(e)
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Hoog
+  herstel: Werk met een testbranch die automatisch naar een testomgeving uitrolt, en zet de productiebranch op slot zodat wijzigingen er alleen via een pull request komen, nadat ze op test bekeken zijn.
+  module: ci
+  in_scanner: true
+  status: actief
 - id: S-01
   domein: S. Mobiele apps (module)
   wat: Minimale permissies; elke permissie heeft een reden die de gebruiker te zien krijgt

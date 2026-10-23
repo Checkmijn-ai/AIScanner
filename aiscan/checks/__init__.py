@@ -14,5 +14,5 @@ def check(*ids):
 
 def load_all():
     # importeren registreert de checks
-    from . import supply, secrets, agent, hygiene, ci, code, bundle, live, github, database  # noqa: F401
+    from . import supply, secrets, agent, hygiene, ci, code, bundle, live, github, database, otap  # noqa: F401
     return REGISTRY

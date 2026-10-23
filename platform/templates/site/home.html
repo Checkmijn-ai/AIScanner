@@ -18,7 +18,7 @@
         <div class="balk{% if L == 'C' %} actief{% endif %}{% if L in 'AB' %} keuring{% endif %}"><span class="staaf l-{{ L }} w-{{ L }}">{{ L }}</span><span class="grens">{{ g }}</span>{% if L == 'C' %}<span class="pijl zelf"><span class="omlijnd">C</span>ZELFSCAN</span>{% endif %}</div>
         {% endfor %}
       </div>
-      <div class="voet"><span><b>Zelfscan: tot C. Keuring: tot A.</b></span><span>46 van de {{ n_norm }} checks · 22-10-2026</span></div>
+      <div class="voet"><span><b>Zelfscan: tot C. Keuring: tot A.</b></span><span>{{ N_ZELFSCAN }} van de {{ n_norm }} checks · 22-10-2026</span></div>
     </div>
   </div>
 </div></section>

@@ -56,7 +56,7 @@ TOOLS = [
     {
         "name": "aiscan_scan",
         "title": "AI-code scan",
-        "description": ("Scant een codeproject lokaal op 46 controles voor software die met AI gebouwd is (geheimen, kwetsbare en "
+        "description": ("Scant een codeproject lokaal op 47 controles voor software die met AI gebouwd is (geheimen, kwetsbare en "
                         "verzonnen pakketten, injectie, agentconfiguratie, frontendrisico's …), elk gekoppeld aan een norm of wet. "
                         "Geeft de scanscore A–G, de belangrijkste bevindingen met bestand en regel, en een herstelhint per scan. "
                         "Het netwerk is geblokkeerd: er verlaat geen code de machine. Het rapport (HTML en JSON) komt in .aiscan/ "

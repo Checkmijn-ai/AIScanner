@@ -28,3 +28,4 @@ jobs:
       - run: python tests/test_live.py
       - run: python tests/test_eigen_scan.py
       - run: python tests/test_rls.py
+      - run: python tests/test_otap.py

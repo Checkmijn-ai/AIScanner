@@ -1,6 +1,6 @@
 # aiscan 0.2 — handleiding (concept)
 
-aiscan controleert software die met AI gebouwd is, of AI bevat, op de 46 scans van niveau 1. Elke uitkomst is gekoppeld aan de norm of wet waar de scan uit komt. De scanner werkt met vaste regels, zonder AI in de scan zelf: dezelfde code geeft altijd dezelfde uitkomst.
+aiscan controleert software die met AI gebouwd is, of AI bevat, op de 47 scans van niveau 1. Elke uitkomst is gekoppeld aan de norm of wet waar de scan uit komt. De scanner werkt met vaste regels, zonder AI in de scan zelf: dezelfde code geeft altijd dezelfde uitkomst.
 
 Dit is een werkend concept. Het is bruikbaar voor de eerste betaalde scans, met een analist die de uitkomst naleest. Voor een product dat breed verkocht wordt, moet een ontwikkelaar het afmaken (zie onderaan).
 

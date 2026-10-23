@@ -1,6 +1,6 @@
 # Dekking van de scans — aiscan 0.1 (concept)
 
-Stand 17 oktober 2026 · niveau 1 · 46 scans.
+Stand 17 oktober 2026 · niveau 1 · 47 scans.
 
 | Soort | Aantal | Wat het betekent |
 | --- | --- | --- |

@@ -34,7 +34,7 @@ NORMEN = [
 
 def load_checks(niveau: int):
     cs = yaml.safe_load((DATA / "checks.yaml").read_text())
-    return [c for c in cs if c.get("status", "actief") == "actief"]  # deze versie bevat de 46 scans van niveau 1
+    return [c for c in cs if c.get("status", "actief") == "actief"]  # deze versie bevat de 47 scans van niveau 1
 
 
 def ruleset_hash():
