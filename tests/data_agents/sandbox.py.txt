@@ -1,0 +1,8 @@
+from agents import Agent, function_tool
+from e2b_code_interpreter import Sandbox
+
+@function_tool
+def python(code: str) -> str:
+    """Run code in a sandbox."""
+    with Sandbox() as sb:
+        return sb.run_code(code).text

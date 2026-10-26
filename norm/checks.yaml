@@ -1,5 +1,5 @@
-versie: 0.3 (concept)
-stand: '2026-10-23'
+versie: 0.4 (concept)
+stand: '2026-10-26'
 licentie: CC BY 4.0
 checks:
 - id: A-01
@@ -1258,7 +1258,7 @@ checks:
   normen: LLM06; ASI02, ASI03
   niveaus:
     n1: niet
-    n2: niet
+    n2: als van toepassing
     n3: verplicht
     n4: verplicht
   in_scanner: false
@@ -1333,7 +1333,7 @@ checks:
   normen: AI Act art. 14; ISO/IEC 42001; ISO/IEC 22989
   niveaus:
     n1: niet
-    n2: niet
+    n2: als van toepassing
     n3: verplicht
     n4: verplicht
   in_scanner: false
@@ -1364,14 +1364,14 @@ checks:
   status: actief
 - id: H-12
   domein: H. AI in het product
-  wat: 'Agents: bescherming tegen vergiftigd geheugen en context, veilige communicatie tussen agents, een noodstop'
+  wat: 'Agents: een noodstop die één agent of alle agents meteen stillegt of in een alleen-lezenstand zet, centraal te bedienen en getest; stroomonderbrekers stoppen een agent automatisch bij afwijkend gedrag (bv. een plotse piek in acties of fouten)'
   hoe: keurder + pentest
-  normen: ASI06, ASI07, ASI10; ISO/IEC TR 24028
+  normen: OWASP Agentic ASI08, ASI10; ISO/IEC TR 24028
   niveaus:
     n1: niet
-    n2: niet
-    n3: verplicht
-    n4: verplicht
+    n2: als van toepassing
+    n3: als van toepassing
+    n4: als van toepassing
   in_scanner: false
   status: actief
 - id: H-13
@@ -1389,7 +1389,7 @@ checks:
 - id: H-14
   domein: H. AI in het product
   wat: 'AI-beslissingen gelogd: per beslissing tijdstip, functie, model en versie, verwijzing naar de invoer, uitvoer, uitgevoerde acties en wie bevestigde; beschermd tegen wijziging, minstens zes maanden
-    bewaard, zonder onnodige persoonsgegevens'
+    bewaard, zonder onnodige persoonsgegevens; bij agents ook elke toolaanroep met parameters, de tussenstappen, de uitkomst van de actiecontrole, de bevestiging en wat de mens te zien kreeg naast wat uitgevoerd werd'
   hoe: scan + analist
   normen: AI Act art. 12, 19, 26(6); ISO/IEC 42001
   niveaus:
@@ -1449,7 +1449,7 @@ checks:
   status: actief
 - id: H-19
   domein: H. AI in het product
-  wat: 'AI uitschakelbaar: elke AI-functie kan apart uitgezet worden en de app blijft dan bruikbaar of valt veilig terug'
+  wat: 'AI uitschakelbaar: elke AI-functie kan apart uitgezet of in een alleen-lezenstand gezet worden en de app blijft dan bruikbaar of valt veilig terug'
   hoe: keurder
   normen: AI Act art. 14(4)(e); ISO/IEC 25010:2023; ISO/IEC TR 24028
   niveaus:
@@ -1474,9 +1474,9 @@ checks:
   status: actief
 - id: H-21
   domein: H. AI in het product
-  wat: 'Tools en MCP-servers van de app: inventaris, herkomst, vastgepinde versie, minimale rechten; toolbeschrijvingen gecontroleerd op verborgen instructies'
+  wat: 'Tools en MCP-servers van de app: inventaris, herkomst, vastgepinde versie, minimale rechten; toolbeschrijvingen en schema''s gecontroleerd op verborgen instructies; de volledige tooldefinities vastgepind (hash) en opnieuw nagekeken bij elke wijziging; een nieuwe server alleen na goedkeuring; servers van elkaar gescheiden, zodat de ene server de tools van de andere niet kan beïnvloeden'
   hoe: scan + analist
-  normen: OWASP LLM03; OWASP Agentic ASI04
+  normen: OWASP LLM03; OWASP Agentic ASI04; OWASP MCP Security Cheat Sheet
   niveaus:
     n1: niet
     n2: verplicht
@@ -1571,6 +1571,149 @@ checks:
   ernst: Middel
   in_scanner: false
   status: voorstel
+- id: H-29
+  domein: H. AI in het product
+  wat: 'Actiecontrole buiten het model: elke toolaanroep van een agent wordt in de code gecontroleerd voor ze uitgevoerd wordt: alleen toegestane tools, alleen de eigen gegevens, grenzen op bedragen, aantallen en bestemmingen; onbekende tools of ontbrekende regels worden geweigerd (fail closed); grote hoeveelheden gegevens naar buiten worden tegengehouden of gemeld'
+  hoe: scan + analist + test
+  normen: OWASP Agentic ASI01, ASI02; OWASP LLM06; OWASP AI Agent Security Cheat Sheet
+  niveaus:
+    n1: als van toepassing
+    n2: als van toepassing
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Hoog
+  in_scanner: true
+  status: actief
+- id: H-30
+  domein: H. AI in het product
+  wat: 'Bevestiging die klopt: acties met grote of onomkeerbare gevolgen (betalen, verwijderen, gegevens delen, rechten wijzigen) gebeuren pas na bevestiging door een mens die de volledige actie met alle parameters ziet, niet de samenvatting van de agent; de bevestiging geldt voor precies die actie, één keer en kort; voor de zwaarste acties opnieuw aanmelden of een tweede factor; de agent kan de bevestiging niet zelf geven of omzeilen'
+  hoe: keurder + test
+  normen: OWASP Agentic ASI09; OWASP AI Agent Security Cheat Sheet; AI Act art. 14
+  niveaus:
+    n1: niet
+    n2: als van toepassing
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Hoog
+  in_scanner: false
+  status: actief
+- id: H-31
+  domein: H. AI in het product
+  wat: 'Sandbox: code en shellcommando''s die een agent uitvoert, draaien in een afgesloten omgeving (container of gehoste sandbox) zonder geheimen, zonder netwerk tenzij nodig, met beperkte bestanden en tijd; liever vaste tools met vaste parameters dan een vrije shell'
+  hoe: scan + keurder
+  normen: OWASP Agentic ASI05; OWASP LLM05
+  niveaus:
+    n1: als van toepassing
+    n2: als van toepassing
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Hoog
+  in_scanner: true
+  status: actief
+- id: H-32
+  domein: H. AI in het product
+  wat: 'Elke agent heeft een eigen identiteit, geen gedeeld account en niet de rechten van de gebruiker of een beheerder, met kortlevende sleutels die alleen gelden voor zijn taak; elke agent heeft een eigenaar en een einddatum, en zijn rechten worden even vaak nagekeken als die van mensen'
+  hoe: keurder + document
+  normen: OWASP Agentic ASI03, ASI10; ISO/IEC 27002 5.18, 8.2
+  niveaus:
+    n1: niet
+    n2: als van toepassing
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Hoog
+  in_scanner: false
+  status: actief
+- id: H-33
+  domein: H. AI in het product
+  wat: 'Geheugen en kennisbank (RAG) van een agent: wat erin komt wordt gecontroleerd; per gebruiker en sessie gescheiden; met een bewaartermijn; wijzigingen herkenbaar; de beheerder kan het inzien en wissen; tekst uit documenten wordt behandeld als gegevens, nooit als opdracht'
+  hoe: keurder + test
+  normen: OWASP Agentic ASI06; OWASP LLM08
+  niveaus:
+    n1: niet
+    n2: als van toepassing
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Hoog
+  in_scanner: false
+  status: actief
+- id: H-34
+  domein: H. AI in het product
+  wat: 'Communicatie tussen agents: elke agent bewijst wie hij is; de ontvanger controleert of de afzender dit mag vragen; berichten beschermd tegen wijziging en herhaling; vastgelegd welke agent aan welke mag delegeren; een keten van agents krijgt nooit meer rechten dan de eerste had'
+  hoe: keurder + pentest
+  normen: OWASP Agentic ASI07
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Middel
+  in_scanner: false
+  status: actief
+- id: H-35
+  domein: H. AI in het product
+  wat: 'Begrenzing van agents: grenzen op het aantal stappen, herhalingen, de diepte van aanroepen en de kosten per sessie en per gebruiker, met een alarm en een automatische stop; geen eindeloze lussen'
+  hoe: scan + keurder
+  normen: OWASP Agentic ASI08; OWASP LLM10
+  niveaus:
+    n1: niet
+    n2: als van toepassing
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Middel
+  in_scanner: false
+  status: actief
+- id: H-36
+  domein: H. AI in het product
+  wat: 'Gegevensminimalisatie naar het model: alleen de gegevens die nodig zijn gaan naar het model en de context; identificatienummers (rijksregisternummer, BSN), gezondheids- en betaalgegevens worden vooraf weggelaten of gemaskeerd, ook in logs en geheugen; gegevens zijn ingedeeld naar gevoeligheid, met regels per klasse'
+  hoe: keurder + test
+  normen: AVG art. 5(1)(c), 9, 25; OWASP LLM02
+  niveaus:
+    n1: niet
+    n2: als van toepassing
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Hoog
+  in_scanner: false
+  status: actief
+- id: H-37
+  domein: H. AI in het product
+  wat: 'Een MCP-server die de app zelf aanbiedt: aanmelden verplicht voor alles wat niet publiek is; tokens alleen aanvaard als ze voor deze server uitgegeven zijn, en nooit doorgegeven aan andere diensten; een lokale server alleen bereikbaar op localhost; Origin- en Host-header gecontroleerd; strikte schema''s voor invoer; limieten per sessie'
+  hoe: scan + test
+  normen: MCP-specificatie (security best practices); OWASP MCP Security Cheat Sheet
+  niveaus:
+    n1: niet
+    n2: als van toepassing
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Hoog
+  in_scanner: false
+  status: actief
+- id: H-38
+  domein: H. AI in het product
+  wat: 'Aanvalstests voor agents: bij elke wijziging aan prompts, tools, geheugen, model of regels draait een vaste set aanvallen (opdracht overnemen, tools misbruiken, rechten verhogen, geheugen vergiftigen, gegevens weglekken, eindeloze lussen, bevestiging omzeilen, ketens van agents); slaagt een aanval, dan gaat de release niet door; de tests kunnen niet in dezelfde wijziging afgezwakt worden'
+  hoe: document + pipeline
+  normen: OWASP Agentic ASI01-ASI10; OWASP AI Agent Security Cheat Sheet
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Middel
+  in_scanner: false
+  status: actief
+- id: H-39
+  domein: H. AI in het product
+  wat: 'Bewaking van agents: per agent een normaal gedragspatroon, met een alarm bij afwijkingen (nieuwe tools, een piek in acties of kosten, pogingen om de bevestiging te omzeilen, gebruik van hogere rechten); het alarm komt bij een mens die kan ingrijpen'
+  hoe: scan + document
+  normen: OWASP Agentic ASI10; ISO/IEC 27002 8.16
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Middel
+  in_scanner: false
+  status: actief
 - id: I-01
   domein: I. Data en privacy
   wat: 'Overzicht van de gegevens: welke persoonsgegevens, waar opgeslagen, hoe lang en waarvoor'

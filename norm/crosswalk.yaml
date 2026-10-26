@@ -7,9 +7,9 @@
 #   niet         – valt buiten de keuring; de organisatie regelt en toont dit zelf.
 # 'Vanaf niveau' rekent de site zelf uit: het laagste niveau waarop de genoemde checks verplicht zijn.
 # De omschrijvingen zijn onze eigen korte samenvattingen, niet de tekst van de norm (die is auteursrechtelijk beschermd).
-# Status: concept, hoort bij keuringsnorm 0.2. Nog niet beoordeeld door een externe auditor.
-versie: "0.2 (concept)"
-stand: "2026-10-23"
+# Status: concept, hoort bij keuringsnorm 0.4. Nog niet beoordeeld door een externe auditor.
+versie: "0.3 (concept)"
+stand: "2026-10-26"
 norm: "ISO/IEC 27001:2022 bijlage A (= ISO/IEC 27002:2022)"
 iso27001:
   # 5. Organisatorische maatregelen
@@ -27,10 +27,10 @@ iso27001:
   - {id: "5.12", titel: "Classificatie van informatie", dekking: niet, checks: [], buiten: "Classificatieschema. I-01 brengt wel de persoonsgegevens van het product in kaart."}
   - {id: "5.13", titel: "Labelen van informatie", dekking: niet, checks: [], buiten: "Labelen volgens het classificatieschema."}
   - {id: "5.14", titel: "Overdracht van informatie", dekking: gedeeltelijk, checks: [P-01, P-08, P-13, Y-02], buiten: "Overdracht buiten de koppelingen van het product (e-mail, papier, mondeling)."}
-  - {id: "5.15", titel: "Toegangsbeveiliging", dekking: gedeeltelijk, checks: [K-07, E-02, W-01, X-04], buiten: "Toegangsbeleid voor de hele organisatie."}
+  - {id: "5.15", titel: "Toegangsbeveiliging", dekking: gedeeltelijk, checks: [K-07, E-02, W-01, X-04, H-29, H-37], buiten: "Toegangsbeleid voor de hele organisatie."}
   - {id: "5.16", titel: "Identiteitsbeheer", dekking: gedeeltelijk, checks: [K-07, R-02, E-16], buiten: "Identiteitsbeheer van medewerkers buiten code en infrastructuur."}
   - {id: "5.17", titel: "Authenticatie-informatie", dekking: gedeeltelijk, checks: [E-01, E-05, P-02, P-03, W-09], buiten: "Wachtwoordbeleid en uitgifte voor medewerkers in het algemeen."}
-  - {id: "5.18", titel: "Toegangsrechten", dekking: gedeeltelijk, checks: [K-07, R-02], buiten: "Toegangsrechten op systemen buiten het product."}
+  - {id: "5.18", titel: "Toegangsrechten", dekking: gedeeltelijk, checks: [K-07, R-02, H-32], buiten: "Toegangsrechten op systemen buiten het product."}
   - {id: "5.19", titel: "Beveiliging in relaties met leveranciers", dekking: gedeeltelijk, checks: [Q-05, F-08, X-02], buiten: "Leveranciers buiten het product."}
   - {id: "5.20", titel: "Beveiliging in overeenkomsten met leveranciers", dekking: gedeeltelijk, checks: [F-08, I-08, H-23, B-09], buiten: "Contracten met leveranciers buiten het product; de inhoud van de contracten zelf."}
   - {id: "5.21", titel: "Beveiliging in de ICT-toeleveringsketen", dekking: gedeeltelijk, checks: [A-03, B-06, F-01, F-02, F-03, F-04, F-06, F-13, R-05, R-09], buiten: "Hardware en ICT-diensten buiten de softwareketen van het product."}
@@ -77,8 +77,8 @@ iso27001:
   - {id: "7.14", titel: "Veilig verwijderen of hergebruiken van apparatuur", dekking: niet, checks: [], buiten: "Afvoeren van laptops, schijven en andere apparatuur."}
   # 8. Technologische maatregelen
   - {id: "8.1", titel: "Eindpuntapparaten van gebruikers", dekking: niet, checks: [], buiten: "Werkplekken van ontwikkelaars en medewerkers: schijfversleuteling, beveiligingssoftware, codeeragents in een afgeschermde omgeving."}
-  - {id: "8.2", titel: "Speciale toegangsrechten", dekking: volledig, checks: [E-01, W-01, W-09, X-04, B-04]}
-  - {id: "8.3", titel: "Beperking van toegang tot informatie", dekking: volledig, checks: [E-02, I-03, W-01, W-03, W-13, P-04]}
+  - {id: "8.2", titel: "Speciale toegangsrechten", dekking: volledig, checks: [E-01, W-01, W-09, X-04, B-04, H-32]}
+  - {id: "8.3", titel: "Beperking van toegang tot informatie", dekking: volledig, checks: [E-02, I-03, W-01, W-03, W-13, P-04, H-29, H-33]}
   - {id: "8.4", titel: "Toegang tot broncode", dekking: volledig, checks: [R-01, R-02, R-06, C-20]}
   - {id: "8.5", titel: "Veilige authenticatie", dekking: volledig, checks: [E-01, E-03, E-09, E-16, P-02, U-03]}
   - {id: "8.6", titel: "Capaciteitsbeheer", dekking: volledig, checks: [K-12, W-06, X-08]}
@@ -86,25 +86,25 @@ iso27001:
   - {id: "8.8", titel: "Beheer van technische kwetsbaarheden", dekking: volledig, checks: [F-01, F-02, F-11, F-12, D-10, D-12, G-02, G-03, G-08]}
   - {id: "8.9", titel: "Configuratiebeheer", dekking: volledig, checks: [E-07, K-06, K-14, W-07, W-08]}
   - {id: "8.10", titel: "Verwijderen van informatie", dekking: gedeeltelijk, checks: [I-04, I-12, Z-23], buiten: "Aantoonbaar wissen van gegevens op apparatuur en media."}
-  - {id: "8.11", titel: "Maskeren van gegevens", dekking: gedeeltelijk, checks: [D-08], buiten: "Maskeren in productie, bv. in schermen en exports."}
-  - {id: "8.12", titel: "Voorkomen van datalekken", dekking: gedeeltelijk, checks: [E-05, H-04, S-02, U-01, W-12], buiten: "Maatregelen tegen datalekken via e-mail, werkplekken en kantoortoepassingen."}
+  - {id: "8.11", titel: "Maskeren van gegevens", dekking: gedeeltelijk, checks: [D-08, H-36], buiten: "Maskeren in productie, bv. in schermen en exports."}
+  - {id: "8.12", titel: "Voorkomen van datalekken", dekking: gedeeltelijk, checks: [E-05, H-04, S-02, U-01, W-12, H-29, H-36], buiten: "Maatregelen tegen datalekken via e-mail, werkplekken en kantoortoepassingen."}
   - {id: "8.13", titel: "Back-up van informatie", dekking: volledig, checks: [I-06, K-16, K-18, K-19, W-11]}
   - {id: "8.14", titel: "Redundantie van informatieverwerkende faciliteiten", dekking: volledig, checks: [X-06]}
   - {id: "8.15", titel: "Logging", dekking: volledig, checks: [E-13, K-09, K-10, K-13, W-12, X-05]}
-  - {id: "8.16", titel: "Monitoring", dekking: volledig, checks: [E-13, K-03, K-11, W-04]}
+  - {id: "8.16", titel: "Monitoring", dekking: volledig, checks: [E-13, K-03, K-11, W-04, H-39]}
   - {id: "8.17", titel: "Kloksynchronisatie", dekking: volledig, checks: [K-10]}
   - {id: "8.18", titel: "Gebruik van speciale hulpprogramma's", dekking: niet, checks: [], buiten: "Beheer van hulpprogramma's die beveiliging kunnen omzeilen."}
   - {id: "8.19", titel: "Software installeren op operationele systemen", dekking: volledig, checks: [K-02, R-09, F-04]}
   - {id: "8.20", titel: "Netwerkbeveiliging", dekking: volledig, checks: [E-10, E-15, P-10, Y-03, Y-04]}
   - {id: "8.21", titel: "Beveiliging van netwerkdiensten", dekking: volledig, checks: [Y-01, Y-02, Y-06, P-13]}
-  - {id: "8.22", titel: "Scheiding van netwerken", dekking: volledig, checks: [E-15, K-01]}
+  - {id: "8.22", titel: "Scheiding van netwerken", dekking: volledig, checks: [E-15, K-01, H-31]}
   - {id: "8.23", titel: "Webfilters", dekking: niet, checks: [], buiten: "Filteren van websites voor medewerkers."}
   - {id: "8.24", titel: "Gebruik van cryptografie", dekking: volledig, checks: [E-06, E-14, P-03, W-10, Y-01, Y-07, Y-08, K-19]}
   - {id: "8.25", titel: "Veilige ontwikkelcyclus", dekking: volledig, checks: [B-01, B-03, C-15, D-06, T-02, T-09]}
   - {id: "8.26", titel: "Beveiligingseisen voor applicaties", dekking: volledig, checks: [T-02, D-15, E-12]}
   - {id: "8.27", titel: "Veilige architectuur en ontwerpprincipes", dekking: volledig, checks: [A-02, E-12, J-03, T-04, Z-10]}
-  - {id: "8.28", titel: "Veilig programmeren", dekking: volledig, checks: [C-01, C-05, C-06, C-17, E-04, H-02, U-07]}
-  - {id: "8.29", titel: "Beveiligingstesten bij ontwikkeling en acceptatie", dekking: volledig, checks: [D-02, D-05, D-06, D-07, D-10, D-13, D-16, T-05]}
+  - {id: "8.28", titel: "Veilig programmeren", dekking: volledig, checks: [C-01, C-05, C-06, C-17, E-04, H-02, U-07, H-29, H-31]}
+  - {id: "8.29", titel: "Beveiligingstesten bij ontwikkeling en acceptatie", dekking: volledig, checks: [D-02, D-05, D-06, D-07, D-10, D-13, D-16, T-05, H-38]}
   - {id: "8.30", titel: "Uitbestede ontwikkeling", dekking: gedeeltelijk, checks: [Z-07, Z-08, B-09], buiten: "Beveiligingseisen in het contract met de bouwer. De keuring zelf is wel de controle op wat de bouwer oplevert."}
   - {id: "8.31", titel: "Scheiding van ontwikkel-, test- en productieomgevingen", dekking: volledig, checks: [K-01, T-05, D-08, R-14]}
   - {id: "8.32", titel: "Wijzigingsbeheer", dekking: volledig, checks: [B-03, K-02, Q-03, R-03, R-04, R-08, R-10, R-14]}

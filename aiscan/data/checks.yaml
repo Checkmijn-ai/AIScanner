@@ -565,3 +565,27 @@
   sinds: '0.1'
   versie: 1
   status: actief
+- id: H-29
+  domein: H. AI in het product
+  scan: 'Agents die zelf handelen: elke toolaanroep wordt in de code gecontroleerd voor ze uitgevoerd wordt; tools die betalen, verwijderen, mailen of schrijven vragen bevestiging of hebben vaste grenzen'
+  normen: OWASP Agentic ASI02, ASI09; OWASP LLM06
+  ernst: Hoog
+  modus: deels
+  module: agentacties
+  methode: scan + analist
+  hint: Controleer elke toolaanroep in de code, buiten het model om (toegestane tools, grenzen op bedragen en aantallen, onbekende tools weigeren), en laat een mens acties met grote gevolgen bevestigen, met de volledige parameters in beeld.
+  sinds: '0.4'
+  versie: 1
+  status: actief
+- id: H-31
+  domein: H. AI in het product
+  scan: 'Code of shellcommando''s die een agent uitvoert, draaien in een sandbox: een afgesloten omgeving zonder geheimen, zonder netwerk tenzij nodig, los van de server'
+  normen: OWASP Agentic ASI05; OWASP LLM05
+  ernst: Hoog
+  modus: deels
+  module: agentacties
+  methode: scan
+  hint: Laat een agent nooit rechtstreeks shell of Python op de server uitvoeren. Gebruik een sandbox (een container zonder geheimen en zonder netwerk, of een gehoste code-interpreter) en geef liever specifieke tools met vaste parameters dan een vrije shell.
+  sinds: '0.4'
+  versie: 1
+  status: actief

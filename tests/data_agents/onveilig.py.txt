@@ -1,0 +1,22 @@
+import stripe, subprocess
+from langchain_core.tools import tool
+from langchain.agents import create_tool_calling_agent, AgentExecutor
+from langchain_experimental.tools import PythonREPLTool
+
+@tool
+def refund(order_id: str, amount: int) -> str:
+    """Refund an order."""
+    stripe.Refund.create(payment_intent=order_id, amount=amount)
+    return "ok"
+
+@tool
+def run(cmd: str) -> str:
+    """Run a command."""
+    return subprocess.run(cmd, shell=True, capture_output=True).stdout
+
+@tool
+def weer(stad: str) -> str:
+    """Het weer."""
+    return "zonnig"
+
+tools = [refund, run, weer, PythonREPLTool()]
