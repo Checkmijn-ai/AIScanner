@@ -7,8 +7,8 @@
 #   niet         – valt buiten de keuring; de organisatie regelt en toont dit zelf.
 # 'Vanaf niveau' rekent de site zelf uit: het laagste niveau waarop de genoemde checks verplicht zijn.
 # De omschrijvingen zijn onze eigen korte samenvattingen, niet de tekst van de norm (die is auteursrechtelijk beschermd).
-# Status: concept, hoort bij keuringsnorm 0.4. Nog niet beoordeeld door een externe auditor.
-versie: "0.3 (concept)"
+# Status: concept, hoort bij keuringsnorm 0.5. Nog niet beoordeeld door een externe auditor.
+versie: "0.4 (concept)"
 stand: "2026-10-26"
 norm: "ISO/IEC 27001:2022 bijlage A (= ISO/IEC 27002:2022)"
 iso27001:
@@ -148,6 +148,54 @@ iso42005:
   - {id: "6.7", titel: "Wie geraakt wordt", dekking: volledig, checks: [H-13, H-16, H-26]}
   - {id: "6.8", titel: "Voordelen en schade, falen en voorzienbaar misbruik", dekking: volledig, checks: [H-01, H-18, H-22, H-17, H-26, H-27], buiten: "Gevolgen voor de samenleving alleen zoals beschreven in H-26."}
   - {id: "6.9", titel: "Maatregelen tegen schade", dekking: volledig, checks: [H-03, H-15, H-19, H-25, H-28]}
+
+# AIUC-1 (AI Underwriting Company, standaard voor AI-agents). Eisen en nummers volgens openbare samenvattingen;
+# de volledige norm staat op aiuc-1.com. Omschrijvingen zijn eigen samenvattingen. Concept, nog niet getoetst door AIUC.
+aiuc1:
+  - {id: "A001", titel: "Beleid voor invoer: training, verwerking, bewaren, rechten van de klant", dekking: volledig, checks: [H-41, H-23]}
+  - {id: "A002", titel: "Beleid voor uitvoer: eigendom, gebruik, opt-out, verwijderen", dekking: volledig, checks: [H-41]}
+  - {id: "A003", titel: "De agent krijgt alleen de gegevens die hij voor zijn taak nodig heeft", dekking: volledig, checks: [H-29, H-33, H-36]}
+  - {id: "A004", titel: "Geen lekken van bedrijfsgeheimen en IP", dekking: gedeeltelijk, checks: [H-04, H-36], buiten: "Welke informatie een bedrijfsgeheim is, bepaalt de organisatie zelf."}
+  - {id: "A005", titel: "Geen gegevens van de ene klant bij een andere", dekking: volledig, checks: [I-03, H-33]}
+  - {id: "A006", titel: "Geen persoonsgegevens in de uitvoer", dekking: volledig, checks: [H-36, H-04]}
+  - {id: "A007", titel: "Uitvoer maakt geen inbreuk op rechten van anderen", dekking: volledig, checks: [H-40]}
+  - {id: "B001", titel: "Aanvalstests door een externe partij, ook prompt injection", dekking: volledig, checks: [H-01, H-38, D-10]}
+  - {id: "B002", titel: "Aanvallen op de AI opsporen en erop reageren", dekking: gedeeltelijk, checks: [H-39, E-13], buiten: "Opsporen in real time eisen we alleen bij agents die zelf handelen."}
+  - {id: "B003", titel: "Technische details die aanvallers helpen niet publiek maken", dekking: gedeeltelijk, checks: [E-07, U-02], buiten: "Een beleid voor publicaties van de organisatie valt erbuiten."}
+  - {id: "B004", titel: "Limieten tegen scrapen en massaal bevragen", dekking: volledig, checks: [H-08, H-28, E-09]}
+  - {id: "B005", titel: "Filter op de invoer tegen prompt injection en jailbreaks", dekking: gedeeltelijk, checks: [H-01], buiten: "We toetsen of aanvallen slagen, niet of er een filter is."}
+  - {id: "B006", titel: "Toegang van de agent beperkt tot zijn taak", dekking: volledig, checks: [H-29, H-32]}
+  - {id: "B007", titel: "Rechten van gebruikers en beheerders volgens beleid", dekking: volledig, checks: [E-01, E-02, H-03]}
+  - {id: "B008", titel: "De omgeving waarin het model draait is beschermd", dekking: volledig, checks: [W-02, W-10, X-04, H-31]}
+  - {id: "B009", titel: "Uitvoer beperken zodat er niet te veel lekt", dekking: gedeeltelijk, checks: [H-36, H-04], buiten: "Afschermen van uitvoer toetsen we voor persoonsgegevens en geheimen."}
+  - {id: "C001", titel: "Lijst van ongewenste uitvoer met ernst, per toepassing", dekking: volledig, checks: [H-22, H-26]}
+  - {id: "C002", titel: "Testen voor de ingebruikname op schadelijke, verzonnen en ongepaste uitvoer", dekking: volledig, checks: [H-07, H-22, H-38]}
+  - {id: "C003", titel: "Schadelijke, beledigende, discriminerende of misleidende uitvoer voorkomen", dekking: volledig, checks: [H-22, H-18]}
+  - {id: "C004", titel: "Uitvoer buiten de taak van de app voorkomen", dekking: volledig, checks: [H-22]}
+  - {id: "C005", titel: "De ernstigste soorten uitvoer technisch blokkeren", dekking: volledig, checks: [H-22, H-29]}
+  - {id: "C006", titel: "Onveilige uitvoer (code-injectie, gegevens naar buiten)", dekking: volledig, checks: [H-02, H-29]}
+  - {id: "C007", titel: "Adviezen met hoog risico eerst langs een mens", dekking: volledig, checks: [H-15, H-30]}
+  - {id: "C008", titel: "De AI bewaken op de risico's uit de lijst", dekking: volledig, checks: [H-17, H-39]}
+  - {id: "C009", titel: "Gebruikers kunnen terugkoppelen en ingrijpen", dekking: gedeeltelijk, checks: [H-16, H-19], buiten: "Terugkoppeling in real time door de gebruiker eisen we niet."}
+  - {id: "C010", titel: "Elk kwartaal een externe test op schadelijke uitvoer", dekking: gedeeltelijk, checks: [H-38, H-22], buiten: "Elk kwartaal alleen op niveau 4 en bij agents die zelf handelen; anders bij de keuring en bij grote wijzigingen."}
+  - {id: "C011", titel: "Elk kwartaal een externe test op uitvoer buiten de taak", dekking: gedeeltelijk, checks: [H-38, H-22], buiten: "Zie C010."}
+  - {id: "C012", titel: "Elk kwartaal een externe test op uitvoer met hoog risico", dekking: gedeeltelijk, checks: [H-38, H-22], buiten: "Zie C010."}
+  - {id: "D001", titel: "Maatregelen tegen verzonnen uitvoer", dekking: volledig, checks: [H-07]}
+  - {id: "D002", titel: "Elk kwartaal een externe test op verzonnen uitvoer", dekking: gedeeltelijk, checks: [H-07, H-38], buiten: "Zie C010."}
+  - {id: "D003", titel: "Toolaanroepen technisch beperken", dekking: volledig, checks: [H-29, H-03]}
+  - {id: "D004", titel: "Elk kwartaal een externe test van toolaanroepen", dekking: gedeeltelijk, checks: [H-38], buiten: "Zie C010."}
+  - {id: "E001", titel: "Plan bij een datalek of beveiligingsincident via de AI", dekking: volledig, checks: [H-25, G-07]}
+  - {id: "E002", titel: "Plan bij schadelijke uitvoer", dekking: volledig, checks: [H-25]}
+  - {id: "E003", titel: "Plan bij verzonnen uitvoer met financiële schade", dekking: volledig, checks: [H-25]}
+  - {id: "E004", titel: "Welke wijzigingen goedkeuring vragen, en door wie", dekking: volledig, checks: [H-06, Q-03, R-08]}
+  - {id: "E005", titel: "Wanneer in de cloud en wanneer lokaal verwerken", dekking: gedeeltelijk, checks: [X-01, H-23], buiten: "De afweging voor de hele organisatie valt erbuiten."}
+  - {id: "E006", titel: "Due diligence op de aanbieder van het model", dekking: volledig, checks: [H-23, H-20, Q-05]}
+  - {id: "E007", titel: "Wezenlijke wijzigingen (model, toegang, gegevens) formeel goedkeuren", dekking: volledig, checks: [H-06, Q-03]}
+  - {id: "E008", titel: "Periodieke interne review", dekking: volledig, checks: [Q-02, Q-06]}
+  - {id: "E009", titel: "Toegang door derden bewaken", dekking: gedeeltelijk, checks: [E-13, R-02], buiten: "Bewaking buiten het product valt erbuiten."}
+  - {id: "E010", titel: "Beleid voor aanvaardbaar gebruik van AI", dekking: gedeeltelijk, checks: [B-01], buiten: "B-01 dekt het gebruik bij het bouwen; het beleid voor alle medewerkers valt erbuiten."}
+  - {id: "F001", titel: "Misbruik van de AI voor cyberaanvallen voorkomen", dekking: gedeeltelijk, checks: [H-22, H-29], buiten: "Alleen voor wat de app zelf kan uitvoeren of genereren."}
+  - {id: "F002", titel: "Catastrofaal misbruik (chemisch, biologisch, nucleair)", dekking: gedeeltelijk, checks: [H-22], buiten: "Geldt vooral voor aanbieders van basismodellen; voor apps via de instellingen van de aanbieder."}
 
 # BIO2 volgt de indeling en nummering van ISO/IEC 27002:2022. De dekking per control is dus die van de ISO-tabel.
 # De aanvullende overheidsmaatregelen van de BIO2 zijn nog niet apart beoordeeld.

@@ -412,7 +412,7 @@ def crosswalk() -> dict:
         d = [per_iso[i]["dekking"] for i in x["iso"]]
         x["dekking"] = "volledig" if set(d) == {"volledig"} else "niet" if set(d) == {"niet"} and not x.get("checks") else "gedeeltelijk"
         x["alle_checks"] = sorted({c for i in x["iso"] for c in per_iso[i]["checks"]} | set(x.get("checks", [])))
-    for x in cw.get("iso42005", []):
+    for x in cw.get("iso42005", []) + cw.get("aiuc1", []):
         x["vanaf"] = vanaf(x["checks"]) if x["dekking"] != "niet" else None
     tel = {k: sum(1 for x in cw["iso27001"] if x["dekking"] == k) for k in DEKKING}
     cw["tel"] = tel
@@ -426,7 +426,7 @@ def crosswalk() -> dict:
 
 @site.get("/crosswalk")
 def crosswalk_pagina():
-    return pagina("crosswalk.html", "Crosswalk ISO 27001, ISO 42005, NIS2 en BIO2",
+    return pagina("crosswalk.html", "Crosswalk ISO 27001, ISO 42005, AIUC-1, NIS2 en BIO2",
                   "Per control uit ISO/IEC 27001:2022 bijlage A: volledig, gedeeltelijk of niet gedekt door de keuring, "
                   "met welke checks en vanaf welk niveau. Plus NIS2 (2024/2690) en BIO2.", cw=crosswalk(), dekking=DEKKING)
 
@@ -449,6 +449,9 @@ def crosswalk_csv():
                     x["vanaf"] or "", ", ".join(x["zelfscan"]), x.get("buiten", ""), cw["versie"]])
     for x in cw.get("iso42005", []):
         w.writerow(["ISO/IEC 42005:2025", x["id"], x["titel"], DEKKING[x["dekking"]], ", ".join(x["checks"]),
+                    x["vanaf"] or "", "", x.get("buiten", ""), cw["versie"]])
+    for x in cw.get("aiuc1", []):
+        w.writerow(["AIUC-1", x["id"], x["titel"], DEKKING[x["dekking"]], ", ".join(x["checks"]),
                     x["vanaf"] or "", "", x.get("buiten", ""), cw["versie"]])
     for x in cw["nis2"]:
         w.writerow(["NIS2-uitvoeringsverordening 2024/2690", x["id"], x["titel"], DEKKING[x["dekking"]],

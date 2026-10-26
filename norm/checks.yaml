@@ -1,4 +1,4 @@
-versie: 0.4 (concept)
+versie: 0.5 (concept)
 stand: '2026-10-26'
 licentie: CC BY 4.0
 checks:
@@ -1301,9 +1301,9 @@ checks:
   status: actief
 - id: H-07
   domein: H. AI in het product
-  wat: Kwaliteit gemeten met een testset van verwachte antwoorden; regressietest bij elke modelwissel
+  wat: 'Kwaliteit gemeten met een testset van verwachte antwoorden; regressietest bij elke modelwissel; maatregelen tegen verzonnen antwoorden (antwoorden op basis van eigen bronnen, bronvermelding, weigeren als er onvoldoende basis is), getest met vragen waar de app geen antwoord op hoort te geven'
   hoe: document + keurder
-  normen: ISO/IEC 25059; ISO/IEC TR 29119-11; ISO/IEC TR 24028; ISO/IEC 23053
+  normen: ISO/IEC 25059; ISO/IEC TR 29119-11; ISO/IEC TR 24028; ISO/IEC 23053; AIUC-1 D001, D002
   niveaus:
     n1: niet
     n2: niet
@@ -1486,9 +1486,9 @@ checks:
   status: actief
 - id: H-22
   domein: H. AI in het product
-  wat: 'Veilige uitvoer: vaste testset voor schadelijke inhoud en gevaarlijk advies (zelfbeschadiging, medisch, financieel, illegaal), met drempel'
+  wat: 'Veilige uitvoer: vaste testset voor schadelijke inhoud en gevaarlijk advies (zelfbeschadiging, medisch, financieel, illegaal), met drempel; per app een vastgelegde lijst van ongewenste uitvoer (schadelijk, buiten de taak van de app, verzonnen, gevaarlijke acties) met ernst, en technische blokkades voor de ernstigste soorten'
   hoe: scan + document
-  normen: OWASP LLM09; AI Act art. 15; ISO/IEC 42001
+  normen: OWASP LLM09; AI Act art. 15; ISO/IEC 42001; AIUC-1 C001, C003, C004, C005
   niveaus:
     n1: niet
     n2: verplicht
@@ -1498,9 +1498,9 @@ checks:
   status: actief
 - id: H-23
   domein: H. AI in het product
-  wat: 'Geen training op klantgegevens zonder toestemming: afspraken met de AI-aanbieder over training, bewaartermijn en regio, in lijn met de AI-kaart'
+  wat: 'Geen training op klantgegevens zonder toestemming: afspraken met de AI-aanbieder over training, bewaartermijn en regio, in lijn met de AI-kaart; due diligence op de aanbieder van het model (beveiliging, omgang met gegevens en persoonsgegevens, certificaten en compliance), opnieuw bij een andere aanbieder'
   hoe: document
-  normen: AVG art. 5, 28; AI Act art. 10
+  normen: AVG art. 5, 28; AI Act art. 10; AIUC-1 E006
   niveaus:
     n1: niet
     n2: niet
@@ -1522,9 +1522,9 @@ checks:
   status: actief
 - id: H-25
   domein: H. AI in het product
-  wat: 'Ernstige AI-incidenten: procedure om ze te melden aan de toezichthouder en de klant, gekoppeld aan de incidentanalyse'
+  wat: 'Ernstige AI-incidenten: procedure om ze te melden aan de toezichthouder en de klant, gekoppeld aan de incidentanalyse; per soort AI-fout een plan met eigenaar, melding, herstel en hulp van buitenaf: datalek of beveiligingsincident via de AI, schadelijke uitvoer, verzonnen uitvoer met financiële schade'
   hoe: document
-  normen: AI Act art. 73
+  normen: AI Act art. 73; AIUC-1 E001, E002, E003
   niveaus:
     n1: niet
     n2: niet
@@ -1690,9 +1690,9 @@ checks:
   status: actief
 - id: H-38
   domein: H. AI in het product
-  wat: 'Aanvalstests voor agents: bij elke wijziging aan prompts, tools, geheugen, model of regels draait een vaste set aanvallen (opdracht overnemen, tools misbruiken, rechten verhogen, geheugen vergiftigen, gegevens weglekken, eindeloze lussen, bevestiging omzeilen, ketens van agents); slaagt een aanval, dan gaat de release niet door; de tests kunnen niet in dezelfde wijziging afgezwakt worden'
+  wat: 'Aanvalstests voor agents: bij elke wijziging aan prompts, tools, geheugen, model of regels draait een vaste set aanvallen (opdracht overnemen, tools misbruiken, rechten verhogen, geheugen vergiftigen, gegevens weglekken, eindeloze lussen, bevestiging omzeilen, ketens van agents); slaagt een aanval, dan gaat de release niet door; de tests kunnen niet in dezelfde wijziging afgezwakt worden; op niveau 4 en bij agents die zelf handelen ook elk kwartaal door een onafhankelijke partij, met de uitslag in het dossier'
   hoe: document + pipeline
-  normen: OWASP Agentic ASI01-ASI10; OWASP AI Agent Security Cheat Sheet
+  normen: OWASP Agentic ASI01-ASI10; OWASP AI Agent Security Cheat Sheet; AIUC-1 B001, C010, C011, C012, D002, D004
   niveaus:
     n1: niet
     n2: optioneel
@@ -1709,6 +1709,32 @@ checks:
   niveaus:
     n1: niet
     n2: niet
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Middel
+  in_scanner: false
+  status: actief
+- id: H-40
+  domein: H. AI in het product
+  wat: 'Uitvoer van de AI maakt geen inbreuk op rechten van anderen: maatregelen tegen het letterlijk overnemen van beschermd werk, merken of persoonlijkheidsrechten (filters, bronvermelding), en afspraken met de AI-aanbieder over vrijwaring bij een inbreuk'
+  hoe: document + test
+  normen: Auteursrecht en merkenrecht (Benelux, EU); AIUC-1 A007
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Middel
+  in_scanner: false
+  status: actief
+- id: H-41
+  domein: H. AI in het product
+  wat: 'Publiek beleid voor invoer en uitvoer van de AI: wat er met gegevens van gebruikers gebeurt (training, bewaartermijn, verwijderen op verzoek), van wie de uitvoer is, en hoe een gebruiker gegevens of uitvoer kan laten verwijderen'
+  hoe: document
+  normen: AVG art. 12, 13, 17; AIUC-1 A001, A002
+  niveaus:
+    n1: niet
+    n2: als van toepassing
     n3: als van toepassing
     n4: als van toepassing
   ernst: Middel
