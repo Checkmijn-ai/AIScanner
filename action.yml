@@ -37,6 +37,10 @@ inputs:
     description: Token voor de lekkenwacht (issues). Standaard het token van de workflow.
     required: false
     default: ${{ github.token }}
+  automatisch:
+    description: "nee (standaard) | ja — 'nee' = de scan draait alleen als iemand hem start (Run workflow); bij push, schedule of pull_request slaat hij over. 'ja' = ook automatisch, als je dat bewust in je eigen pipeline wilt."
+    required: false
+    default: "nee"
   manifest:
     description: Adres van het manifest van de dagversie
     required: false
@@ -68,6 +72,7 @@ runs:
         CM_MEETELLEN: ${{ inputs.meetellen }}
         CM_WAARSCHUWEN: ${{ inputs.waarschuwen }}
         CM_TOKEN: ${{ inputs.token }}
+        CM_AUTOMATISCH: ${{ inputs.automatisch }}
         CM_OUT: ${{ runner.temp }}/checkmijn-rapport
       run: python "${{ github.action_path }}/action/scan_ci.py"
     - name: Rapport bewaren bij deze run
