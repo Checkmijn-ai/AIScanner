@@ -11,6 +11,7 @@ permissions:
 jobs:
   nakijken:
     runs-on: ubuntu-latest
+    environment: server
     timeout-minutes: 10
     steps:
       - name: Van buitenaf

@@ -2,7 +2,8 @@
 #   https://checkmijn-ai.github.io/AIScanner/  (latest.json, scan.md, checkmijn-JJJJ-MM-DD.pyz, ...)
 # Nodig:
 #   - Settings → Pages → Source: "GitHub Actions"
-#   - Settings → Secrets and variables → Actions → secret DAGVERSIE_SLEUTEL (privésleutel, PEM, Ed25519)
+#   - Settings → Environments → dagversie: secret DAGVERSIE_SLEUTEL (privésleutel, PEM, Ed25519), en bij
+#     Deployment branches alleen main. Niet als gewoon repository-geheim.
 name: Dagversie
 on:
   schedule:
@@ -18,6 +19,10 @@ env:
 jobs:
   bouw:
     runs-on: ubuntu-latest
+    # De privésleutel staat als geheim in deze omgeving. Instellen: Settings → Environments → dagversie →
+    # Deployment branches: alleen main. Zo kan alleen code die op main staat (na review) iets laten ondertekenen,
+    # en niet een werkkopie (branch) met aangepaste code.
+    environment: dagversie
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5.0.0

@@ -28,7 +28,7 @@ De uitslag staat in de samenvatting van de run. Het volledige rapport is een art
 
 **Met een AI-agent met terminal** (Claude Code, Cursor, Copilot): *"Volg de instructie op checkmijn.ai/scan.md voor dit project."*
 
-**Lokaal:** `python -m aiscan PAD --offline` (Python 3.11+, `pip install -r requirements.txt`).
+**Lokaal:** `python -m aiscan PAD --offline` (Python 3.11+, `pip install --require-hashes -r requirements.txt`). Gebruik een vrijgegeven versie (`git checkout v1`) en niet zomaar de laatste stand van main. Nog veiliger: de ondertekende dagversie, zoals route A op [checkmijn.ai/scan.md](https://checkmijn.ai/scan.md) beschrijft; die controleert handtekening en controlegetal.
 
 ## Wat er in deze repository staat
 
