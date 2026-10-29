@@ -93,8 +93,8 @@ FAQ = [
     ("Krijgen jullie mijn code?", "Nee. De scanner draait op je eigen computer of in je eigen GitHub. Vraag je een "
      "scorepagina aan, dan krijgen we alleen per check de uitslag. Geen code, geen bestandsnamen, geen wachtwoorden."),
     ("Ik bouw in Lovable, Bolt of v0. Kan ik scannen?", "Ja, via GitHub. Koppel je project aan een privé-repository en "
-     "plak de tekst van onze pagina Hoe het werkt in de chat. Daarna scant GitHub bij elke wijziging en zet het rapport in "
-     "je project. Je bouwtool laat eerst de score zien en lost pas iets op als jij ja zegt."),
+     "plak de tekst van onze pagina Hoe het werkt in de chat. Je start de scan zelf in GitHub, met één klik; als jij dat "
+     "goedkeurt, zet hij het rapport in je project. Je bouwtool laat eerst de score zien en lost pas iets op als jij ja zegt."),
     ("Wat bewaren jullie van het rapport?", "Een versleutelde kopie. De sleutel zit alleen in jouw link, dus wij kunnen het "
      "niet lezen. Na 90 dagen wissen we het."),
     ("Moet ik iets installeren?", "Nee. Je AI-assistent of GitHub haalt de scanner op en ruimt daarna op."),
@@ -116,7 +116,7 @@ FAQ = [
      "pentesters. Het werkt volgens onze norm, zodat de uitslagen te vergelijken zijn."),
     ("Welke programmeertalen?", "JavaScript, TypeScript en Python. Voor lekke pakketten ook PHP, Go, Java en Ruby."),
     ("Hoe lang is een score geldig?", "Een zelfscan blijft 30 dagen actueel, een keuring 12 maanden. Daarna wordt de "
-     "badge grijs. Scan je bij elke wijziging, dan blijft hij vanzelf actueel."),
+     "badge grijs. Scan opnieuw na een wijziging, dan blijft hij actueel."),
     ("Controleren jullie of een tekst door AI geschreven is?", "Nee. We controleren software die met AI gebouwd is."),
 ]
 
