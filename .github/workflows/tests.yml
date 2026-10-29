@@ -29,3 +29,4 @@ jobs:
       - run: python tests/test_eigen_scan.py
       - run: python tests/test_rls.py
       - run: python tests/test_workflow_veilig.py
+      - run: python tests/test_alleen_handmatig.py
