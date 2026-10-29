@@ -1,0 +1,41 @@
+# checkmijn.ai — scan in GitHub, met het rapport in je project (voor Lovable, Bolt en v0). Zet dit bestand in je project als .github/workflows/checkmijn.yml.
+#
+# Wat het doet, en wat niet:
+# - de scan draait ALLEEN als jij hem start: Actions → checkmijn.ai → Run workflow. Er draait niets vanzelf,
+#   niet bij een wijziging en niet 's nachts;
+# - de scan krijgt schrijfrechten op je project. De vastgezette versie gebruikt die alleen om het rapport terug te
+#   zetten als .checkmijn/RAPPORT.md (en alleen in een privé-repository), zodat je AI-bouwtool (Lovable, Bolt, v0)
+#   het kan lezen en de bevindingen kan herstellen. Hij opent geen issues. Wil je geen schrijfrechten geven,
+#   gebruik dan checkmijn.yml (alleen lezen);
+# - de code verlaat GitHub niet; het opgemaakte rapport wordt versleuteld bewaard, met de sleutel alleen in jouw link;
+# - de versie van de scan ligt vast (de lange code achter @). GitHub haalt precies die versie op en geen andere,
+#   ook niet als iemand bij checkmijn.ai iets zou veranderen. De scanner van de dag wordt bij elke run
+#   gecontroleerd op handtekening en controlegetal; klopt dat niet, dan stopt de scan.
+# Klaar met scannen? Haal dit bestand weer weg. Wil je later opnieuw scannen, haal dan de nieuwste versie op
+# via https://checkmijn.ai/scan.md.
+name: checkmijn.ai
+on:
+  workflow_dispatch: {}
+permissions:
+  contents: write   # alleen om .checkmijn/RAPPORT.md terug te zetten
+  id-token: write   # bewijst aan checkmijn.ai dat de scan echt uit deze repository komt (voor de rapportlink)
+concurrency:
+  group: checkmijn
+  cancel-in-progress: true
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5.0.0
+        with:
+          fetch-depth: 0   # volledige geschiedenis: ook oude geheimen worden gevonden
+      # Vaste versie van de scan (vrijgegeven als v1). Verander deze code niet zelf.
+      - uses: Checkmijn-ai/AIScanner@5ff488483f5660c0977a83d380cf3daa417052dd  # v1
+        with:
+          rapport-in-repo: auto   # alleen in een privé-repository
+          rapport-link: "true"   # opgemaakt rapport via een persoonlijke link, versleuteld (wij kunnen het niet lezen)
+          insturen: "false"
+          waarschuwen: "nee"
+          meetellen: "false"
+          faal-bij: nooit

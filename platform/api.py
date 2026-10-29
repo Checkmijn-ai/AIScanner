@@ -209,7 +209,8 @@ def lees_tekst(naam: str) -> bytes:
 DAGVERSIE_BESTANDEN = {"scan.md": "text/markdown; charset=utf-8", "latest.json": "application/json",
                        "checks.json": "application/json", "versies.json": "application/json",
                        "changelog.json": "application/json", "public-key.pem": "text/plain; charset=utf-8",
-                       "checkmijn.yml": "text/plain; charset=utf-8", "geen-code.json": "application/json",
+                       "checkmijn.yml": "text/plain; charset=utf-8", "checkmijn-schrijven.yml": "text/plain; charset=utf-8",
+                       "geen-code.json": "application/json",
                        "testbank.json": "application/json"}
 
 

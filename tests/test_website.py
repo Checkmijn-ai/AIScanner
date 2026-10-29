@@ -30,7 +30,7 @@ for p in paginas:
         assert "style-src 'self';" in csp, p
     links |= set(re.findall(r'href="(/[^"#?]*)', html))
 kapot = [l for l in sorted(links) if c.get(l).status_code >= 400 and l not in ("/latest.json", "/checks.json",
-         "/versies.json", "/changelog.json", "/public-key.pem", "/checkmijn.yml", "/scan.md")]
+         "/versies.json", "/changelog.json", "/public-key.pem", "/checkmijn.yml", "/checkmijn-schrijven.yml", "/scan.md")]
 assert not kapot, kapot
 assert c.get("/bestaat-niet").status_code == 404
 assert "Disallow: /rapport/" in c.get("/robots.txt").get_data(as_text=True)

@@ -251,8 +251,11 @@ def main(argv=None):
     from jinja2 import Template
     tpl = Template((ROOT / "platform" / "templates" / "scan.md.j2").read_text())
     workflow = (ROOT / "voorbeelden" / "checkmijn.yml").read_text()
-    (pub / "scan.md").write_text(tpl.render(m=manifest, workflow=workflow, sleutel=sleutel_b64))
-    shutil.copy(ROOT / "voorbeelden" / "checkmijn.yml", pub / "checkmijn.yml")
+    workflow_schrijven = (ROOT / "voorbeelden" / "checkmijn-schrijven.yml").read_text()
+    (pub / "scan.md").write_text(tpl.render(m=manifest, workflow=workflow, workflow_schrijven=workflow_schrijven,
+                                            sleutel=sleutel_b64))
+    for naam_wf in ("checkmijn.yml", "checkmijn-schrijven.yml"):
+        shutil.copy(ROOT / "voorbeelden" / naam_wf, pub / naam_wf)
     log(f"Gepubliceerd: {naam} · sha256 {sha[:16]}… · databank {meta.get('stand')} ({meta.get('aantal')} lekken)")
     return 0
 
