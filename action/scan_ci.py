@@ -42,6 +42,14 @@ def schrijf_samenvatting(tekst: str):
     if SAMENVATTING:
         with open(SAMENVATTING, "a", encoding="utf-8") as f:
             f.write(tekst + "\n")
+    else:
+        # Buiten GitHub (GitLab, Bitbucket, Azure DevOps): de samenvatting komt bij het rapport.
+        try:
+            OUT.mkdir(parents=True, exist_ok=True)
+            with open(OUT / "samenvatting.md", "a", encoding="utf-8") as f:
+                f.write(tekst + "\n")
+        except OSError:
+            pass
     log(tekst)
 
 
@@ -474,8 +482,10 @@ AUTOMATISCH = os.environ.get("CM_AUTOMATISCH", "nee").strip().lower() in ("ja", 
 def alleen_handmatig() -> bool:
     """De scan draait alleen als de gebruiker hem zelf start (Run workflow), tenzij de workflow uitdrukkelijk
     'automatisch: ja' zet. Oudere workflowbestanden met push of schedule scannen dus niet meer vanzelf."""
-    gebeurtenis = os.environ.get("GITHUB_EVENT_NAME", "")
-    if gebeurtenis in ("", "workflow_dispatch") or AUTOMATISCH:
+    # GitHub: GITHUB_EVENT_NAME. GitLab, Bitbucket en Azure DevOps: het sjabloon zet CM_GEBEURTENIS
+    # (CI_PIPELINE_SOURCE, "custom" of Build.Reason).
+    gebeurtenis = os.environ.get("GITHUB_EVENT_NAME") or os.environ.get("CM_GEBEURTENIS", "")
+    if gebeurtenis in ("", "workflow_dispatch", "web", "custom", "Manual") or AUTOMATISCH:
         return False
     tekst = ("**checkmijn.ai: deze scan is niet uitgevoerd.** De scan draait alleen als je hem zelf start, "
              "bij *Actions → checkmijn.ai → Run workflow*. Deze run kwam van '" + gebeurtenis + "'. "
@@ -511,7 +521,7 @@ def main() -> int:
             log(f"::warning::Geen sessiecode van de API ({r.stderr.strip() or 'geen antwoord'}); er wordt niets ingeleverd.")
 
     cmd = [sys.executable, str(pyz), str(PAD), "--offline", "--out", str(OUT), "--bewijs"]
-    repo = os.environ.get("GITHUB_REPOSITORY", "")
+    repo = os.environ.get("GITHUB_REPOSITORY") or os.environ.get("CM_PROJECT", "")
     if "/" in repo:
         cmd += ["--klant", repo.split("/")[0], "--app", repo.split("/")[1]]
     if nonce:
