@@ -16,6 +16,7 @@ Met MCP roept je AI-agent aiscan zelf aan, terwijl hij bouwt: Claude Code, Curso
 Nodig: Python 3.11 of nieuwer en git.
 
 ```
+git checkout v1          # een vrijgegeven versie, niet de laatste stand van main
 pip install .            # in de map van aiscan
 ```
 

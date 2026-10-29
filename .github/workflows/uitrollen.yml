@@ -27,6 +27,7 @@ concurrency:
 jobs:
   uitrollen:
     runs-on: ubuntu-latest
+    environment: server   # geheimen van de server; Settings → Environments → server → alleen main en test
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5.0.0
