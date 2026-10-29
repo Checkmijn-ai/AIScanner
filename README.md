@@ -16,7 +16,7 @@ permissions:
   contents: read
   id-token: write                # voor de versleutelde rapportlink
 ...
-      - uses: Checkmijn-ai/AIScanner@5ff488483f5660c0977a83d380cf3daa417052dd  # v1
+      - uses: Checkmijn-ai/AIScanner@a04d55afebe7869f1eeb8c4f624d9aaef99ab98b  # v1
         with:
           rapport-in-repo: "false"
           faal-bij: nooit         # of: kritiek, hoog
