@@ -1,6 +1,7 @@
 # Geeft een versie van de Action vrij: zet het label v1 op een commit waarvan de tests geslaagd zijn.
 # Klanten gebruiken `Checkmijn-ai/AIScanner@v1`; wat op main staat, bereikt hen pas na deze stap.
 # Wie nog strenger wil, zet in zijn workflow de volledige commit (40 tekens) in plaats van v1.
+# Daarna: in voorbeelden/ de vaste versie (40 tekens) en, voor GitLab/Bitbucket/Azure, de drie controlegetallen bijwerken; tests/test_workflow_veilig.py bewaakt dat.
 name: Action vrijgeven
 on:
   workflow_dispatch:

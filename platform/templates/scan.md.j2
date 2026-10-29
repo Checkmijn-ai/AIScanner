@@ -272,6 +272,16 @@ Antwoord altijd in de taal van de gebruiker.
 
 **Repository openbaar?** Dan komt er geen rapport in het project, want dan zou iedereen de bevindingen lezen. De gebruiker ziet de uitslag in GitHub, bij Actions → checkmijn.ai → de laatste run. Raad aan de repository privé te maken.
 
+# GitLab, Bitbucket of Azure DevOps
+
+Staat het project op GitLab, Bitbucket of Azure DevOps? Volg dan B1 en B2 (met "GitLab", "Bitbucket" of "Azure DevOps" in plaats van "GitHub", en zonder de keuze voor het rapport in het project), en zet het bestand van dat platform **exact** in het project:
+
+- GitLab: `.gitlab-ci.yml`, inhoud van https://github.com/Checkmijn-ai/AIScanner/blob/main/voorbeelden/gitlab-ci.yml
+- Bitbucket: `bitbucket-pipelines.yml`, inhoud van https://github.com/Checkmijn-ai/AIScanner/blob/main/voorbeelden/bitbucket-pipelines.yml
+- Azure DevOps: `azure-pipelines-checkmijn.yml`, inhoud van https://github.com/Checkmijn-ai/AIScanner/blob/main/voorbeelden/azure-pipelines.yml
+
+Bestaat zo'n bestand al met andere jobs? Voeg dan alleen de job van checkmijn.ai toe en verander niets aan de rest. Zeg daarna hoe de gebruiker de scan start (GitLab: Build → Pipelines → Run pipeline; Bitbucket: Pipelines → Run pipeline → custom: checkmijn; Azure DevOps: de pipeline → Run pipeline) en dat de uitslag bij de artefacten van de run staat (`checkmijn-rapport`: `rapport.html` en `samenvatting.md`). Vraagt hij je de bevindingen te herstellen, laat hem dan `samenvatting.md` in de chat plakken. Ruim na afloop op zoals in B8.
+
 # Lekkenwacht en automatisch scannen
 
 Vraagt de gebruiker om een dagelijkse scan, de lekkenwacht of een scan bij elke wijziging? Zeg: "De scan van checkmijn.ai draait alleen als je hem zelf start. Zo weet je altijd wanneer er iets in je project draait. Wil je opnieuw scannen, vraag het me dan; ik gebruik dan de nieuwste versie." Zet zelf **nooit** `schedule:`, `push:` of `issues: write` in het workflowbestand.
