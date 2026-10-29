@@ -7,17 +7,22 @@ elke check gekoppeld aan de norm of wet waar hij uit komt (CRA, AVG, AI Act, NIS
 
 ## Gebruiken
 
-**In je GitHub-repository (aanbevolen).** Zet [voorbeelden/checkmijn.yml](voorbeelden/checkmijn.yml) in je project als `.github/workflows/checkmijn.yml`. De kern:
+**In je GitHub-repository (aanbevolen).** Zet [voorbeelden/checkmijn.yml](voorbeelden/checkmijn.yml) in je project als `.github/workflows/checkmijn.yml`, en start de scan bij *Actions → checkmijn.ai → Run workflow*. De scan draait alleen als je hem zelf start, krijgt alleen leesrechten en gebruikt een vaste versie (de volledige commit):
 
 ```yaml
-      - uses: Checkmijn-ai/AIScanner@v1   # vrijgegeven versie; of de volledige commit voor de strengste controle
+on:
+  workflow_dispatch: {}          # alleen als jij hem start
+permissions:
+  contents: read
+  id-token: write                # voor de versleutelde rapportlink
+...
+      - uses: Checkmijn-ai/AIScanner@5ff488483f5660c0977a83d380cf3daa417052dd  # v1
         with:
-          rapport-in-repo: auto   # privé-repository: rapport in .checkmijn/RAPPORT.md
-          insturen: "false"       # "true" = bewijsbestand (zonder code) inleveren voor een scorepagina
+          rapport-in-repo: "false"
           faal-bij: nooit         # of: kritiek, hoog
 ```
 
-De uitslag staat in de samenvatting van de run. Het volledige rapport is een artefact van de run en blijft in GitHub.
+De uitslag staat in de samenvatting van de run. Het volledige rapport is een artefact van de run en blijft in GitHub. Wil je het rapport in je project (voor een AI-bouwtool), gebruik dan [voorbeelden/checkmijn-schrijven.yml](voorbeelden/checkmijn-schrijven.yml).
 
 **Met Lovable, Bolt of v0 (geen terminal):** zie [LOVABLE-BOLT-V0.md](LOVABLE-BOLT-V0.md). De scan draait in GitHub, en je bouwtool leest het rapport uit `.checkmijn/RAPPORT.md` en herstelt de bevindingen.
 

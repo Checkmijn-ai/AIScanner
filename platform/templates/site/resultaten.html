@@ -52,7 +52,7 @@
     <div class="kaart">
       <h2 class="mt0">Hoe we tellen</h2>
       <ul class="zacht">
-        <li><b>Scans via GitHub:</b> GitHub bewijst met een ondertekend token dat de scan echt uit een repository komt. Ze tellen mee als de eigenaar <code>meetellen: "true"</code> laat staan (zo staat het in ons voorbeeldbestand). De dagelijkse lekkenwacht telt niet mee.</li>
+        <li><b>Scans via GitHub:</b> GitHub bewijst met een ondertekend token dat de scan echt uit een repository komt. Ze tellen alleen mee als de eigenaar dat zelf aanzet met <code>meetellen: "true"</code>; in ons voorbeeldbestand staat het uit.</li>
         <li><b>Zelfscans met een AI-agent:</b> de agent vraagt eerst of je wilt meetellen. Ze tellen alleen mee met een geldig bewijsbestand van een echte dagversie en een sessiecode die maar één keer werkt. We vermelden ze apart, omdat we ze minder goed kunnen controleren.</li>
         <li>We ontvangen alleen de letter. Geen code, geen bevindingen, geen naam van de repository. Per project bewaren we een onomkeerbare code, zodat we de eerste en de laatste score kunnen vergelijken.</li>
         <li>Hoogstens {{ 10 }} scans per project per dag tellen mee. Pull requests tellen niet mee.</li>

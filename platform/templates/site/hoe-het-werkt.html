@@ -24,8 +24,8 @@
   <p class="zacht">Kies wat bij je past. Scannen is altijd gratis.</p>
   <div class="routes mt2">
     <a class="kaart route" href="#agent"><span class="label">10 minuten</span><h3>Met een AI-assistent</h3><p class="zacht">Je werkt met Claude Code, Cursor, Copilot of Replit. Je plakt één zin en de rest gaat vanzelf.</p><span class="meer">Zo doe je het →</span></a>
-    <a class="kaart route" href="#bouwtools"><span class="label">15 minuten</span><h3>Met Lovable, Bolt of v0</h3><p class="zacht">Je bouwt in de browser. De scan draait dan in GitHub, bij elke wijziging.</p><span class="meer">Zo doe je het →</span></a>
-    <a class="kaart route" href="#github"><span class="label">Voor ontwikkelaars</span><h3>In je eigen pipeline</h3><p class="zacht">Eén bestand in je GitHub-repository, en elke wijziging krijgt een score.</p><span class="meer">Zo doe je het →</span></a>
+    <a class="kaart route" href="#bouwtools"><span class="label">15 minuten</span><h3>Met Lovable, Bolt of v0</h3><p class="zacht">Je bouwt in de browser. De scan draait dan in GitHub, als jij hem start.</p><span class="meer">Zo doe je het →</span></a>
+    <a class="kaart route" href="#github"><span class="label">Voor ontwikkelaars</span><h3>In je eigen pipeline</h3><p class="zacht">Eén bestand in je GitHub-repository. Jij start de scan, en krijgt een score.</p><span class="meer">Zo doe je het →</span></a>
     <a class="kaart route" href="#keuring"><span class="label">Vanaf €4.950</span><h3>Laten keuren</h3><p class="zacht">Heb je bewijs nodig voor een klant of auditor? Dan kijkt een keurder mee.</p><span class="meer">Meer over keuren →</span></a>
   </div>
 </div></section>
@@ -50,7 +50,7 @@
   <div class="drie-stappen mt2">
     <div><span class="stapnr">1</span><h3>Scannen</h3><p class="zacht">De scanner draait op je eigen computer of in je eigen GitHub. Na een paar minuten heb je je score.</p></div>
     <div><span class="stapnr">2</span><h3>Oplossen</h3><p class="zacht">Je AI vraagt eerst of het mag. Zeg je ja, dan lost het eerst de ernstigste problemen op.</p></div>
-    <div><span class="stapnr">3</span><h3>Opnieuw scannen</h3><p class="zacht">Je ziet je nieuwe score naast de oude. Via GitHub gebeurt dat vanzelf bij elke wijziging.</p></div>
+    <div><span class="stapnr">3</span><h3>Opnieuw scannen</h3><p class="zacht">Je ziet je nieuwe score naast de oude. Via GitHub start je de scan daarvoor opnieuw met één klik.</p></div>
   </div>
 </div></section>
 
@@ -82,11 +82,11 @@
 
 <section class="vlak" id="bouwtools"><div class="wrap sectie">
   <h2 class="mt0">Met Lovable, Bolt of v0</h2>
-  <p class="lead">Deze tools kunnen zelf niets op je computer uitvoeren. Daarom draait de scan in GitHub. Je plakt één keer een tekst en typt daarna alleen nog <q>verder</q>.</p>
+  <p class="lead">Deze tools kunnen zelf niets op je computer uitvoeren. Daarom draait de scan in GitHub. Je plakt één keer een tekst, start de scan in GitHub met één klik en typt daarna <q>verder</q>.</p>
   <div class="rooster-3 mt2">
     <div class="kaart"><span class="stapnr">1</span><h3>Koppel je project aan GitHub</h3><p class="zacht">Dat kan in je bouwtool. Kies een <strong>privé</strong>-repository.</p></div>
     <div class="kaart"><span class="stapnr">2</span><h3>Plak dit in de chat</h3>{{ m.code("bouwtool-1", bouwtool_1, "Eén keer plakken") }}</div>
-    <div class="kaart"><span class="stapnr">3</span><h3>Typ na twee minuten <q>verder</q></h3><p class="zacht">Je bouwtool toont je score en vraagt of hij mag oplossen. Zeg <q>ja</q>. Typ daarna weer <q>verder</q> voor je nieuwe score.</p><p class="zacht klein">Nog niet klaar? Dan zegt je bouwtool dat. Probeer het een minuut later opnieuw.</p></div>
+    <div class="kaart"><span class="stapnr">3</span><h3>Start de scan en typ <q>verder</q></h3><p class="zacht">Ga in GitHub naar <b>Actions → checkmijn.ai → Run workflow</b>. Typ na twee minuten <q>verder</q>. Je bouwtool toont je score en vraagt of hij mag oplossen. Na het oplossen start je de scan opnieuw.</p><p class="zacht klein">Klaar? Dan haalt je bouwtool het bestand weer weg. Er blijft niets van ons achter.</p></div>
   </div>
   <div class="rooster-2 mt2">
     <div>
@@ -94,7 +94,7 @@
       <ul>
         <li>Een rapport in je project (<code>.checkmijn/RAPPORT.md</code>) met je score en alle bevindingen.</li>
         <li>Een persoonlijke link naar hetzelfde rapport, mooi opgemaakt.</li>
-        <li>Een nieuwe scan bij elke wijziging, en elke dag de <a href="#lekkenwacht">lekkenwacht</a>.</li>
+        <li>Een scan als jij hem start, nooit vanzelf. Zie <a href="#veilig">waarom</a>.</li>
       </ul>
     </div>
     <div>
@@ -103,13 +103,14 @@
         <li>Je code blijft in GitHub.</li>
         <li>Het opgemaakte rapport bewaren we versleuteld. Alleen wie de link heeft, kan het lezen. Wij niet.</li>
         <li>Is je repository openbaar, dan komt het rapport er niet in. Anders kan iedereen je lekken lezen.</li>
-        <li>Met <code>meetellen: "true"</code> telt alleen je letter mee in de <a href="/resultaten">openbare resultaten</a>. Zet het op "false" als je dat niet wilt.</li>
+        <li>Je score telt niet mee in de <a href="/resultaten">openbare resultaten</a>, tenzij je dat zelf aanzet met <code>meetellen: "true"</code>.</li>
       </ul>
     </div>
   </div>
-  <p class="zacht klein">Wil je bouwtool het bestand niet maken? Doe het dan zelf in GitHub: <em>Add file → Create new file</em>, naam <code>.github/workflows/checkmijn.yml</code>, met de inhoud die hieronder bij de pipeline staat.</p>
+  <p class="zacht klein">Wil je bouwtool het bestand niet maken? Doe het dan zelf in GitHub: <em>Add file → Create new file</em>, naam <code>.github/workflows/checkmijn.yml</code>, met de inhoud van <a href="/checkmijn-schrijven.yml">checkmijn-schrijven.yml</a> (rapport in je project) of <a href="/checkmijn.yml">checkmijn.yml</a> (alleen lezen).</p>
   {{ m.code_inzien([
-    ("/checkmijn.yml", "checkmijn.yml", "het bestand dat in je project komt"),
+    ("/checkmijn-schrijven.yml", "checkmijn-schrijven.yml", "het bestand dat in je project komt (met rapport)"),
+    ("/checkmijn.yml", "checkmijn.yml", "hetzelfde, alleen lezen"),
     ("/scan.md", "scan.md", "de instructie die je bouwtool leest"),
     (BRONCODE ~ "/blob/main/action.yml", "action.yml", "wat de GitHub Action doet"),
     (BRONCODE ~ "/blob/main/action/scan_ci.py", "action/scan_ci.py", "de code die in GitHub draait"),
@@ -118,7 +119,7 @@
 
 <section class="wrap sectie" id="github">
   <h2 class="mt0">In je eigen pipeline</h2>
-  <p class="zacht">Zet dit bestand in <code>.github/workflows/checkmijn.yml</code>. Bij elke wijziging controleert GitHub of de scanner echt van ons komt, scant je code zonder internet en zet de uitslag bij de run.</p>
+  <p class="zacht">Zet dit bestand in <code>.github/workflows/checkmijn.yml</code>. Start de scan bij <b>Actions → checkmijn.ai → Run workflow</b>. GitHub haalt precies de vastgelegde versie van de scan op, controleert of de scanner echt van ons komt, scant je code zonder internet en zet de uitslag bij de run. De scan krijgt alleen leesrechten.</p>
   {{ m.code("workflow", workflow, ".github/workflows/checkmijn.yml") }}
   {{ m.code_inzien([
     ("/checkmijn.yml", "checkmijn.yml", "dit bestand, om te downloaden"),
@@ -128,30 +129,15 @@
   ]) }}
 </section>
 
-<section class="vlak" id="lekkenwacht"><div class="wrap sectie">
-  <div class="rooster-2">
-    <div>
-      <h2 class="mt0">Lekkenwacht: een seintje bij een nieuw lek</h2>
-      <p class="lead">Bijna elke dag wordt er ergens een lek gevonden in een pakket dat veel apps gebruiken. De lekkenwacht kijkt elke ochtend of jouw app daar last van heeft.</p>
-      <p>Is dat zo, dan krijg je een melding in GitHub (en een mail) met wat er lek is en naar welke versie je moet. Is het opgelost, dan verdwijnt de melding vanzelf. Is alles in orde, dan hoor je niets.</p>
-      <p class="zacht klein">Je lijst met onderdelen blijft in je eigen GitHub. Uitzetten kan met <code>waarschuwen: "nee"</code> in het bestand.</p>
-    </div>
-    <div class="kaart">
-      <h3 class="mt0">Wat hij bekijkt</h3>
-      <p class="zacht">De pakketten in je project, ook de pakketten die andere pakketten meebrengen. Voor JavaScript en TypeScript, Python, PHP, Go, Java en Ruby. En de versie van PHP, Node.js, Python, Ruby of Go als die in je project staat.</p>
-      <p class="zacht klein">Nog niet: Rust en .NET.</p>
-      <h3>Binnenkort: Lekkenwacht Plus</h3>
-      <p class="zacht">Ook voor wat buiten je code zit: je server, je databank, WordPress en plugins, je firewall. Je geeft op wat je gebruikt, wij mailen je bij een lek. We bewaren alleen namen en versies, zonder je bedrijfsnaam of serveradres.</p>
-    </div>
+<section class="vlak" id="veilig"><div class="wrap sectie">
+  <h2 class="mt0">Waarom de scan alleen draait als jij hem start</h2>
+  <p class="lead">Een scan draait in jouw project. Dan wil je precies weten wanneer, en welke code.</p>
+  <div class="rooster-3 mt2">
+    <div class="kaart"><h3 class="mt0">Alleen als jij klikt</h3><p class="zacht">Er draait niets vanzelf: niet bij een wijziging en niet 's nachts. Wil je opnieuw scannen, dan klik je opnieuw.</p></div>
+    <div class="kaart"><h3 class="mt0">Een vaste versie</h3><p class="zacht">In het bestand staat de lange code van één vrijgegeven versie. GitHub haalt precies die op, en geen andere. Ook wij kunnen die achteraf niet veranderen.</p></div>
+    <div class="kaart"><h3 class="mt0">Zo weinig rechten als kan</h3><p class="zacht">Standaard mag de scan je project alleen lezen. Wil je dat je bouwtool het rapport leest en oplost, dan mag de scan alleen dat rapport terugzetten, na jouw ja.</p></div>
   </div>
-
-  <h3 class="mt2" id="lekkenwacht-aanzetten">Aanzetten</h3>
-  <div class="rooster-3 mt1">
-    <div class="kaart"><h4 class="mt0">Nieuw project</h4><p class="zacht">Scan je voor het eerst via GitHub? Dan staat hij al aan.</p></div>
-    <div class="kaart"><h4 class="mt0">Al eerder gescand met een AI of bouwtool</h4>{{ m.code("lw-bouwtool", lw_bouwtool, "Plak dit in de chat") }}</div>
-    <div class="kaart"><h4 class="mt0">Eigen pipeline</h4>{{ m.code("lw-pipeline", lw_pipeline, "In .github/workflows/checkmijn.yml") }}<p class="zacht klein">Of neem het hele <a href="/checkmijn.yml">voorbeeldbestand</a> over.</p></div>
-  </div>
-  <p class="zacht klein mt2">Werkt het? In GitHub zie je bij <b>Actions → checkmijn.ai</b> in elke run een regel die begint met "Lekkenwacht". Krijg je geen mail, zet dan bij je repository <b>Watch</b> aan.</p>
+  <p class="zacht klein mt2">De scanner van de dag is ondertekend. Klopt de handtekening of het controlegetal niet, dan stopt de scan. Klaar met scannen? Haal het bestand weer weg; wil je later opnieuw scannen, dan haal je de nieuwste versie op.</p>
 </div></section>
 
 <section class="wrap sectie" id="keuring">
