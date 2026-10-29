@@ -29,7 +29,7 @@ jobs:
           fetch-depth: 0   # volledige geschiedenis: ook oude geheimen worden gevonden
           persist-credentials: false
       # Vaste versie van de scan (vrijgegeven als v1). Verander deze code niet zelf.
-      - uses: Checkmijn-ai/AIScanner@a04d55afebe7869f1eeb8c4f624d9aaef99ab98b  # v1
+      - uses: Checkmijn-ai/AIScanner@7e0ffdd1f8563001be6e0f81fbd80c2d44b9ae2c  # v1
         with:
           rapport-in-repo: "false"
           rapport-link: "true"   # opgemaakt rapport via een persoonlijke link, versleuteld (wij kunnen het niet lezen)
