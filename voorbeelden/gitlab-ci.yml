@@ -1,0 +1,45 @@
+# checkmijn.ai — scan in GitLab. Zet dit in je project als .gitlab-ci.yml (of voeg de job toe aan je bestaande bestand).
+# Starten: Build → Pipelines → Run pipeline.
+# Wat het doet, en wat niet:
+# - de scan draait ALLEEN als jij hem start. Er draait niets vanzelf, niet bij een wijziging en niet 's nachts;
+# - de scan leest je project en verandert niets; de code verlaat je pipeline niet;
+# - het scanscript en de sleutel worden opgehaald op één vaste versie en gecontroleerd met een controlegetal;
+#   de scanner van de dag wordt daarna gecontroleerd op handtekening en controlegetal. Klopt iets niet, dan stopt de scan;
+# - het rapport (rapport.html, samenvatting.md) staat bij de artefacten van deze run.
+# Klaar met scannen? Haal dit bestand weer weg. Opnieuw scannen: haal de nieuwste versie op via checkmijn.ai/scan.md.
+checkmijn:
+  image: python:3.12-slim
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "web"'   # alleen als iemand op "Run pipeline" klikt
+  variables:
+    GIT_DEPTH: "0"   # volledige geschiedenis: ook oude geheimen worden gevonden
+  script:
+    - apt-get update -qq && apt-get install -y -qq git >/dev/null
+    - git config --global --add safe.directory "$CI_PROJECT_DIR"
+    - |
+      set -eu
+      python3 - <<'PY'
+      import hashlib, os, sys, urllib.request
+      versie = "8f65f4b926cd9a1b4cdf86bd07dd72eb3c30ebdb"  # vaste versie van de scan (v1)
+      basis = f"https://raw.githubusercontent.com/Checkmijn-ai/AIScanner/{versie}/action/"
+      verwacht = {
+          "scan_ci.py": "bee76b4e5e5d43420feb2909aa58e9fe6ce325bdad518ab8fca87615fb67429a",
+          "public-key.pem": "175e602d78a3dc03e37e5bd1e4377bb391c140c575f279d5b2131cd312d119fb",
+          "requirements.txt": "ad8a2de3e568c856fb62a7318c8d69fd7ac14affd7868db4cfe03f7babb4445a",
+      }
+      os.makedirs("/tmp/checkmijn-scan", exist_ok=True)
+      for naam, controlegetal in verwacht.items():
+          data = urllib.request.urlopen(basis + naam, timeout=60).read()
+          if hashlib.sha256(data).hexdigest() != controlegetal:
+              sys.exit(f"checkmijn.ai: het controlegetal van {naam} klopt niet. Gestopt.")
+          open(f"/tmp/checkmijn-scan/{naam}", "wb").write(data)
+      print("checkmijn.ai: scanscript en sleutel gecontroleerd")
+      PY
+      python3 -m pip install --quiet --require-hashes --no-deps -r /tmp/checkmijn-scan/requirements.txt
+      CM_GEBEURTENIS="$CI_PIPELINE_SOURCE" CM_PROJECT="$CI_PROJECT_PATH" CM_OUT="$PWD/checkmijn-rapport" CM_PAD="$PWD" CM_INSTUREN=false CM_RAPPORT_IN_REPO=false CM_RAPPORT_LINK=false \
+        CM_MEETELLEN=false CM_WAARSCHUWEN=nee CM_FAAL_BIJ=nooit python3 /tmp/checkmijn-scan/scan_ci.py
+  artifacts:
+    when: always
+    expire_in: 30 days
+    paths:
+      - checkmijn-rapport/
