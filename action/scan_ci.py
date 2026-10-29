@@ -468,7 +468,30 @@ def rapport_in_repo(rap: dict, m: dict, letter: str, link: str | None = None, hi
         return "Het rapport kon niet in de repository gezet worden."
 
 
+AUTOMATISCH = os.environ.get("CM_AUTOMATISCH", "nee").strip().lower() in ("ja", "true", "yes")
+
+
+def alleen_handmatig() -> bool:
+    """De scan draait alleen als de gebruiker hem zelf start (Run workflow), tenzij de workflow uitdrukkelijk
+    'automatisch: ja' zet. Oudere workflowbestanden met push of schedule scannen dus niet meer vanzelf."""
+    gebeurtenis = os.environ.get("GITHUB_EVENT_NAME", "")
+    if gebeurtenis in ("", "workflow_dispatch") or AUTOMATISCH:
+        return False
+    tekst = ("**checkmijn.ai: deze scan is niet uitgevoerd.** De scan draait alleen als je hem zelf start, "
+             "bij *Actions → checkmijn.ai → Run workflow*. Deze run kwam van '" + gebeurtenis + "'. "
+             "Je project staat waarschijnlijk nog op een oudere versie van het bestand. Haal de nieuwste op via "
+             "https://checkmijn.ai/scan.md (bouwtool: plak de tekst van checkmijn.ai/hoe-het-werkt opnieuw). "
+             "Wil je toch automatisch scannen in je eigen pipeline, zet dan `automatisch: \"ja\"` bij de stap.")
+    log(tekst.replace("**", ""))
+    if SAMENVATTING:
+        with open(SAMENVATTING, "a", encoding="utf-8") as f:
+            f.write(tekst + "\n")
+    return True
+
+
 def main() -> int:
+    if alleen_handmatig():
+        return 0
     log(f"checkmijn.ai · manifest: {MANIFEST_URL}")
     m = json.loads(haal(MANIFEST_URL))
     handtekening = controleer_handtekening(m)
