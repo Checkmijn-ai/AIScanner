@@ -156,7 +156,7 @@ iso42001:
   - {id: "A.2", titel: "Beleid voor AI", dekking: gedeeltelijk, checks: [B-01, H-41], buiten: "Het AI-beleid van de organisatie en de afstemming met ander beleid; B-01 dekt het beleid bij het bouwen, H-41 het beleid voor gebruikers."}
   - {id: "A.3", titel: "Interne organisatie: rollen en zorgen melden", dekking: gedeeltelijk, checks: [Q-01, A-07], buiten: "Een procedure om zorgen over AI te melden voor alle medewerkers."}
   - {id: "A.4", titel: "Middelen: data, tools, systemen en mensen", dekking: gedeeltelijk, checks: [A-04, H-20, H-21, B-10, Q-07], buiten: "Middelen buiten het product."}
-  - {id: "A.5", titel: "Impactbeoordeling van AI-systemen", dekking: gedeeltelijk, checks: [H-10, H-26], buiten: "Het proces voor de hele organisatie; zie ook de tabel ISO/IEC 42005."}
+  - {id: "A.5", titel: "Impactbeoordeling van AI-systemen", dekking: gedeeltelijk, checks: [H-10, H-26], buiten: "Het proces voor de hele organisatie. H-10 is een indeling in risicoklassen, geen impactbeoordeling; H-26 (impactbeoordeling) is nog een voorstel. Zie ook de tabel ISO/IEC 42005."}
   - {id: "A.6", titel: "Levenscyclus: eisen, ontwerp, testen, uitrol, bewaking, documentatie en logs", dekking: gedeeltelijk, checks: [T-01, T-02, T-04, H-06, H-07, H-14, H-17, H-43, J-03], buiten: "Doelen voor verantwoorde ontwikkeling op het niveau van de organisatie."}
   - {id: "A.7", titel: "Data voor AI: herkomst, kwaliteit en voorbereiding", dekking: gedeeltelijk, checks: [H-11, H-20, I-01], buiten: "Datakwaliteit toetsen we alleen bij eigen training of finetuning."}
   - {id: "A.8", titel: "Informatie voor belanghebbenden en melden van incidenten", dekking: gedeeltelijk, checks: [H-05, H-13, J-08, H-25, H-41], buiten: "Communicatie buiten het product."}

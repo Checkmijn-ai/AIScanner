@@ -1279,7 +1279,8 @@ checks:
 - id: H-05
   domein: H. AI in het product
   wat: 'AI-melding: wie met een AI-functie praat, weet dat het AI is (tenzij dat voor een redelijke gebruiker duidelijk is); wie wordt blootgesteld aan emotieherkenning of biometrische indeling, wordt daarover
-    ingelicht; deepfakes en door AI gemaakte tekst over zaken van algemeen belang zijn als zodanig herkenbaar'
+    ingelicht; deepfakes en door AI gemaakte tekst over zaken van algemeen belang zijn als zodanig herkenbaar; met de uitzonderingen van art. 50(4): tekst die een mens heeft nagekeken onder redactionele
+    verantwoordelijkheid, en een beperkte vermelding bij duidelijk artistiek, satirisch of fictief werk'
   hoe: scan + keurder
   normen: AI Act art. 50(1), 50(3), 50(4)
   niveaus:
@@ -1344,13 +1345,15 @@ checks:
   status: actief
 - id: H-10
   domein: H. AI in het product
-  wat: 'Verboden AI en risicoklasse: de bouwer verklaart, en vanaf niveau 2 controleert de keurder, dat het product geen verboden AI-praktijk bevat (AI Act art. 5, ook het verbod op AI die beelden van kindermisbruik
-    of intieme beelden zonder toestemming maakt) en of het onder hoog risico valt (art. 6, bijlage I en III). Een verboden praktijk betekent geen label. Bij hoog risico: een label pas vanaf niveau 3, en
-    de scorepagina vermeldt "hoog risico: geen conformiteitsbeoordeling"; het label vervangt de wettelijke conformiteitsbeoordeling niet'
+  wat: 'Verboden AI en risicoklasse: de bouwer verklaart, en vanaf niveau 2 controleert de keurder, dat het product geen verboden AI-praktijk bevat (AI Act art. 5, ook het verbod op AI die intieme beelden,
+    video of geluid zonder toestemming of materiaal van kindermisbruik maakt of bewerkt, ook als dat een voorzienbaar gevolg is zonder passende technische waarborgen) en of het onder hoog risico valt (art.
+    6, bijlage I en III). Een verboden praktijk betekent geen label. Bij hoog risico: een label pas vanaf niveau 3, en de scorepagina vermeldt "Hoog-risico-AI: dit label is geen conformiteitsbeoordeling
+    volgens de AI Act (art. 43)"; zodra de verplichtingen voor hoog risico gelden (bijlage III: 2-12-2027, bijlage I: 2-8-2028) alleen met bewijs van de conformiteitsbeoordeling (EU-conformiteitsverklaring
+    en CE-markering)'
   hoe: verklaring + keurder
   normen: AI Act art. 5, 6, bijlage I en III; ISO/IEC 42001 A.5
   niveaus:
-    n1: als van toepassing
+    n1: optioneel
     n2: als van toepassing
     n3: verplicht
     n4: verplicht
@@ -1500,7 +1503,7 @@ checks:
   wat: 'Veilige uitvoer: vaste testset voor schadelijke inhoud en gevaarlijk advies (zelfbeschadiging, medisch, financieel, illegaal), met drempel; per app een vastgelegde lijst van ongewenste uitvoer (schadelijk,
     buiten de taak van de app, verzonnen, gevaarlijke acties) met ernst, en technische blokkades voor de ernstigste soorten'
   hoe: scan + document
-  normen: OWASP LLM07:2026; AI Act art. 15; ISO/IEC 42001; AIUC-1 C001, C003, C004, C005
+  normen: OWASP LLM07:2026; AI Act art. 15 (bij hoog risico); ISO/IEC 42001; AIUC-1 C001, C003, C004, C005
   niveaus:
     n1: niet
     n2: verplicht
@@ -1771,12 +1774,12 @@ checks:
   status: actief
 - id: H-42
   domein: H. AI in het product
-  wat: 'Modelbestanden veilig geladen: eigen of gedownloade modellen alleen in een formaat zonder uitvoerbare code (bv. safetensors, ONNX) of met een gecontroleerd controlegetal; een vaste revisie in plaats
-    van de nieuwste; code uit de modelrepository niet uitvoeren (trust_remote_code uit)'
+  wat: 'Modelbestanden veilig geladen: eigen of gedownloade modellen alleen in een formaat zonder uitvoerbare code (bv. safetensors, ONNX, GGUF); een controlegetal alleen als aanvulling, of voor pickle-bestanden
+    uit de eigen, gedocumenteerde trainingspijplijn; een vaste revisie in plaats van de nieuwste; code uit de modelrepository niet uitvoeren (trust_remote_code uit)'
   hoe: scan + analist
   normen: OWASP LLM04:2026; ISO/IEC 27090:2026; CycloneDX ML-BOM
   niveaus:
-    n1: als van toepassing
+    n1: niet
     n2: als van toepassing
     n3: als van toepassing
     n4: als van toepassing
@@ -1786,10 +1789,10 @@ checks:
   status: actief
 - id: H-43
   domein: H. AI in het product
-  wat: 'Geen verzonnen antwoorden bij een AI-functie die antwoordt of adviseert op basis van eigen bronnen (kennisbank, documenten): op tien vragen waarop de bron geen antwoord geeft, zegt de functie dat
-    ze het niet weet of verwijst ze door; antwoorden vermelden hun bron'
+  wat: 'Geen verzonnen antwoorden bij een AI-functie die antwoordt of adviseert op basis van eigen bronnen (kennisbank, documenten): op hoogstens één van tien vragen waarop de bron geen antwoord geeft,
+    verzint de functie iets in plaats van te zeggen dat ze het niet weet of door te verwijzen; antwoorden vermelden een bron die bestaat'
   hoe: aanvalstest + keurder
-  normen: OWASP LLM07:2026; AI Act art. 15; ISO/IEC 42001 A.6
+  normen: OWASP LLM07:2026; ISO/IEC 42001 A.6; AI Act art. 15 (bij hoog risico)
   niveaus:
     n1: niet
     n2: als van toepassing
