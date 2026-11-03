@@ -7,9 +7,9 @@
 #   niet         – valt buiten de keuring; de organisatie regelt en toont dit zelf.
 # 'Vanaf niveau' rekent de site zelf uit: het laagste niveau waarop de genoemde checks verplicht zijn.
 # De omschrijvingen zijn onze eigen korte samenvattingen, niet de tekst van de norm (die is auteursrechtelijk beschermd).
-# Status: concept, hoort bij keuringsnorm 0.5. Nog niet beoordeeld door een externe auditor.
-versie: "0.4 (concept)"
-stand: "2026-10-26"
+# Status: concept, hoort bij keuringsnorm 0.6. Nog niet beoordeeld door een externe auditor.
+versie: "0.6 (concept)"
+stand: "2026-11-03"
 norm: "ISO/IEC 27001:2022 bijlage A (= ISO/IEC 27002:2022)"
 iso27001:
   # 5. Organisatorische maatregelen
@@ -148,6 +148,20 @@ iso42005:
   - {id: "6.7", titel: "Wie geraakt wordt", dekking: volledig, checks: [H-13, H-16, H-26]}
   - {id: "6.8", titel: "Voordelen en schade, falen en voorzienbaar misbruik", dekking: volledig, checks: [H-01, H-18, H-22, H-17, H-26, H-27], buiten: "Gevolgen voor de samenleving alleen zoals beschreven in H-26."}
   - {id: "6.9", titel: "Maatregelen tegen schade", dekking: volledig, checks: [H-03, H-15, H-19, H-25, H-28]}
+
+
+# ISO/IEC 42001:2023 bijlage A (managementsysteem voor AI). Per groep van controls; de keuring toetst alleen de kant van
+# het product, nooit het managementsysteem van de organisatie. Omschrijvingen zijn eigen samenvattingen.
+iso42001:
+  - {id: "A.2", titel: "Beleid voor AI", dekking: gedeeltelijk, checks: [B-01, H-41], buiten: "Het AI-beleid van de organisatie en de afstemming met ander beleid; B-01 dekt het beleid bij het bouwen, H-41 het beleid voor gebruikers."}
+  - {id: "A.3", titel: "Interne organisatie: rollen en zorgen melden", dekking: gedeeltelijk, checks: [Q-01, A-07], buiten: "Een procedure om zorgen over AI te melden voor alle medewerkers."}
+  - {id: "A.4", titel: "Middelen: data, tools, systemen en mensen", dekking: gedeeltelijk, checks: [A-04, H-20, H-21, B-10, Q-07], buiten: "Middelen buiten het product."}
+  - {id: "A.5", titel: "Impactbeoordeling van AI-systemen", dekking: gedeeltelijk, checks: [H-10, H-26], buiten: "Het proces voor de hele organisatie; zie ook de tabel ISO/IEC 42005."}
+  - {id: "A.6", titel: "Levenscyclus: eisen, ontwerp, testen, uitrol, bewaking, documentatie en logs", dekking: gedeeltelijk, checks: [T-01, T-02, T-04, H-06, H-07, H-14, H-17, H-43, J-03], buiten: "Doelen voor verantwoorde ontwikkeling op het niveau van de organisatie."}
+  - {id: "A.7", titel: "Data voor AI: herkomst, kwaliteit en voorbereiding", dekking: gedeeltelijk, checks: [H-11, H-20, I-01], buiten: "Datakwaliteit toetsen we alleen bij eigen training of finetuning."}
+  - {id: "A.8", titel: "Informatie voor belanghebbenden en melden van incidenten", dekking: gedeeltelijk, checks: [H-05, H-13, J-08, H-25, H-41], buiten: "Communicatie buiten het product."}
+  - {id: "A.9", titel: "Verantwoord en beoogd gebruik", dekking: gedeeltelijk, checks: [H-09, H-13, H-15, H-19], buiten: "Gebruik van AI-systemen van derden door de organisatie zelf."}
+  - {id: "A.10", titel: "Derde partijen: leveranciers en klanten", dekking: gedeeltelijk, checks: [F-08, Q-05, I-08, H-23, H-42], buiten: "Leveranciers en contracten buiten het product."}
 
 # AIUC-1 (AI Underwriting Company, standaard voor AI-agents). Eisen en nummers volgens openbare samenvattingen;
 # de volledige norm staat op aiuc-1.com. Omschrijvingen zijn eigen samenvattingen. Concept, nog niet getoetst door AIUC.

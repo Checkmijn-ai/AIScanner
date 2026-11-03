@@ -1,7 +1,7 @@
 {% extends "site/basis.html" %}
 {% import "site/macros.html" as m %}
 {% block inhoud %}
-{% call m.kop("Crosswalk", "Wat de keuring dekt, per control", "Een auditor denkt per control: is die gedekt, door welke checks, en wat moet ik zelf nog toetsen? Deze tabel zet alle 93 controls uit ISO/IEC 27001:2022 bijlage A naast onze checks. Ook wat we niet dekken, staat erin. Verderop: ISO 42005 (de impact van AI op mensen), AIUC-1 (AI-agents), NIS2 en BIO2.") %}
+{% call m.kop("Crosswalk", "Wat de keuring dekt, per control", "Een auditor denkt per control: is die gedekt, door welke checks, en wat moet ik zelf nog toetsen? Deze tabel zet alle 93 controls uit ISO/IEC 27001:2022 bijlage A naast onze checks. Ook wat we niet dekken, staat erin. Verderop: ISO 42001 (AI-managementsysteem), ISO 42005 (de impact van AI op mensen), AIUC-1 (AI-agents), NIS2 en BIO2.") %}
 <div class="niveautellers">
   <div><b>{{ cw.tel.volledig }}</b><span class="zacht klein">volledig gedekt voor het product</span></div>
   <div><b>{{ cw.tel.gedeeltelijk }}</b><span class="zacht klein">gedeeltelijk gedekt</span></div>
@@ -10,7 +10,7 @@
 <div class="knoppenrij"><a class="knop licht klein" href="/crosswalk.csv">Als CSV voor je dossier</a><a class="knop licht klein" href="/norm/crosswalk.yaml">Als bestand (YAML)</a><a class="knop licht klein" href="/wat-we-controleren">Alle checks</a></div>
 {% endcall %}
 <section class="wrap sectie">
-  {{ m.let_op("Versie " ~ cw.versie ~ " (stand " ~ datum_nl(cw.stand) ~ "), bij keuringsnorm 0.5. Nog niet beoordeeld door een externe auditor, en de keuring is nog niet geaccrediteerd. Gebruik de tabel om te zien wat er getoetst wordt; of je erop steunt, beslist je auditor.") }}
+  {{ m.let_op("Versie " ~ cw.versie ~ " (stand " ~ datum_nl(cw.stand) ~ "), bij keuringsnorm " ~ normversie ~ ". Nog niet beoordeeld door een externe auditor, en de keuring is nog niet geaccrediteerd. Gebruik de tabel om te zien wat er getoetst wordt; of je erop steunt, beslist je auditor.") }}
   <h2>Hoe je de tabel leest</h2>
   <ul>
     <li><b>Volledig:</b> voor de gekeurde software en de omgeving waarin ze draait, dekken de checks alle onderdelen van de control.</li>
@@ -37,6 +37,14 @@
   </table></div>
   {% endfor %}
   <p class="zacht klein"><sup>z</sup> = deze check voert de zelfscan al automatisch uit.</p>
+
+  <h2 id="iso42001">ISO/IEC 42001: AI-managementsysteem, bijlage A</h2>
+  <p class="zacht">ISO/IEC 42001 is een norm voor het managementsysteem van een organisatie. De keuring toetst alleen de kant van het product: per groep van controls welke checks bewijs leveren. Onze keuring is geen ISO 42001-certificering.</p>
+  <div class="scroll"><table class="tabel">
+    <thead><tr><th scope="col">Groep</th><th scope="col">Dekking</th><th scope="col">Checks</th><th scope="col">Vanaf niveau</th><th scope="col">Buiten de keuring</th></tr></thead>
+    <tbody>{% for x in cw.iso42001 %}<tr id="iso42001-{{ x.id }}"><td><b>{{ x.id }}</b> {{ x.titel }}</td><td><span class="label dek-{{ x.dekking }}">{{ dekking[x.dekking] }}</span></td>
+      <td class="klein">{% for c in x.checks %}<a href="/check/{{ c }}">{{ c }}</a>{{ ' ' if not loop.last }}{% endfor %}</td><td>{{ x.vanaf or '–' }}</td><td class="zacht klein">{{ x.buiten or '' }}</td></tr>{% endfor %}</tbody>
+  </table></div>
 
   <h2 id="iso42005">ISO/IEC 42005: impactbeoordeling van een AI-systeem</h2>
   <p class="zacht">Wat de keuring toetst van een impactbeoordeling: wat doet de AI met mensen, en wat is eraan gedaan. Alleen voor apps met AI, vooral als die over mensen beslist of adviseert.</p>
