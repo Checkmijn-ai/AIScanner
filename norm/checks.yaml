@@ -98,7 +98,7 @@ checks:
   normen: Tabblad Wetgeving
   niveaus:
     n1: niet
-    n2: niet
+    n2: verplicht
     n3: verplicht
     n4: verplicht
   in_scanner: false
@@ -1199,12 +1199,12 @@ checks:
   status: actief
 - id: G-07
   domein: G. Kwetsbaarheden en updates (CRA)
-  wat: Meldproces klaar om actief uitgebuite kwetsbaarheden en ernstige incidenten binnen 24 uur te melden
+  wat: Meldproces klaar om actief uitgebuite kwetsbaarheden en ernstige incidenten binnen 24 uur te melden (CRA, sinds 11 september 2026), voor software die als product op de markt komt
   hoe: document
   normen: CRA art. 14
   niveaus:
     n1: niet
-    n2: niet
+    n2: als van toepassing
     n3: verplicht
     n4: verplicht
   in_scanner: false
@@ -1852,12 +1852,13 @@ checks:
   status: actief
 - id: I-05
   domein: I. Data en privacy
-  wat: Hostingregio en doorgifte buiten de EER gekend en gedocumenteerd
+  wat: Hostingregio en doorgifte buiten de EER gekend en gedocumenteerd, met de grondslag voor elke doorgifte (adequaatheidsbesluit, zoals het EU-VS-kader, of modelcontracten); wie op een adequaatheidsbesluit
+    steunt, heeft een plan B voor als het vervalt
   hoe: document
   normen: AVG hoofdstuk V
   niveaus:
     n1: niet
-    n2: niet
+    n2: verplicht
     n3: verplicht
     n4: verplicht
   in_scanner: false
@@ -3422,12 +3423,13 @@ checks:
   status: actief
 - id: X-03
   domein: X. Hosting en infrastructuur
-  wat: Gegevens en back-ups in de EER, of doorgifte gedekt (I-05); blootstelling aan niet-Europese wetgeving (bv. de Amerikaanse CLOUD Act) staat in het rapport
+  wat: Gegevens en back-ups in de EER, of doorgifte gedekt (I-05); blootstelling aan niet-Europese wetgeving (bv. de Amerikaanse CLOUD Act) staat in het rapport en op de scorepagina. Een niet-Europese aanbieder
+    met een geldige grondslag is geen bevinding, wel een vermelding
   hoe: document
   normen: AVG hoofdstuk V
   niveaus:
     n1: niet
-    n2: niet
+    n2: verplicht
     n3: verplicht
     n4: verplicht
   in_scanner: false
