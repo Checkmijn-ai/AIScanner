@@ -51,6 +51,24 @@ assert c["status"] == "Geen bevinding" and not c["bevindingen"], c
 c = scan({"firestore.rules": "service cloud.firestore {\n match /{d=**} {\n  allow read, write: if true;\n }\n}\n"})
 assert any(b["ernst"] == "Kritiek" for b in c["bevindingen"]), c
 
+# Lovable met drizzle-kit: migraties in drizzle/migrations, met de opmaak van drizzle (statement-breakpoint, AS PERMISSIVE)
+c = scan({"drizzle/migrations/0000_init.sql": """CREATE TABLE "bookings" ("id" uuid PRIMARY KEY, "user_id" uuid);
+--> statement-breakpoint
+CREATE TABLE "public"."profiles" ("id" uuid PRIMARY KEY);
+--> statement-breakpoint
+ALTER TABLE "profiles" ENABLE ROW LEVEL SECURITY;
+--> statement-breakpoint
+CREATE POLICY "own" ON "profiles" AS PERMISSIVE FOR SELECT TO "authenticated" USING (auth.uid() = id);
+""", "package.json": '{"dependencies": {"drizzle-orm": "0.44.0"}}'})
+t = [b["titel"] for b in c["bevindingen"]]
+assert c["status"] == "Bevinding", c
+assert "Tabel 'bookings' zonder Row Level Security" in t and not any("profiles" in x for x in t), t
+# eigen map via drizzle.config.ts (out)
+c = scan({"drizzle.config.ts": 'export default defineConfig({ out: "./db/sql", schema: "./src/db/schema.ts" })',
+          "db/sql/0001.sql": 'CREATE TABLE "klanten" ("id" int);'})
+assert any("klanten" in b["titel"] for b in c["bevindingen"]), c
+c = scan({"package.json": '{"dependencies": {"drizzle-orm": "0.44.0"}}'})
+assert c["status"] == "Niet gescand", c                                                # drizzle zonder migraties
 c = scan({"package.json": '{"dependencies": {"@supabase/supabase-js": "2.0.0"}}'})
 assert c["status"] == "Niet gescand", c                                                # Supabase zonder migraties
 assert scan({"app.py": "print(1)\n"})["status"] == "Niet van toepassing"

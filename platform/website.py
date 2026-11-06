@@ -728,7 +728,8 @@ def robots():
         return Response("User-agent: *\nDisallow: /\n", mimetype="text/plain")
     if TEST:
         # Testomgeving: niet indexeren (elke pagina heeft ook noindex). /nieuws mag gelezen worden om de feeds te controleren.
-        return Response("User-agent: *\nAllow: /nieuws\nDisallow: /\n", mimetype="text/plain")
+        # scan.md en latest.json mogen opgehaald worden, zodat een AI-agent de instructie zelf kan lezen; ze krijgen noindex.
+        return Response("User-agent: *\nAllow: /nieuws\nAllow: /scan.md\nAllow: /latest.json\nDisallow: /\n", mimetype="text/plain")
     return Response(f"User-agent: *\nDisallow: /rapport/\nDisallow: /api/\nDisallow: /nieuws/post-van-de-dag\nDisallow: /nieuwsbrief/\nSitemap: {SITE_URL}/sitemap.xml\n",
                     mimetype="text/plain")
 

@@ -190,9 +190,9 @@ De scanner draait dan in GitHub Actions, in het project van de gebruiker. De cod
 
 **B2. Leg uit en vraag toestemming.** Zeg:
 
-> "Ik zet één bestand in je project: `.github/workflows/checkmijn.yml`. Daarmee kun je je project scannen in GitHub. De scan draait **alleen als jij hem start**; er draait niets vanzelf. Je code verlaat GitHub niet. Het opgemaakte rapport wordt versleuteld bewaard bij checkmijn.ai; de sleutel zit alleen in jouw persoonlijke link, dus checkmijn.ai kan het niet lezen. Als je klaar bent, haal ik het bestand weer weg.
+> "Ik zet één bestand in je project: `.github/workflows/checkmijn.yml`. Daarmee kun je je project scannen in GitHub. De scan is open source: de code staat op https://github.com/Checkmijn-ai/AIScanner, en het bestand legt precies één versie vast (de lange code achter `@`), zodat er niets anders draait dan wat je daar kunt nalezen. De scan draait **alleen als jij hem start**; er draait niets vanzelf. Je code verlaat GitHub niet. Het opgemaakte rapport wordt versleuteld bewaard bij checkmijn.ai; de sleutel zit alleen in jouw persoonlijke link, dus checkmijn.ai kan het niet lezen. Als je klaar bent, haal ik het bestand weer weg.
 >
-> Eén keuze: mag de scan het rapport in je project zetten (`.checkmijn/RAPPORT.md`)? Dan kan ik de uitslag lezen en de bevindingen voor je herstellen. Daarvoor krijgt de scan schrijfrechten op je project; hij gebruikt die alleen voor dat rapport. Zeg je nee, dan krijgt de scan alleen leesrechten en bekijk je de uitslag zelf in GitHub.
+> Eén keuze: mag de scan het rapport in je project zetten (`.checkmijn/RAPPORT.md`)? Dan kan ik de uitslag lezen en de bevindingen voor je herstellen. Daarvoor krijgt de scan schrijfrechten op je project; hij gebruikt die alleen voor dat rapport. Het rapport blijft daarna wel in de geschiedenis van je repository staan, ook als we het later weghalen. Zeg je nee, dan krijgt de scan alleen leesrechten en bekijk je de uitslag zelf in GitHub. Twijfel je, kies dan nee.
 >
 > Mag ik het bestand toevoegen, en mag de scan het rapport in je project zetten? (bestand: ja/nee · rapport in project: ja/nee)"
 
@@ -200,15 +200,24 @@ Doe niets zonder een duidelijk "ja" voor het bestand.
 
 **B3. Maak het bestand `.github/workflows/checkmijn.yml`** met **exact** de inhoud hieronder. Verander er niets aan, en verander verder niets in het project.
 
-*Rapport in project: ja* (aanbevolen voor Lovable, Bolt en v0):
+*Rapport in project: ja* (handig met Lovable, Bolt en v0: de agent kan dan zelf herstellen):
 
 ```yaml
 {{ workflow_schrijven }}```
 
-*Rapport in project: nee* (alleen lezen):
+*Rapport in project: nee* (alleen lezen, het veiligst):
 
 ```yaml
 {{ workflow }}```
+
+**Dependabot.** Staat er een `.github/dependabot.yml` met `package-ecosystem: "github-actions"`, of zet je die later aan (de scan raadt bewaking aan, G-08)? Voeg dan bij dat ecosysteem toe, zodat Dependabot de vastgezette versie van de scan niet wijzigt:
+
+```yaml
+    ignore:
+      - dependency-name: "Checkmijn-ai/AIScanner"
+```
+
+Opent Dependabot toch een pull request op `checkmijn.yml`, zeg dan tegen de gebruiker dat hij die niet moet samenvoegen.
 
 **B4. Zeg tegen de gebruiker hoe hij de scan start:**
 
@@ -250,7 +259,7 @@ Een bevinding met *(nakijken)* is niet zeker. Kijk of ze klopt:
   reden: HTML komt uit onze eigen vertalingen, niet van gebruikers
 ```
 
-Zo telt die melding bij de volgende scan niet meer mee; ze blijft zichtbaar in het rapport, met de reden. Zekere bevindingen (zonder *nakijken*) kun je zo niet wegzetten.
+Zo telt die melding bij de volgende scan niet meer mee; ze blijft zichtbaar in het rapport, met de reden. Zekere bevindingen (zonder *nakijken*) kun je zo niet wegzetten, met één uitzondering: een lek in een **ontwikkelafhankelijkheid** (F-01, Middel of Laag, met "ontwikkelafhankelijkheid" in de titel) waarvoor geen bruikbare oplossing bestaat, bv. esbuild via drizzle-kit, dat alleen in de testserver draait. Leg die vast met `check: F-01`, het bestand uit de melding (bv. `package-lock.json`) en de reden.
 
 Wijzig `.checkmijn/` (behalve `onterecht.yml`, na een "ja") en het workflowbestand nooit zelf, en schrijf zelf geen score.
 
@@ -264,7 +273,7 @@ Wijzig `.checkmijn/` (behalve `onterecht.yml`, na een "ja") en het workflowbesta
 
 **B8. Opruimen.** Vraag letterlijk:
 
-> "Zal ik het checkmijn.ai-bestand en de map `.checkmijn/` (met het rapport) weer uit je project halen? Dan blijft er niets van de scan achter, en niemand kan later je bevindingen lezen, ook niet als je de repository ooit openbaar maakt. Wil je later opnieuw scannen, vraag het me dan opnieuw: je krijgt dan de nieuwste versie. (ja/nee)"
+> "Zal ik het checkmijn.ai-bestand en de map `.checkmijn/` (met het rapport) weer uit je project halen? Dan staat er niets meer van de scan in je project. Let op: een rapport dat in je project stond, blijft in de geschiedenis van de repository staan. Houd de repository daarom privé; maak je ze ooit openbaar, dan zijn de oude bevindingen daar terug te vinden. Wil je later opnieuw scannen, vraag het me dan opnieuw: je krijgt dan de nieuwste versie. (ja/nee)"
 
 Bij "ja": verwijder `.github/workflows/checkmijn.yml` en de map `.checkmijn/`, en verander verder niets. Bewaar de link naar het rapport niet ergens in het project. Zeg: "Opgeruimd. Je rapport blijft 90 dagen bereikbaar via je persoonlijke link."
 

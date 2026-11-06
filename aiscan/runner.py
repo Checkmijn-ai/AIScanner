@@ -86,7 +86,8 @@ MAX_ONTERECHT = 50
 
 def onterecht_toepassen(proj, results) -> int:
     """Leest .checkmijn/onterecht.yml van de bouwer. Alleen meldingen 'nakijken' (bevestigen) kunnen onterecht zijn;
-    een zekere bevinding blijft altijd staan. Elke regel vraagt een reden, en alles staat zichtbaar in het rapport.
+    een zekere bevinding blijft altijd staan. Uitzondering: een lek in een ontwikkelafhankelijkheid (F-01, Middel of Laag)
+    zonder bruikbare oplossing mag met een reden vastgelegd worden, bv. esbuild via drizzle-kit (alleen de testserver). Elke regel vraagt een reden, en alles staat zichtbaar in het rapport.
 
     - check: U-07
       bestand: src/i18n/teksten.ts
@@ -110,7 +111,8 @@ def onterecht_toepassen(proj, results) -> int:
     for c, res in results:
         houden = []
         for f in res.findings:
-            r = next((r for r in regels if f.bevestigen and r[0] == f.check and r[1] == (f.bestand or "").lstrip("./")
+            mag = f.bevestigen or (f.check == "F-01" and "ontwikkelafhankelijkheid" in f.titel and f.ernst in ("Middel", "Laag"))
+            r = next((r for r in regels if mag and r[0] == f.check and r[1] == (f.bestand or "").lstrip("./")
                       and (not r[2] or r[2] == f.regel)), None)
             if r:
                 res.onterecht.append((f, r[3]))

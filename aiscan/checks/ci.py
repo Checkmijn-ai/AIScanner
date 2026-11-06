@@ -23,8 +23,13 @@ THRESHOLD = re.compile(r"(composer audit|govulncheck|cargo audit|bundle(r)?[- ]a
 SOFT = re.compile(r"(continue-on-error:\s*true|\|\|\s*(true|exit 0)|allow_failure:\s*true)", re.I)
 
 
+EIGEN = re.compile(r"Checkmijn-ai/AIScanner@|checkmijn-scan/scan_ci\.py|CM_GEBEURTENIS", re.I)
+
+
 def ci_files(proj):
-    return proj.find(*CI_FILES, where="all_files")
+    """De pipelines van het project, zonder het workflowbestand van checkmijn.ai zelf: dat test het project niet
+    en hoort niet als 'de pipeline' te tellen (anders lijkt het scanbestand de fout)."""
+    return [p for p in proj.find(*CI_FILES, where="all_files") if not EIGEN.search(proj.text(p))]
 
 
 @check("D-02")
@@ -88,6 +93,6 @@ def monitoring(proj, meta):
         r.info.append("Geplande scan van afhankelijkheden in " + ", ".join(proj.rel(p) for p in sched))
     if not bots and not sched:
         r.add(Finding("G-08", meta["ernst"], "Geen doorlopende bewaking van nieuwe kwetsbaarheden in afhankelijkheden",
-                      bewijs="Geen Dependabot, Renovate, Snyk of geplande scan gevonden. Met de SBOM uit dit rapport kan de "
-                             "maandelijkse bewaking van de scanner dit opvangen."))
+                      bewijs="Geen Dependabot, Renovate, Snyk of geplande scan gevonden. Zet je Dependabot aan voor GitHub Actions, "
+                             "sluit dan Checkmijn-ai/AIScanner uit (ignore) zodat de vastgezette versie van de scan niet wijzigt."))
     return r
