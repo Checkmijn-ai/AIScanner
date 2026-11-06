@@ -50,4 +50,9 @@ s = score.bereken([({"id": x}, Result(x)) for x in ("E-05", "F-01", "C-01", "C-0
                   + [({"id": "W-13"}, Result("W-13", status="Niet gescand"))], deel=False)
 assert s["letter"] == "C" and s["onvolledig"] == ["W-13"], s
 assert "maximum voor een zelfscan" in s["uitleg"] and "Onvolledig" in s["uitleg"], s["uitleg"]
-print("ok: eigen workflow telt niet als pipeline, dev-lek met reden, C als maximum, onvolledig zonder W-13")
+# de geheime sleutel van Supabase (nieuwe vorm) wordt gevonden, de publieke niet
+from aiscan.secretscan import scan_text  # noqa: E402
+geheim = "sb_" + "secret_" + "N7x" * 10  # in stukken, zodat de scan van deze repository zelf er niet over valt
+assert [h[1] for h in scan_text(f'const s = "{geheim}";', "src/lib/supabase.ts")] == ["supabase-secret-key"]
+assert scan_text('const p = "sb_' + 'publishable_' + 'Ab1' * 10 + '";', "src/lib/supabase.ts") == []
+print("ok: eigen workflow telt niet als pipeline, dev-lek met reden, C als maximum, onvolledig zonder W-13, Supabase-sleutels")

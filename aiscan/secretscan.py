@@ -35,6 +35,10 @@ def rules():
     # eigen regel bovenop gitleaks: een databaseadres met gebruikersnaam en wachtwoord (postgres://user:wachtwoord@host)
     compiled.append({"id": "database-url-met-wachtwoord", "desc": "Databaseadres met wachtwoord", "keywords": ["://"],
                      "rx": DB_URL, "group": 1, "path_rx": None, "allow_rx": [DB_LOKAAL]})
+    # eigen regel: de geheime sleutel van Supabase in de nieuwe vorm (sb_secret_...). Omzeilt Row Level Security volledig;
+    # nooit in de frontend. De publieke sleutel (sb_publishable_...) en de anon-JWT tellen niet (zie publieke_sleutel).
+    compiled.append({"id": "supabase-secret-key", "desc": "Geheime sleutel van Supabase", "keywords": ["sb_secret_"],
+                     "rx": re.compile(r"\b(sb_secret_[A-Za-z0-9_-]{20,})"), "group": 1, "path_rx": None, "allow_rx": []})
     allow_paths = []
     for p in d.get("allow_paths", []):
         try:
@@ -170,6 +174,8 @@ def nice(rule_id: str) -> str:
         return "mogelijk geheim (algemeen patroon)"
     if rule_id == "private-key":
         return "privésleutel"
+    if rule_id == "supabase-secret-key":
+        return "geheime sleutel van Supabase (omzeilt Row Level Security)"
     parts = rule_id.split("-")
     brand = BRANDS.get(parts[0])
     rest = parts[1:] if brand else parts
