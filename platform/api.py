@@ -216,8 +216,10 @@ DAGVERSIE_BESTANDEN = {"scan.md": "text/markdown; charset=utf-8", "latest.json":
 
 def _dagversie_bestand(naam):
     def view():
-        return Response(lees_tekst(naam), mimetype=DAGVERSIE_BESTANDEN[naam],
-                        headers={"Access-Control-Allow-Origin": "*", "Cache-Control": "public, max-age=300"})
+        kop = {"Access-Control-Allow-Origin": "*", "Cache-Control": "public, max-age=300"}
+        if os.environ.get("CHECKMIJN_OMGEVING", "") == "test":
+            kop["X-Robots-Tag"] = "noindex, nofollow"  # mag gelezen worden door een agent, niet in zoekmachines
+        return Response(lees_tekst(naam), mimetype=DAGVERSIE_BESTANDEN[naam], headers=kop)
     view.__name__ = "dagversie_" + naam.replace(".", "_").replace("-", "_")
     return view
 

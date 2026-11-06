@@ -50,9 +50,25 @@ def _regel(tekst: str, pos: int) -> int:
     return tekst.count("\n", 0, pos) + 1
 
 
+DRIZZLE_OUT = re.compile(r"""\bout\s*:\s*['"`]\.?/?([\w./-]+?)/?['"`]""")
+
+
+def _drizzle_mappen(proj):
+    """Waar drizzle-kit de SQL-migraties zet: standaard drizzle/ (Lovable: drizzle/migrations), of 'out' in drizzle.config."""
+    mappen = ["drizzle/*.sql", "*/drizzle/*.sql"]
+    for p in proj.find("drizzle.config.ts", "drizzle.config.js", "drizzle.config.mjs", "drizzle.config.cjs",
+                       "drizzle.config.json", where="all_files"):
+        m = DRIZZLE_OUT.search(proj.text(p))
+        if m:
+            basis = proj.rel(p).rsplit("/", 1)[0] + "/" if "/" in proj.rel(p) else ""
+            mappen.append(f"{basis}{m.group(1)}/*.sql")
+    return mappen
+
+
 def _supabase(proj, r: Result):
     migraties = sorted(proj.find("supabase/migrations/*.sql", "*/supabase/migrations/*.sql", "supabase/schema.sql",
-                                 "db/migrations/*.sql", "migrations/*.sql", where="all_files"), key=lambda p: p.name)
+                                 "db/migrations/*.sql", "migrations/*.sql", *_drizzle_mappen(proj), where="all_files"),
+                       key=lambda p: (str(p.parent), p.name))
     if not migraties:
         return False
     tabellen = {}   # naam -> (bestand, regel)
@@ -138,11 +154,11 @@ def rechten_per_rij(proj, meta):
         r.status = "Bevinding" if r.findings else "Geen bevinding"
         r.info.append("De test met twee accounts (kan gebruiker A de gegevens van B zien?) hoort bij de keuring.")
         return r
-    gebruikt = any(re.search(r"@supabase/supabase-js|\bsupabase\b|firebase", proj.text(p))
+    gebruikt = any(re.search(r"@supabase/supabase-js|\bsupabase\b|firebase|drizzle-orm", proj.text(p))
                    for p in proj.find("package.json", "requirements*.txt", "pyproject.toml", where="all_files"))
     if gebruikt:
         r.status, r.reden = "Niet gescand", ("De app gebruikt Supabase of Firebase, maar de migraties of regels staan niet in de "
-                                             "repository. Zet ze erin (supabase/migrations, firestore.rules) zodat ze nagekeken kunnen worden.")
+                                             "repository. Zet ze erin (supabase/migrations, drizzle/migrations of firestore.rules) zodat ze nagekeken kunnen worden.")
     else:
         r.status, r.reden = "Niet van toepassing", "Geen Supabase of Firebase gevonden."
     return r

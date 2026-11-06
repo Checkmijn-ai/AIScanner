@@ -18,7 +18,7 @@
         <div class="balk{% if L == 'C' %} actief{% endif %}{% if L in 'AB' %} keuring{% endif %}"><span class="staaf l-{{ L }} w-{{ L }}">{{ L }}</span><span class="grens">{{ g }}</span>{% if L == 'C' %}<span class="pijl zelf"><span class="omlijnd">C</span>ZELFSCAN</span>{% endif %}</div>
         {% endfor %}
       </div>
-      <div class="voet"><span><b>Zelfscan: tot C. Keuring: tot A.</b></span><span>46 van de {{ n_norm }} checks · 22-10-2026</span></div>
+      <div class="voet"><span><b>Zelfscan: tot C. Keuring: tot A.</b></span><span>{{ N_ZELFSCAN }} van de {{ n_norm }} checks · 22-10-2026</span></div>
     </div>
   </div>
 </div></section>
@@ -36,13 +36,35 @@
 </section>
 
 <section class="wrap sectie">
+  <div class="smal">
+    <h2 class="mt0">Geen rem, maar een versneller</h2>
+    <p>Je bouwt met AI om snel te gaan. Een controle mag dat niet vertragen. Daarom draait de scan in je eigen omgeving, als jij hem start, en blijft je code bij jou. Wat de scan vindt, krijg je met een concrete herstelstap, zodat je het meteen kunt oplossen.</p>
+    <p>En als een klant, inkoper of auditor vraagt hoe veilig je software is, heb je één antwoord: een score volgens een publieke norm, met een scorepagina die iedereen kan nakijken.</p>
+  </div>
+</section>
+
+<section class="wrap sectie">
   <h2 class="mt0">Wat we doen</h2>
   <div class="rooster-3">
     <div class="kaart"><h3>Gratis basisscan</h3><p class="zacht">Je scant je app zelf, met je AI of in GitHub. Je code blijft bij jou. Je krijgt een rapport en een score tot C.</p><a class="meer" href="/hoe-het-werkt">Zo werkt het →</a></div>
-    <div class="kaart"><h3>Keuring</h3><p class="zacht">Moet je het kunnen bewijzen aan een klant, inkoper of auditor? Dan kijkt een keurder mee en kun je een A halen. Vanaf €5.700 per app.</p><a class="meer" href="/niveaus">De niveaus →</a></div>
-    <div class="kaart"><h3>Hulp en bewaking</h3><p class="zacht">Lukt het herstellen niet zelf, dan helpen we. En we houden in de gaten of er nieuwe lekken bijkomen in wat je gebruikt.</p><a class="meer" href="/wat-je-krijgt">Prijzen →</a></div>
+    <div class="kaart"><h3>Keuring</h3><p class="zacht">Moet je het kunnen bewijzen aan een klant, inkoper of auditor? Dan kijkt een keurder mee en kun je een A halen. Vanaf €4.950 per app.</p><a class="meer" href="/niveaus">De niveaus →</a></div>
+    <div class="kaart"><h3>Hulp bij herstellen</h3><p class="zacht">Lukt het herstellen niet zelf, dan helpen we je verder.</p><a class="meer" href="/wat-je-krijgt">Prijzen →</a></div>
   </div>
 </section>
+
+<section class="vlak" id="wat-we-toetsen"><div class="wrap sectie">
+  <h2 class="mt0">Wat we toetsen</h2>
+  <p class="lead">Geen puur technische keuring. We kijken naar de software, naar de AI erin, naar hoe ze gebouwd en beheerd wordt, en of ze voldoet aan de basisverplichtingen.</p>
+  <div class="rooster-3 mt2">
+    <div class="kaart"><h3 class="mt0">Veilige software</h3><p class="zacht">Lekken, wachtwoorden en sleutels in de code, lekke pakketten, gescheiden gegevens van klanten, een veilige server.</p></div>
+    <div class="kaart"><h3 class="mt0">Een beheersbare AI</h3><p class="zacht">Mag de AI alleen wat nodig is? Vraagt ze bevestiging voor wat niet terug te draaien is? Kan een mens ingrijpen, en wordt bijgehouden wat ze beslist?</p></div>
+    <div class="kaart"><h3 class="mt0">Zorgvuldig gebouwd</h3><p class="zacht">Keurt een mens elke wijziging goed? Zijn er tests? Wie mag iets live zetten? Welke AI-tools zijn gebruikt bij het bouwen?</p></div>
+    <div class="kaart"><h3 class="mt0">De basisregels</h3><p class="zacht">Bedrijfsgegevens en privacyverklaring, cookies pas na toestemming, een meldpunt voor lekken en eerlijk zeggen dat er AI in zit.</p></div>
+    <div class="kaart"><h3 class="mt0">Doet het wat het belooft?</h3><p class="zacht">Werken knoppen, instellingen en beveiligingen echt, of lijkt het alleen maar zo? AI bouwt soms iets dat er goed uitziet maar niets doet.</p></div>
+    <div class="kaart"><h3 class="mt0">Wat we niet keuren</h3><p class="zacht">Of je app inhoudelijk klopt voor jouw bedrijf: berekeningen, vakinhoud van AI-antwoorden en gebruiksgemak. Dat blijft jouw verantwoordelijkheid.</p></div>
+  </div>
+  <p class="zacht klein mt2">De gratis scan controleert wat automatisch kan. Bij een keuring kijkt een mens alles na, ook wat een scanner niet ziet. <a href="/wat-we-controleren">Alle checks bekijken</a></p>
+</div></section>
 
 <section class="wrap sectie praktijk">
   <div class="praktijk-kaart">
@@ -114,7 +136,7 @@
   <h2 class="mt0">Meer dan een tool, goedkoper dan een pentest</h2>
   <div class="vergelijk mt2">
     <div><h3>Automatische tool</h3><p class="prijsje">€350 tot €1.000 per maand</p><p class="zacht klein">Basisversie gratis</p><ul><li>Vindt lekken</li><li>Geen score die je kunt tonen</li></ul></div>
-    <div class="wij"><h3>CheckMijn.AI</h3><p class="prijsje">Scan: gratis</p><p class="klein">Keuring: vanaf €5.700 per app</p><ul><li>Vaste, publieke checks</li><li>Een score van A tot G</li><li>Vanaf niveau 2 kijkt een keurder mee</li></ul></div>
+    <div class="wij"><h3>CheckMijn.AI</h3><p class="prijsje">Scan: gratis</p><p class="klein">Keuring: vanaf €4.950 per app</p><ul><li>Vaste, publieke checks</li><li>Een score van A tot G</li><li>Vanaf niveau 2 kijkt een keurder mee</li></ul></div>
     <div><h3>Losse pentest</h3><p class="prijsje">€3.500 tot €14.000 per test</p><p class="zacht klein">Per app, per keer</p><ul><li>Grondig, maar eenmalig</li><li>Bij ons inbegrepen vanaf niveau 3</li></ul></div>
   </div>
   <p class="zacht klein mt1">Marktprijzen, oktober 2026. <a href="/wat-je-krijgt">Wat je per niveau krijgt</a>.</p>

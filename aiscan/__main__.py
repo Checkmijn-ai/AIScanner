@@ -22,7 +22,7 @@ from .runner import run, summarize, to_json
 def main(argv=None):
     ap = argparse.ArgumentParser(prog="aiscan", description="AI-code scan: controles met vaste regels, gekoppeld aan normen en wetten.")
     ap.add_argument("pad", help="map met de broncode (bij voorkeur een git-repository)")
-    ap.add_argument("--niveau", type=int, default=1, choices=[1], help="pakket; deze versie bevat niveau 1 (46 scans)")
+    ap.add_argument("--niveau", type=int, default=1, choices=[1], help="pakket; deze versie bevat niveau 1 (47 scans)")
     ap.add_argument("--klant", default="—")
     ap.add_argument("--app", default=None)
     ap.add_argument("--versie", default="")

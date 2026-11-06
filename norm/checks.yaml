@@ -1,5 +1,5 @@
-versie: 0.2 (concept)
-stand: '2026-10-21'
+versie: 0.6 (concept)
+stand: '2026-11-03'
 licentie: CC BY 4.0
 checks:
 - id: A-01
@@ -98,7 +98,7 @@ checks:
   normen: Tabblad Wetgeving
   niveaus:
     n1: niet
-    n2: niet
+    n2: verplicht
     n3: verplicht
     n4: verplicht
   in_scanner: false
@@ -1199,12 +1199,12 @@ checks:
   status: actief
 - id: G-07
   domein: G. Kwetsbaarheden en updates (CRA)
-  wat: Meldproces klaar om actief uitgebuite kwetsbaarheden en ernstige incidenten binnen 24 uur te melden
+  wat: Meldproces klaar om actief uitgebuite kwetsbaarheden en ernstige incidenten binnen 24 uur te melden (CRA, sinds 11 september 2026), voor software die als product op de markt komt
   hoe: document
   normen: CRA art. 14
   niveaus:
     n1: niet
-    n2: niet
+    n2: als van toepassing
     n3: verplicht
     n4: verplicht
   in_scanner: false
@@ -1228,7 +1228,7 @@ checks:
   domein: H. AI in het product
   wat: Prompt injection getest, direct en indirect (via documenten, webpagina's, toolresultaten)
   hoe: scan + aanvalstest
-  normen: LLM01; OWASP AISVS; ETSI EN 304 223
+  normen: LLM01:2026; OWASP AISVS; ETSI EN 304 223; ISO/IEC TR 24028; ISO/IEC 27090:2026
   niveaus:
     n1: niet
     n2: verplicht
@@ -1240,7 +1240,7 @@ checks:
   domein: H. AI in het product
   wat: 'Uitvoer van het model wordt behandeld als onbetrouwbare invoer: niet rechtstreeks uitgevoerd, gevalideerd en geëncodeerd'
   hoe: scan + analist
-  normen: LLM05
+  normen: LLM10:2026
   niveaus:
     n1: verplicht
     n2: verplicht
@@ -1255,19 +1255,20 @@ checks:
   domein: H. AI in het product
   wat: Model en agent hebben minimale rechten op tools; onomkeerbare acties vragen bevestiging door een mens
   hoe: keurder
-  normen: LLM06; ASI02, ASI03
+  normen: LLM03:2026; ASI02, ASI03
   niveaus:
     n1: niet
-    n2: niet
+    n2: als van toepassing
     n3: verplicht
     n4: verplicht
   in_scanner: false
   status: actief
 - id: H-04
   domein: H. AI in het product
-  wat: 'Geen lekken: geen geheimen in de systeemprompt, gegevens van klanten gescheiden in zoek- en vectoropslag'
+  wat: 'Geen lekken: geen geheimen in de systeemprompt of in andere verborgen context (instructies, schema''s van de kennisbank, verborgen beleidsregels, toolbeschrijvingen); gegevens van klanten gescheiden
+    in zoek- en vectoropslag'
   hoe: scan + aanvalstest
-  normen: LLM02, LLM07, LLM08
+  normen: LLM02:2026, LLM08:2026, LLM09:2026; ISO/IEC TR 24028; ISO/IEC 27090:2026
   niveaus:
     n1: niet
     n2: verplicht
@@ -1277,16 +1278,19 @@ checks:
   status: actief
 - id: H-05
   domein: H. AI in het product
-  wat: Gebruikers weten dat ze met AI praten; door AI gemaakte inhoud is gemarkeerd waar dat moet
-  hoe: keurder
-  normen: AI Act art. 50
+  wat: 'AI-melding: wie met een AI-functie praat, weet dat het AI is (tenzij dat voor een redelijke gebruiker duidelijk is); wie wordt blootgesteld aan emotieherkenning of biometrische indeling, wordt daarover
+    ingelicht; deepfakes en door AI gemaakte tekst over zaken van algemeen belang zijn als zodanig herkenbaar; met de uitzonderingen van art. 50(4): tekst die een mens heeft nagekeken onder redactionele
+    verantwoordelijkheid, en een beperkte vermelding bij duidelijk artistiek, satirisch of fictief werk'
+  hoe: scan + keurder
+  normen: AI Act art. 50(1), 50(3), 50(4)
   niveaus:
-    n1: niet
-    n2: niet
-    n3: verplicht
-    n4: verplicht
+    n1: optioneel
+    n2: als van toepassing
+    n3: als van toepassing
+    n4: als van toepassing
   in_scanner: false
   status: actief
+  ernst: Hoog
 - id: H-06
   domein: H. AI in het product
   wat: Modelaanbieder en -versie vastgelegd; een ander model is een ingrijpende wijziging en vraagt herkeuring
@@ -1301,9 +1305,10 @@ checks:
   status: actief
 - id: H-07
   domein: H. AI in het product
-  wat: Kwaliteit gemeten met een testset van verwachte antwoorden; regressietest bij elke modelwissel
+  wat: Kwaliteit gemeten met een testset van verwachte antwoorden; regressietest bij elke modelwissel; maatregelen tegen verzonnen antwoorden (antwoorden op basis van eigen bronnen, bronvermelding, weigeren
+    als er onvoldoende basis is), getest met vragen waar de app geen antwoord op hoort te geven
   hoe: document + keurder
-  normen: ISO/IEC 25059; ISO/IEC TR 29119-11
+  normen: ISO/IEC 25059; ISO/IEC TR 29119-11; ISO/IEC TR 24028; ISO/IEC 23053; AIUC-1 D001, D002
   niveaus:
     n1: niet
     n2: niet
@@ -1315,7 +1320,7 @@ checks:
   domein: H. AI in het product
   wat: Limieten op verbruik (tokens, aanvragen) tegen misbruik en onverwachte kosten
   hoe: scan
-  normen: LLM10
+  normen: LLM06:2026
   niveaus:
     n1: verplicht
     n2: verplicht
@@ -1333,28 +1338,33 @@ checks:
   normen: AI Act art. 14; ISO/IEC 42001; ISO/IEC 22989
   niveaus:
     n1: niet
-    n2: niet
+    n2: als van toepassing
     n3: verplicht
     n4: verplicht
   in_scanner: false
   status: actief
 - id: H-10
   domein: H. AI in het product
-  wat: De bouwer heeft vastgesteld dat het product geen verboden AI-praktijk bevat en of het onder hoog risico valt (AI Act); zo ja, vervangt het keurmerk de wettelijke conformiteitsbeoordeling niet
-  hoe: document
-  normen: AI Act art. 5, 6, bijlage III
+  wat: 'Verboden AI en risicoklasse: de bouwer verklaart, en vanaf niveau 2 controleert de keurder, dat het product geen verboden AI-praktijk bevat (AI Act art. 5, ook het verbod op AI die intieme beelden,
+    video of geluid zonder toestemming of materiaal van kindermisbruik maakt of bewerkt, ook als dat een voorzienbaar gevolg is zonder passende technische waarborgen) en of het onder hoog risico valt (art.
+    6, bijlage I en III). Een verboden praktijk betekent geen label. Bij hoog risico: een label pas vanaf niveau 3, en de scorepagina vermeldt "Hoog-risico-AI: dit label is geen conformiteitsbeoordeling
+    volgens de AI Act (art. 43)"; zodra de verplichtingen voor hoog risico gelden (bijlage III: 2-12-2027, bijlage I: 2-8-2028) alleen met bewijs van de conformiteitsbeoordeling (EU-conformiteitsverklaring
+    en CE-markering)'
+  hoe: verklaring + keurder
+  normen: AI Act art. 5, 6, bijlage I en III; ISO/IEC 42001 A.5
   niveaus:
-    n1: niet
-    n2: niet
+    n1: optioneel
+    n2: als van toepassing
     n3: verplicht
     n4: verplicht
   in_scanner: false
   status: actief
+  ernst: Kritiek
 - id: H-11
   domein: H. AI in het product
   wat: 'Bij eigen training of finetuning: herkomst van de data, rechten en persoonsgegevens gedocumenteerd'
   hoe: document
-  normen: ISO/IEC 42001 bijlage A; AI Act art. 10
+  normen: ISO/IEC 42001 bijlage A; AI Act art. 10; ISO/IEC 23053; ISO/IEC 27090:2026
   niveaus:
     n1: niet
     n2: niet
@@ -1364,21 +1374,23 @@ checks:
   status: actief
 - id: H-12
   domein: H. AI in het product
-  wat: 'Agents: bescherming tegen vergiftigd geheugen en context, veilige communicatie tussen agents, een noodstop'
+  wat: 'Agents: een noodstop die één agent of alle agents meteen stillegt of in een alleen-lezenstand zet, centraal te bedienen en getest; stroomonderbrekers stoppen een agent automatisch bij afwijkend
+    gedrag (bv. een plotse piek in acties of fouten)'
   hoe: keurder + pentest
-  normen: ASI06, ASI07, ASI10
+  normen: OWASP Agentic ASI08, ASI10; ISO/IEC TR 24028
   niveaus:
     n1: niet
-    n2: niet
-    n3: verplicht
-    n4: verplicht
+    n2: als van toepassing
+    n3: als van toepassing
+    n4: als van toepassing
   in_scanner: false
   status: actief
 - id: H-13
   domein: H. AI in het product
-  wat: 'AI-kaart, publiek: per AI-functie wat ze doet, welke beslissingen of adviezen ze geeft, welke gegevens ze gebruikt, aanbieder en model, bekende beperkingen en foutsoorten'
+  wat: 'AI-kaart, publiek: per AI-functie wat ze doet, welke beslissingen of adviezen ze geeft, welke gegevens ze gebruikt, aanbieder en model, bekende beperkingen en foutsoorten, onbedoeld gebruik, en
+    wie door de AI geraakt wordt (gebruikers, klanten, derden)'
   hoe: document
-  normen: AI Act art. 13, 50; ISO/IEC 42001; ISO/IEC 22989
+  normen: AI Act art. 13, 50; ISO/IEC 42001; ISO/IEC 22989; ISO/IEC 42005 6.3, 6.7
   niveaus:
     n1: niet
     n2: niet
@@ -1389,7 +1401,8 @@ checks:
 - id: H-14
   domein: H. AI in het product
   wat: 'AI-beslissingen gelogd: per beslissing tijdstip, functie, model en versie, verwijzing naar de invoer, uitvoer, uitgevoerde acties en wie bevestigde; beschermd tegen wijziging, minstens zes maanden
-    bewaard, zonder onnodige persoonsgegevens'
+    bewaard, zonder onnodige persoonsgegevens; bij agents ook elke toolaanroep met parameters, de tussenstappen, de uitkomst van de actiecontrole, de bevestiging en wat de mens te zien kreeg naast wat uitgevoerd
+    werd'
   hoe: scan + analist
   normen: AI Act art. 12, 19, 26(6); ISO/IEC 42001
   niveaus:
@@ -1403,7 +1416,7 @@ checks:
   domein: H. AI in het product
   wat: 'Vieroogenprincipe: beslissingen met rechtsgevolg of grote financiële gevolgen worden door een mens bevestigd voor ze uitgevoerd worden; ook de bevestiging wordt gelogd'
   hoe: keurder
-  normen: AI Act art. 14; AVG art. 22
+  normen: AI Act art. 14; AVG art. 22; ISO/IEC TR 24028
   niveaus:
     n1: niet
     n2: niet
@@ -1427,7 +1440,7 @@ checks:
   domein: H. AI in het product
   wat: 'AI in productie bewaakt: foutpercentage, klachten, afwijkingen in de invoer en hoe vaak mensen de AI overrulen (te vaak of nooit is een signaal)'
   hoe: scan + document
-  normen: AI Act art. 72; ISO/IEC 42001
+  normen: AI Act art. 72; ISO/IEC 42001; ISO/IEC TR 24028
   niveaus:
     n1: niet
     n2: optioneel
@@ -1439,7 +1452,7 @@ checks:
   domein: H. AI in het product
   wat: Getest op oneerlijke uitkomsten (bias) bij beslissingen over personen, met vastgelegde testset en uitslag
   hoe: document + keurder
-  normen: AI Act art. 10, 15; ISO/IEC TR 24027
+  normen: AI Act art. 10, 15; ISO/IEC TR 24027; ISO/IEC TR 24028
   niveaus:
     n1: niet
     n2: niet
@@ -1449,9 +1462,9 @@ checks:
   status: actief
 - id: H-19
   domein: H. AI in het product
-  wat: 'AI uitschakelbaar: elke AI-functie kan apart uitgezet worden en de app blijft dan bruikbaar of valt veilig terug'
+  wat: 'AI uitschakelbaar: elke AI-functie kan apart uitgezet of in een alleen-lezenstand gezet worden en de app blijft dan bruikbaar of valt veilig terug'
   hoe: keurder
-  normen: AI Act art. 14(4)(e); ISO/IEC 25010:2023
+  normen: AI Act art. 14(4)(e); ISO/IEC 25010:2023; ISO/IEC TR 24028
   niveaus:
     n1: niet
     n2: niet
@@ -1464,7 +1477,7 @@ checks:
   wat: 'Herkomst van modellen (AI-BOM): modellen en datasets in een machineleesbare lijst met herkomst, licentie en hash of handtekening; modelbestanden in een veilig formaat, geen uitvoerbare formaten
     uit onbekende bron'
   hoe: scan + document
-  normen: OWASP LLM03; CycloneDX ML-BOM; ISO/IEC 42001
+  normen: OWASP LLM04:2026; CycloneDX ML-BOM; ISO/IEC 42001; ISO/IEC TR 24028; ISO/IEC 23053
   niveaus:
     n1: niet
     n2: verplicht
@@ -1474,9 +1487,10 @@ checks:
   status: actief
 - id: H-21
   domein: H. AI in het product
-  wat: 'Tools en MCP-servers van de app: inventaris, herkomst, vastgepinde versie, minimale rechten; toolbeschrijvingen gecontroleerd op verborgen instructies'
+  wat: 'Tools en MCP-servers van de app: inventaris, herkomst, vastgepinde versie, minimale rechten; toolbeschrijvingen en schema''s gecontroleerd op verborgen instructies; de volledige tooldefinities vastgepind
+    (hash) en opnieuw nagekeken bij elke wijziging; een nieuwe server alleen na goedkeuring; servers van elkaar gescheiden, zodat de ene server de tools van de andere niet kan beïnvloeden'
   hoe: scan + analist
-  normen: OWASP LLM03; OWASP Agentic ASI04
+  normen: OWASP LLM04:2026; OWASP Agentic ASI04; OWASP MCP Security Cheat Sheet
   niveaus:
     n1: niet
     n2: verplicht
@@ -1486,9 +1500,10 @@ checks:
   status: actief
 - id: H-22
   domein: H. AI in het product
-  wat: 'Veilige uitvoer: vaste testset voor schadelijke inhoud en gevaarlijk advies (zelfbeschadiging, medisch, financieel, illegaal), met drempel'
+  wat: 'Veilige uitvoer: vaste testset voor schadelijke inhoud en gevaarlijk advies (zelfbeschadiging, medisch, financieel, illegaal), met drempel; per app een vastgelegde lijst van ongewenste uitvoer (schadelijk,
+    buiten de taak van de app, verzonnen, gevaarlijke acties) met ernst, en technische blokkades voor de ernstigste soorten'
   hoe: scan + document
-  normen: OWASP LLM09; AI Act art. 15; ISO/IEC 42001
+  normen: OWASP LLM07:2026; AI Act art. 15 (bij hoog risico); ISO/IEC 42001; AIUC-1 C001, C003, C004, C005
   niveaus:
     n1: niet
     n2: verplicht
@@ -1498,9 +1513,10 @@ checks:
   status: actief
 - id: H-23
   domein: H. AI in het product
-  wat: 'Geen training op klantgegevens zonder toestemming: afspraken met de AI-aanbieder over training, bewaartermijn en regio, in lijn met de AI-kaart'
+  wat: 'Geen training op klantgegevens zonder toestemming: afspraken met de AI-aanbieder over training, bewaartermijn en regio, in lijn met de AI-kaart; due diligence op de aanbieder van het model (beveiliging,
+    omgang met gegevens en persoonsgegevens, certificaten en compliance), opnieuw bij een andere aanbieder'
   hoe: document
-  normen: AVG art. 5, 28; AI Act art. 10
+  normen: AVG art. 5, 28; AI Act art. 10; AIUC-1 E006
   niveaus:
     n1: niet
     n2: niet
@@ -1522,14 +1538,268 @@ checks:
   status: actief
 - id: H-25
   domein: H. AI in het product
-  wat: 'Ernstige AI-incidenten: procedure om ze te melden aan de toezichthouder en de klant, gekoppeld aan de incidentanalyse'
+  wat: 'Ernstige AI-incidenten: procedure om ze te melden aan de toezichthouder en de klant, gekoppeld aan de incidentanalyse; per soort AI-fout een plan met eigenaar, melding, herstel en hulp van buitenaf:
+    datalek of beveiligingsincident via de AI, schadelijke uitvoer, verzonnen uitvoer met financiële schade'
   hoe: document
-  normen: AI Act art. 73
+  normen: AI Act art. 73; AIUC-1 E001, E002, E003
   niveaus:
     n1: niet
     n2: niet
     n3: als van toepassing
     n4: als van toepassing
+  in_scanner: false
+  status: actief
+- id: H-26
+  domein: H. AI in het product
+  wat: 'AI-impactbeoordeling: per AI-systeem een beoordeling met de onderdelen van ISO/IEC 42005 hoofdstuk 6 (doel, beoogd en onbedoeld gebruik, gegevens, model, omgeving, wie geraakt wordt, voordelen en
+    schade, falen en misbruik, maatregelen), goedgekeurd en opnieuw beoordeeld bij een ander model of ander gebruik'
+  hoe: document + keurder
+  normen: ISO/IEC 42005; ISO/IEC 42001 6.1.4; AI Act art. 27
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: als van toepassing
+    n4: verplicht
+  ernst: Hoog
+  in_scanner: false
+  status: voorstel
+- id: H-27
+  domein: H. AI in het product
+  wat: 'Robuustheid van eigen modellen: een zelf getraind of bijgesteld model is getest met gerichte, misleidende invoer (kleine aanpassingen die het model doen falen), met vastgelegde uitslag'
+  hoe: test + keurder
+  normen: ISO/IEC TR 24028; ISO/IEC 23053; ISO/IEC 27090:2026
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Middel
+  in_scanner: false
+  status: voorstel
+- id: H-28
+  domein: H. AI in het product
+  wat: 'Bescherming tegen het stelen van een model: een eigen model achter een API heeft limieten en bewaking tegen massaal bevragen om het na te bouwen'
+  hoe: document + test
+  normen: ISO/IEC TR 24028; ISO/IEC 27090:2026
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Middel
+  in_scanner: false
+  status: voorstel
+- id: H-29
+  domein: H. AI in het product
+  wat: 'Actiecontrole buiten het model: elke toolaanroep van een agent wordt in de code gecontroleerd voor ze uitgevoerd wordt: alleen toegestane tools, alleen de eigen gegevens, grenzen op bedragen, aantallen
+    en bestemmingen; onbekende tools of ontbrekende regels worden geweigerd (fail closed); grote hoeveelheden gegevens naar buiten worden tegengehouden of gemeld'
+  hoe: scan + analist + test
+  normen: OWASP Agentic ASI01, ASI02; OWASP LLM03:2026; OWASP AI Agent Security Cheat Sheet
+  niveaus:
+    n1: als van toepassing
+    n2: als van toepassing
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Hoog
+  in_scanner: true
+  status: actief
+- id: H-30
+  domein: H. AI in het product
+  wat: 'Bevestiging die klopt: acties met grote of onomkeerbare gevolgen (betalen, verwijderen, gegevens delen, rechten wijzigen) gebeuren pas na bevestiging door een mens die de volledige actie met alle
+    parameters ziet, niet de samenvatting van de agent; de bevestiging geldt voor precies die actie, één keer en kort; voor de zwaarste acties opnieuw aanmelden of een tweede factor; de agent kan de bevestiging
+    niet zelf geven of omzeilen'
+  hoe: keurder + test
+  normen: OWASP Agentic ASI09; OWASP AI Agent Security Cheat Sheet; AI Act art. 14
+  niveaus:
+    n1: niet
+    n2: als van toepassing
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Hoog
+  in_scanner: false
+  status: actief
+- id: H-31
+  domein: H. AI in het product
+  wat: 'Sandbox: code en shellcommando''s die een agent uitvoert, draaien in een afgesloten omgeving (container of gehoste sandbox) zonder geheimen, zonder netwerk tenzij nodig, met beperkte bestanden en
+    tijd; liever vaste tools met vaste parameters dan een vrije shell'
+  hoe: scan + keurder
+  normen: OWASP Agentic ASI05; OWASP LLM10:2026
+  niveaus:
+    n1: als van toepassing
+    n2: als van toepassing
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Hoog
+  in_scanner: true
+  status: actief
+- id: H-32
+  domein: H. AI in het product
+  wat: Elke agent heeft een eigen identiteit, geen gedeeld account en niet de rechten van de gebruiker of een beheerder, met kortlevende sleutels die alleen gelden voor zijn taak; elke agent heeft een eigenaar
+    en een einddatum, en zijn rechten worden even vaak nagekeken als die van mensen
+  hoe: keurder + document
+  normen: OWASP Agentic ASI03, ASI10; ISO/IEC 27002 5.18, 8.2
+  niveaus:
+    n1: niet
+    n2: als van toepassing
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Hoog
+  in_scanner: false
+  status: actief
+- id: H-33
+  domein: H. AI in het product
+  wat: 'Geheugen en kennisbank (RAG) van een agent: wat erin komt wordt gecontroleerd; per gebruiker en sessie gescheiden; met een bewaartermijn; wijzigingen herkenbaar; de beheerder kan het inzien en wissen;
+    tekst uit documenten wordt behandeld als gegevens, nooit als opdracht'
+  hoe: keurder + test
+  normen: OWASP Agentic ASI06; OWASP LLM09:2026
+  niveaus:
+    n1: niet
+    n2: als van toepassing
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Hoog
+  in_scanner: false
+  status: actief
+- id: H-34
+  domein: H. AI in het product
+  wat: 'Communicatie tussen agents: elke agent bewijst wie hij is; de ontvanger controleert of de afzender dit mag vragen; berichten beschermd tegen wijziging en herhaling; vastgelegd welke agent aan welke
+    mag delegeren; een keten van agents krijgt nooit meer rechten dan de eerste had'
+  hoe: keurder + pentest
+  normen: OWASP Agentic ASI07
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Middel
+  in_scanner: false
+  status: actief
+- id: H-35
+  domein: H. AI in het product
+  wat: 'Begrenzing van agents: grenzen op het aantal stappen, herhalingen, de diepte van aanroepen en de kosten per sessie en per gebruiker, met een alarm en een automatische stop; geen eindeloze lussen'
+  hoe: scan + keurder
+  normen: OWASP Agentic ASI08; OWASP LLM06:2026
+  niveaus:
+    n1: niet
+    n2: als van toepassing
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Middel
+  in_scanner: false
+  status: actief
+- id: H-36
+  domein: H. AI in het product
+  wat: 'Gegevensminimalisatie naar het model: alleen de gegevens die nodig zijn gaan naar het model en de context; identificatienummers (rijksregisternummer, BSN), gezondheids- en betaalgegevens worden
+    vooraf weggelaten of gemaskeerd, ook in logs en geheugen; gegevens zijn ingedeeld naar gevoeligheid, met regels per klasse'
+  hoe: keurder + test
+  normen: AVG art. 5(1)(c), 9, 25; OWASP LLM02:2026
+  niveaus:
+    n1: niet
+    n2: als van toepassing
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Hoog
+  in_scanner: false
+  status: actief
+- id: H-37
+  domein: H. AI in het product
+  wat: 'Een MCP-server die de app zelf aanbiedt: aanmelden verplicht voor alles wat niet publiek is; tokens alleen aanvaard als ze voor deze server uitgegeven zijn, en nooit doorgegeven aan andere diensten;
+    een lokale server alleen bereikbaar op localhost; Origin- en Host-header gecontroleerd; strikte schema''s voor invoer; limieten per sessie'
+  hoe: scan + test
+  normen: MCP-specificatie (security best practices); OWASP MCP Security Cheat Sheet
+  niveaus:
+    n1: niet
+    n2: als van toepassing
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Hoog
+  in_scanner: false
+  status: actief
+- id: H-38
+  domein: H. AI in het product
+  wat: 'Aanvalstests voor agents: bij elke wijziging aan prompts, tools, geheugen, model of regels draait een vaste set aanvallen (opdracht overnemen, tools misbruiken, rechten verhogen, geheugen vergiftigen,
+    gegevens weglekken, eindeloze lussen, bevestiging omzeilen, ketens van agents); slaagt een aanval, dan gaat de release niet door; de tests kunnen niet in dezelfde wijziging afgezwakt worden; op niveau
+    4 en bij agents die zelf handelen ook elk kwartaal door een onafhankelijke partij, met de uitslag in het dossier'
+  hoe: document + pipeline
+  normen: OWASP Agentic ASI01-ASI10; OWASP AI Agent Security Cheat Sheet; AIUC-1 B001, C010, C011, C012, D002, D004
+  niveaus:
+    n1: niet
+    n2: optioneel
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Middel
+  in_scanner: false
+  status: actief
+- id: H-39
+  domein: H. AI in het product
+  wat: 'Bewaking van agents: per agent een normaal gedragspatroon, met een alarm bij afwijkingen (nieuwe tools, een piek in acties of kosten, pogingen om de bevestiging te omzeilen, gebruik van hogere rechten);
+    het alarm komt bij een mens die kan ingrijpen'
+  hoe: scan + document
+  normen: OWASP Agentic ASI10; ISO/IEC 27002 8.16
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Middel
+  in_scanner: false
+  status: actief
+- id: H-40
+  domein: H. AI in het product
+  wat: 'Uitvoer van de AI maakt geen inbreuk op rechten van anderen: maatregelen tegen het letterlijk overnemen van beschermd werk, merken of persoonlijkheidsrechten (filters, bronvermelding), en afspraken
+    met de AI-aanbieder over vrijwaring bij een inbreuk'
+  hoe: document + test
+  normen: Auteursrecht en merkenrecht (Benelux, EU); AIUC-1 A007
+  niveaus:
+    n1: niet
+    n2: niet
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Middel
+  in_scanner: false
+  status: actief
+- id: H-41
+  domein: H. AI in het product
+  wat: 'Publiek beleid voor invoer en uitvoer van de AI: wat er met gegevens van gebruikers gebeurt (training, bewaartermijn, verwijderen op verzoek), van wie de uitvoer is, en hoe een gebruiker gegevens
+    of uitvoer kan laten verwijderen'
+  hoe: document
+  normen: AVG art. 12, 13, 17; AIUC-1 A001, A002
+  niveaus:
+    n1: niet
+    n2: als van toepassing
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Middel
+  in_scanner: false
+  status: actief
+- id: H-42
+  domein: H. AI in het product
+  wat: 'Modelbestanden veilig geladen: eigen of gedownloade modellen alleen in een formaat zonder uitvoerbare code (bv. safetensors, ONNX, GGUF); een controlegetal alleen als aanvulling, of voor pickle-bestanden
+    uit de eigen, gedocumenteerde trainingspijplijn; een vaste revisie in plaats van de nieuwste; code uit de modelrepository niet uitvoeren (trust_remote_code uit)'
+  hoe: scan + analist
+  normen: OWASP LLM04:2026; ISO/IEC 27090:2026; CycloneDX ML-BOM
+  niveaus:
+    n1: niet
+    n2: als van toepassing
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Hoog
+  herstel: Laad modellen met een vaste revisie (commit-hash), als safetensors, en zet trust_remote_code uit.
+  in_scanner: false
+  status: actief
+- id: H-43
+  domein: H. AI in het product
+  wat: 'Geen verzonnen antwoorden bij een AI-functie die antwoordt of adviseert op basis van eigen bronnen (kennisbank, documenten): op hoogstens één van tien vragen waarop de bron geen antwoord geeft,
+    verzint de functie iets in plaats van te zeggen dat ze het niet weet of door te verwijzen; antwoorden vermelden een bron die bestaat'
+  hoe: aanvalstest + keurder
+  normen: OWASP LLM07:2026; ISO/IEC 42001 A.6; AI Act art. 15 (bij hoog risico)
+  niveaus:
+    n1: niet
+    n2: als van toepassing
+    n3: als van toepassing
+    n4: als van toepassing
+  ernst: Middel
+  herstel: Laat de functie alleen antwoorden op basis van gevonden bronnen, met bronvermelding, en laat ze weigeren of doorverwijzen als er geen bron is.
   in_scanner: false
   status: actief
 - id: I-01
@@ -1582,12 +1852,13 @@ checks:
   status: actief
 - id: I-05
   domein: I. Data en privacy
-  wat: Hostingregio en doorgifte buiten de EER gekend en gedocumenteerd
+  wat: Hostingregio en doorgifte buiten de EER gekend en gedocumenteerd, met de grondslag voor elke doorgifte (adequaatheidsbesluit, zoals het EU-VS-kader, of modelcontracten); wie op een adequaatheidsbesluit
+    steunt, heeft een plan B voor als het vervalt
   hoe: document
   normen: AVG hoofdstuk V
   niveaus:
     n1: niet
-    n2: niet
+    n2: verplicht
     n3: verplicht
     n4: verplicht
   in_scanner: false
@@ -2597,6 +2868,22 @@ checks:
   module: github
   in_scanner: true
   status: actief
+- id: R-14
+  domein: R. Versiebeheer en releases
+  wat: 'OTAP-route: elke wijziging gaat eerst naar een test- of acceptatieomgeving en wordt daar bekeken voor dezelfde versie naar productie gaat; niets rechtstreeks naar productie (afgedwongen met een
+    beveiligde productiebranch)'
+  hoe: scan + keurder
+  normen: ISO/IEC 27002 8.31, 8.32; NIS2 art. 21(2)(e)
+  niveaus:
+    n1: verplicht
+    n2: verplicht
+    n3: verplicht
+    n4: verplicht
+  ernst: Hoog
+  herstel: Werk met een testbranch die automatisch naar een testomgeving uitrolt, en zet de productiebranch op slot zodat wijzigingen er alleen via een pull request komen, nadat ze op test bekeken zijn.
+  module: ci
+  in_scanner: true
+  status: actief
 - id: S-01
   domein: S. Mobiele apps (module)
   wat: Minimale permissies; elke permissie heeft een reden die de gebruiker te zien krijgt
@@ -3097,7 +3384,7 @@ checks:
   status: actief
 - id: W-13
   domein: W. Backend en opslag
-  wat: 'Rechten per rij in de databank (Row Level Security of Security Rules) staan aan op elke tabel met gebruikersgegevens, getest met twee accounts; de sleutel met volledige rechten zit nooit in de frontend'
+  wat: Rechten per rij in de databank (Row Level Security of Security Rules) staan aan op elke tabel met gebruikersgegevens, getest met twee accounts; de sleutel met volledige rechten zit nooit in de frontend
   hoe: scan + document + test
   normen: OWASP API1:2023; AVG art. 32
   niveaus:
@@ -3136,12 +3423,13 @@ checks:
   status: actief
 - id: X-03
   domein: X. Hosting en infrastructuur
-  wat: Gegevens en back-ups in de EER, of doorgifte gedekt (I-05); blootstelling aan niet-Europese wetgeving (bv. de Amerikaanse CLOUD Act) staat in het rapport
+  wat: Gegevens en back-ups in de EER, of doorgifte gedekt (I-05); blootstelling aan niet-Europese wetgeving (bv. de Amerikaanse CLOUD Act) staat in het rapport en op de scorepagina. Een niet-Europese aanbieder
+    met een geldige grondslag is geen bevinding, wel een vermelding
   hoe: document
   normen: AVG hoofdstuk V
   niveaus:
     n1: niet
-    n2: niet
+    n2: verplicht
     n3: verplicht
     n4: verplicht
   in_scanner: false
@@ -3337,7 +3625,8 @@ checks:
   status: actief
 - id: Y-10
   domein: Y. Communicatieprotocollen
-  wat: 'Volledige TLS-test per adres: elk IPv4- en IPv6-adres van elke publieke host apart getest (certificaat, keten, protocollen, cipher suites, forward secrecy, sleutellengte, HSTS), met minstens een A in een gangbare test zoals SSL Labs'
+  wat: 'Volledige TLS-test per adres: elk IPv4- en IPv6-adres van elke publieke host apart getest (certificaat, keten, protocollen, cipher suites, forward secrecy, sleutellengte, HSTS), met minstens een
+    A in een gangbare test zoals SSL Labs'
   hoe: tool + keurder
   normen: NIST SP 800-52 Rev. 2; BSI TR-02102-2; CRA I (2)(e)
   niveaus:

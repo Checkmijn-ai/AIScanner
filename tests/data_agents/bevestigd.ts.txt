@@ -1,0 +1,10 @@
+import { generateText, tool } from 'ai';
+import { z } from 'zod';
+export const tools = {
+  deleteUser: tool({
+    description: 'Delete a user',
+    inputSchema: z.object({ id: z.string() }),
+    needsApproval: true,
+    execute: async ({ id }) => db.user.delete({ where: { id } }),
+  }),
+};

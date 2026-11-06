@@ -66,7 +66,7 @@ GRADES = [
 
 LEVELS = [
     {"n": 1, "naam": "Basisscan", "status": "Nu, gratis", "voor": "Interne tools, kleine apps, een eerste meting",
-     "wie": "Volledig automatisch", "checks": "46", "werkt": "—", "aanval": "—", "hoogste": "C",
+     "wie": "Volledig automatisch", "checks": str(len([c for c in yaml.safe_load((ROOT / "aiscan" / "data" / "checks.yaml").read_text(encoding="utf-8")) if c.get("status", "actief") == "actief"])), "werkt": "—", "aanval": "—", "hoogste": "C",
      "geldig": "Zolang de scan actueel is"},
     {"n": 2, "naam": "Gekeurd", "status": "In voorbereiding (pilots)", "voor": "De meeste zakelijke apps",
      "wie": "Automatisch + erkende keurder", "checks": "±100, plus checks die je erbij kiest",
@@ -185,7 +185,7 @@ def workflow() -> str:
 @site.app_context_processor
 def _algemeen():
     return {"NAV": NAV, "DISCLAIMER": DISCLAIMER, "CONTACT": CONTACT, "SITE_URL": SITE_URL, "TEST": TEST,
-            "pad": request.path, "BRONCODE": BRONCODE, "ERKEND": ERKEND, "BEDRIJF": BEDRIJF, "BEDRIJF_KLAAR": BEDRIJF_KLAAR, "HOSTING": HOSTING, "dagkop": dagkop,
+            "pad": request.path, "N_ZELFSCAN": len(checks()), "BRONCODE": BRONCODE, "ERKEND": ERKEND, "BEDRIJF": BEDRIJF, "BEDRIJF_KLAAR": BEDRIJF_KLAAR, "HOSTING": HOSTING, "dagkop": dagkop,
             "nieuws_vers": nieuws_vandaag(), "NB_ACTIEF": _nb_actief(), "getal": getal, "datum_nl": datum_nl}
 
 
@@ -196,8 +196,8 @@ def pagina(sjabloon: str, titel: str, beschrijving: str, **kw):
 @site.get("/")
 def home():
     return pagina("home.html", "Onafhankelijke controle van software die met AI gebouwd is",
-                  "Check je AI-software voor je ze lanceert, koopt of oplevert. Een meetlat, geen mening: 46 vaste "
-                  f"checks in de gratis zelfscan, {len(norm()['checks'])} in de volledige norm, Europese normen en een score van A tot G.", nieuws_kort=laatste_nieuws(),
+                  "Is je AI-software veilig? Scan je app gratis, je code blijft bij jou. Je krijgt een score van A tot G en "
+                  "een lijst met wat je moet oplossen. Voor bewijs aan een klant of auditor is er een keuring.", nieuws_kort=laatste_nieuws(),
                   teller=(lambda st: st if st.get("scans", 0) >= TOON_TELLER_VANAF else None)(statistiek()),
                   lekken=lekkendatabank(), n_norm=len(norm()["checks"]))
 
@@ -299,7 +299,7 @@ def vertrouwen():
 
 @site.get("/framework")
 def framework():
-    return pagina("framework.html", "Gratis framework", f"De 46 checks van de zelfscan (niveau 1) als checklist, CSV of JSON, onder CC BY 4.0. De volledige norm telt {len(norm()['checks'])} checks.",
+    return pagina("framework.html", "Gratis framework", f"De {len(checks())} checks van de zelfscan (niveau 1) als checklist, CSV of JSON, onder CC BY 4.0. De volledige norm telt {len(norm()['checks'])} checks.",
                   checks=checks())
 
 
@@ -407,6 +407,8 @@ def crosswalk() -> dict:
         d = [per_iso[i]["dekking"] for i in x["iso"]]
         x["dekking"] = "volledig" if set(d) == {"volledig"} else "niet" if set(d) == {"niet"} and not x.get("checks") else "gedeeltelijk"
         x["alle_checks"] = sorted({c for i in x["iso"] for c in per_iso[i]["checks"]} | set(x.get("checks", [])))
+    for x in cw.get("iso42005", []) + cw.get("iso42001", []) + cw.get("aiuc1", []):
+        x["vanaf"] = vanaf(x["checks"]) if x["dekking"] != "niet" else None
     tel = {k: sum(1 for x in cw["iso27001"] if x["dekking"] == k) for k in DEKKING}
     cw["tel"] = tel
     cw["per_iso"] = per_iso
@@ -419,9 +421,10 @@ def crosswalk() -> dict:
 
 @site.get("/crosswalk")
 def crosswalk_pagina():
-    return pagina("crosswalk.html", "Crosswalk ISO 27001, NIS2 en BIO2",
+    return pagina("crosswalk.html", "Crosswalk ISO 27001, ISO 42001, ISO 42005, AIUC-1, NIS2 en BIO2",
                   "Per control uit ISO/IEC 27001:2022 bijlage A: volledig, gedeeltelijk of niet gedekt door de keuring, "
-                  "met welke checks en vanaf welk niveau. Plus NIS2 (2024/2690) en BIO2.", cw=crosswalk(), dekking=DEKKING)
+                  "met welke checks en vanaf welk niveau. Plus ISO 42001, NIS2 (2024/2690) en BIO2.", cw=crosswalk(), dekking=DEKKING,
+                  normversie=str(norm()["versie"]).split(" ")[0])
 
 
 @site.get("/norm/crosswalk.yaml")
@@ -440,6 +443,15 @@ def crosswalk_csv():
     for x in cw["iso27001"]:
         w.writerow(["ISO/IEC 27001:2022 bijlage A", x["id"], x["titel"], DEKKING[x["dekking"]], ", ".join(x["checks"]),
                     x["vanaf"] or "", ", ".join(x["zelfscan"]), x.get("buiten", ""), cw["versie"]])
+    for x in cw.get("iso42005", []):
+        w.writerow(["ISO/IEC 42005:2025", x["id"], x["titel"], DEKKING[x["dekking"]], ", ".join(x["checks"]),
+                    x["vanaf"] or "", "", x.get("buiten", ""), cw["versie"]])
+    for x in cw.get("iso42001", []):
+        w.writerow(["ISO/IEC 42001:2023 bijlage A", x["id"], x["titel"], DEKKING[x["dekking"]], ", ".join(x["checks"]),
+                    x["vanaf"] or "", "", x.get("buiten", ""), cw["versie"]])
+    for x in cw.get("aiuc1", []):
+        w.writerow(["AIUC-1", x["id"], x["titel"], DEKKING[x["dekking"]], ", ".join(x["checks"]),
+                    x["vanaf"] or "", "", x.get("buiten", ""), cw["versie"]])
     for x in cw["nis2"]:
         w.writerow(["NIS2-uitvoeringsverordening 2024/2690", x["id"], x["titel"], DEKKING[x["dekking"]],
                     ", ".join(x["alle_checks"]), "", "", "Zie ISO " + ", ".join(x["iso"]), cw["versie"]])
@@ -716,7 +728,8 @@ def robots():
         return Response("User-agent: *\nDisallow: /\n", mimetype="text/plain")
     if TEST:
         # Testomgeving: niet indexeren (elke pagina heeft ook noindex). /nieuws mag gelezen worden om de feeds te controleren.
-        return Response("User-agent: *\nAllow: /nieuws\nDisallow: /\n", mimetype="text/plain")
+        # scan.md en latest.json mogen opgehaald worden, zodat een AI-agent de instructie zelf kan lezen; ze krijgen noindex.
+        return Response("User-agent: *\nAllow: /nieuws\nAllow: /scan.md\nAllow: /latest.json\nDisallow: /\n", mimetype="text/plain")
     return Response(f"User-agent: *\nDisallow: /rapport/\nDisallow: /api/\nDisallow: /nieuws/post-van-de-dag\nDisallow: /nieuwsbrief/\nSitemap: {SITE_URL}/sitemap.xml\n",
                     mimetype="text/plain")
 
