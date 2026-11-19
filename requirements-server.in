@@ -2,6 +2,6 @@
 #   uv pip compile requirements-server.in --universal --python-version 3.12 --generate-hashes -o requirements-server.txt
 -r requirements.in
 flask>=3
-gunicorn>=22
+gunicorn>=27.0.1
 cryptography>=42
 tzdata
