@@ -3,7 +3,7 @@ name = "aiscan"
 version = "0.3.0"
 description = "AI-code scan: controles met vaste regels op software die met AI gebouwd is, gekoppeld aan normen en wetten (concept)"
 requires-python = ">=3.11"
-dependencies = ["PyYAML>=6.0", "Jinja2>=3.1", "requests>=2.31", "packaging>=23.0"]
+dependencies = ["PyYAML>=6.0.4", "Jinja2>=3.1", "requests>=2.31", "packaging>=23.0"]
 
 [project.scripts]
 aiscan = "aiscan.__main__:main"
